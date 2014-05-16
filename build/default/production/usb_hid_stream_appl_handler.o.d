@@ -1,0 +1,19 @@
+build/default/production/usb_hid_stream_appl_handler.o:  \
+ usb_hid_stream_appl_handler.c  \
+usb.h  \
+GenericTypeDefs.h  \
+Compiler.h  \
+usb_config.h  \
+usb_common.h  \
+usb_ch9.h  \
+usb_device.h  \
+usb_hal.h  \
+usb_hal_pic24.h  \
+usb_function_hid.h  \
+usb_hid_stream_appl_handler.h  \
+ams_types.h  \
+usb_hid_stream_driver.h  \
+AmsCom.h  \
+i2c_driver.h  \
+spi_driver.h  \
+logger.h 
