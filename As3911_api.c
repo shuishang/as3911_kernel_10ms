@@ -121,12 +121,12 @@ extern void as3911Isr( int t );
 
 static int as3911startsignal( void )
 {
-	int oflags = 0;
+	/*int oflags = 0;
 
 	signal( SIGIO, as3911Isr );
 	fcntl(iAS3911_Fd,F_SETOWN,getpid());
 	oflags = fcntl( iAS3911_Fd, F_GETFL);
-	fcntl(iAS3911_Fd,F_SETFL,oflags |FASYNC );
+	fcntl(iAS3911_Fd,F_SETFL,oflags |FASYNC );*/
 	return 0;
 }
 
@@ -223,7 +223,7 @@ u8 data_quck[]={ 0xef,0x00,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x12,0x00,0x00,0x0
  //  AS3911ModulationLevelTable_t mainModulationTable ;
 #define LOG myTACE
 #define myTACE printf
-   void displayRegisterValue(u8 address)
+   void displayRegisterValue(unsigned char  address)
 {
     u8 value = 0;
     as3911ReadRegister(address, &value);
@@ -231,7 +231,7 @@ u8 data_quck[]={ 0xef,0x00,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x12,0x00,0x00,0x0
    // printf("\033[40;44mREG: 0x%x: 0x%x\r\n\033[5m", address, value);
 }
    
-void displayTestRegisterValue(u8 address)
+void displayTestRegisterValue(unsigned char address)
 {
     u8 value = 0;
     LOG("Test REG: 0x%x: 0x%x\r\n", address, value);

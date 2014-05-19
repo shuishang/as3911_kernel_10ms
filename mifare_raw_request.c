@@ -10,7 +10,9 @@
 #include "mifare.h"
 #include <string.h>
 #include "logger.h"
-
+#include <stdio.h>
+#undef dbgLog
+#define  dbgLog printf
 /*
 ******************************************************************************
 * DEFINES
@@ -137,8 +139,9 @@ out:
 */
 static u16 mifareCopyToRawBuffer(const parity_data_t *message, u16 length)
 {
-    int i, bytepos = 0;
+    int  bytepos = 0;
     int bitpos = 0;
+    u16 i;
     memset(mifareRawBuffer,0,sizeof(mifareRawBuffer));
     dbgLog("transmitting: ");
     for(i = 0; i<length; i++)
@@ -176,7 +179,9 @@ static u16 mifareExtractMessage(u8* response, u16 responseLength)
     int i, bytepos = 0;
     int bitpos = 0;
     dbgLog("extracting ");
+#if (USE_LOGGER == LOGGER_ON)	
     dbgHexDump(mifareRawBuffer,responseLength);
+#endif
     if (responseLength==1)
     {
         response[0] = mifareRawBuffer[0];
@@ -199,6 +204,8 @@ static u16 mifareExtractMessage(u8* response, u16 responseLength)
         response[i] = m;
     }
     dbgLog(" extracted: ");
+#if (USE_LOGGER == LOGGER_ON)	
     dbgHexDump(response,bytes);
+#endif
     return bytes;
 }

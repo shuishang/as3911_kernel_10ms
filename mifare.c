@@ -22,7 +22,7 @@
 ******************************************************************************
 */
 #if 1
-#define MIFARE_DEBUG dbgLog
+#define MIFARE_DEBUG printf
 #else
 #define MIFARE_DEBUG(...)
 #endif
@@ -207,14 +207,16 @@ s8 mifareAuthenticateStep1(u8 keySelect,
         MIFARE_DEBUG("!! ");
         MIFARE_DEBUG("Reveiced 0x%x byte and 0x%x bits", numReceivedBytes, 0);
         MIFARE_DEBUG(", expected 4 bytes and 0 bits. Abort.\n");
+	#if (USE_LOGGER == LOGGER_ON)
         dbgHexDump(authenticationResponse,numReceivedBytes);
-
+	#endif
         mifareResetCipher();
  //       return ERR_NOTFOUND;
         return -52;
     }
+   #if (USE_LOGGER == LOGGER_ON)
     dbgHexDump(authenticationResponse,numReceivedBytes);
-
+   #endif
     uid_as_u32 = ARRAY_TO_UINT32(uid);
     tag_nonce = ARRAY_TO_UINT32(authenticationResponse);
 
@@ -349,7 +351,9 @@ s8 mifareSendRequest(const u8 *request, u16 requestLength
   
     err = mifareSendRawRequest(transceive_buffer, requestLength+2
         , response, maxResponseLength, responseLength, timeout, fourBitResponse);
+#if (USE_LOGGER == LOGGER_ON)	
     dbgLog("mifareSendRequest[%hhx]\n",err);
+#endif
 //    EVAL_ERR_NE_GOTO(ERR_NONE, err, out);
 if (err != ERR_NONE) goto out;
     // Copy response into transceive buffer for decryption.

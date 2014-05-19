@@ -210,4 +210,7 @@ int AS3911_rw_AntennaParm( PTAS3911_ANTENNAPARM ptAntennaParam );
 int AS3911_read_libCBFLVersion(  char  *pchVersion );
 void show3911Reg();
 void  appTestCmd ();
+void displayTestRegisterValue(unsigned char  address);
+   void displayRegisterValue(unsigned char  address) ;
+#define myTACE  printf
 #endif//

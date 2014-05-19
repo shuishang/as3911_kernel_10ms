@@ -83,7 +83,7 @@
     #define USE_LOGGER  LOGGER_OFF
 #endif
 */
-#define USE_LOGGER  LOGGER_OFF
+#define USE_LOGGER  LOGGER_ON
 
 /*
 ******************************************************************************
@@ -108,29 +108,9 @@
 #define DBG_ASSERT(mustBeTrue)  {}
 #endif
 
-#if (USE_USB_LOGGER == LOGGER_ON)
-#define USB_LOG dbgLog /*!< macro used for printing debug messages */
-#define USB_LOGDUMP dbgHexDump /*!< macro used for dumping buffers */
-#else
-#define USB_LOG(...) /*!< macro used for printing debug messages if USE_LOGGER is set */
-#define USB_LOGDUMP(...) /*!< macro used for dumping buffers if USE_LOGGER is set */
-#endif
 
-#if (USE_I2C_LOGGER == LOGGER_ON)
-#define I2C_LOG dbgLog /*!< macro used for printing debug messages */
-#define I2C_LOGDUMP dbgHexDump /*!< macro used for dumping buffers */
-#else
-#define I2C_LOG(...) /*!< macro used for printing debug messages if USE_LOGGER is set */
-#define I2C_LOGDUMP(...) /*!< macro used for dumping buffers if USE_LOGGER is set */
-#endif
 
-#if (USE_SPI_LOGGER == LOGGER_ON)
-#define SPI_LOG dbgLog /*!< macro used for printing debug messages */
-#define SPI_LOGDUMP dbgHexDump /*!< macro used for dumping buffers */
-#else
-#define SPI_LOG(...) /*!< macro used for printing debug messages if USE_LOGGER is set */
-#define SPI_LOGDUMP(...) /*!< macro used for dumping buffers if USE_LOGGER is set */
-#endif
+
 
 /*! \ingroup logger
  *****************************************************************************
@@ -149,7 +129,7 @@
  *
  *****************************************************************************
  */
-extern s8 dbgLog(const char* format, ...);
+
 
 /*! \ingroup debug
  *****************************************************************************
@@ -166,6 +146,6 @@ extern s8 dbgLog(const char* format, ...);
  *****************************************************************************
  */
 extern void dbgHexDump (unsigned char *buffer, u16 length);
-
+#define  dbgLog printf
 #endif /* LOGGER_H */
 

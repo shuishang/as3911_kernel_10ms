@@ -41,7 +41,7 @@
 
 #include <stddef.h>
 
-#include "usb_hid_stream_appl_handler.h"
+
 
 #include "emv_hal.h"
 #include "emv_standard.h"
@@ -186,10 +186,10 @@ s16 emvStartTerminalApplication(s16 (*application)(void))
         emvHalResetField();
 //test in 2014-1-9
         /* Card removal. */
- //       emvDisplayMessage(EMV_M_REMOVE_CARD);
-  //      error = emvRemove(&picc);
-  //      if (EMV_ERR_OK != error)
-  //          continue;
+        emvDisplayMessage(EMV_M_REMOVE_CARD);
+        error = emvRemove(&picc);
+      if (EMV_ERR_OK != error)
+            continue;
     }
 }
 

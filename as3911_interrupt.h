@@ -102,7 +102,7 @@
 
 
 #include "ams_types.h"
-
+#define TIMER_INTERRUPT_STATUS 0
 /*
 ******************************************************************************
 * DEFINES

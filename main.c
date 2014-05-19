@@ -130,6 +130,7 @@
 
 #include "logger.h"
 #include "as3911.h"
+#include "as3911_api.h"
 #include "emv_hal.h"
 #include "sleep.h"
 
@@ -262,19 +263,7 @@ const char * applGetFirmwareVersion(void)
     return gAS3911FwVersion;
 }
 
-/*!
- *****************************************************************************
- * \brief Display the value of an AS3911 register on the debug output.
- *
- * \param[in] address Address of the register whose value shall be display.
- *****************************************************************************
- */
-void displayRegisterValue(u8 address)
-{
-    u8 value = 0;
-    as3911ReadRegister(address, &value);
-    LOG("REG: 0x%hhx: 0x%hhx\n", address, value);
-}
+
 
 /*!
  *****************************************************************************
@@ -283,12 +272,7 @@ void displayRegisterValue(u8 address)
  * \param[in] address Address of the register whose value shall be display.
  *****************************************************************************
  */
-void displayTestRegisterValue(u8 address)
-{
-    u8 value = 0;
 
-    LOG("Test REG: 0x%hhx: 0x%hhx\n", address, value);
-}
 
 /*! \ingroup usb
  *****************************************************************************
