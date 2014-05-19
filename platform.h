@@ -41,7 +41,7 @@
 * INCLUDES
 ******************************************************************************
 */
-#include <p24FJ64GB002.h>
+
 #include "ams_types.h"
 #include "GenericTypeDefs.h"
 #include "Compiler.h"
@@ -62,25 +62,8 @@
 * GLOBAL VARIABLES
 ******************************************************************************
 */
-extern umword IRQ_COUNT;
 
-/*
-******************************************************************************
-* GLOBAL MACROS
-******************************************************************************
-*/
 
-/*! macro which globally disables interrupts and increments interrupt count */
-#define IRQ_INC_DISABLE() do {                                              \
-    __builtin_disi(0x3FFF);                                                 \
-    IRQ_COUNT++;                                                            \
-} while(0)
-
-/*! macro to globally enable interrupts again if interrupt count is 0 */
-#define IRQ_DEC_ENABLE() do {                                               \
-   if (IRQ_COUNT != 0) IRQ_COUNT--;                                         \
-   if (IRQ_COUNT == 0)  __builtin_disi(0);                                  \
-} while(0)
 
 #endif /* PLATFORM_H */
 

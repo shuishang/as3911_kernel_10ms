@@ -41,12 +41,12 @@
 * INCLUDES
 ******************************************************************************
 */
-#include <p24FJ64GB002.h>
 
 #include "as3911_io.h"
 #include "as3911_def.h"
 #include "errno.h"
-#include "spi_driver.h"
+#include <string.h>
+extern iAS3911_Fd;
 
 /*
 ******************************************************************************
@@ -67,8 +67,8 @@
 ******************************************************************************
 */
 
-#define AS3911_SEN_ON() { _LATB8 = 0; }
-#define AS3911_SEN_OFF() { _LATB8 = 1; }
+#define AS3911_SEN_ON() { ; }
+#define AS3911_SEN_OFF() { ; }
 
 /*
 ******************************************************************************
@@ -112,13 +112,11 @@ s8 as3911WriteRegister(u8 address, u8 data)
     int current_cpu_ipl = 0;
     u8 as3911WriteCommand[2] = { address & AS3911_SPI_ADDRESS_MASK, data };
 
-    SET_AND_SAVE_CPU_IPL(current_cpu_ipl, 7);
 
     AS3911_SEN_ON();
-    error |= spiRxTx(2, &as3911WriteCommand[0], 0, NULL, TRUE);
+    error = write( iAS3911_Fd, as3911WriteCommand, 2 );
     AS3911_SEN_OFF();
 
-    SET_CPU_IPL(current_cpu_ipl);
 
     if (ERR_NONE != error)
         return ERR_IO;
@@ -132,13 +130,11 @@ s8 as3911ReadRegister(u8 address, u8 *data)
     int current_cpu_ipl = 0;
     u8 as3911ReadCommand = AS3911_SPI_CMD_READ_REGISTER | (address & AS3911_SPI_ADDRESS_MASK);
 
-    SET_AND_SAVE_CPU_IPL(current_cpu_ipl, 7);
 
     AS3911_SEN_ON();
-    error |= spiRxTx(1, &as3911ReadCommand, 1, data, TRUE);
+    error = read( iAS3911_Fd, as3911ReadCommand, 1 );	
     AS3911_SEN_OFF();
 
-    SET_CPU_IPL(current_cpu_ipl);
 
     if (ERR_NONE != error)
         return ERR_IO;
@@ -152,13 +148,11 @@ s8 as3911WriteTestRegister(u8 address, u8 data)
     int current_cpu_ipl = 0;
     u8 as3911WriteCommand[3] = { AS3911_SPI_CMD_DIREC_CMD | AS3911_CMD_TEST_ACCESS, address & AS3911_SPI_ADDRESS_MASK, data };
 
-    SET_AND_SAVE_CPU_IPL(current_cpu_ipl, 7);
 
     AS3911_SEN_ON();
-    error |= spiRxTx(3, &as3911WriteCommand[0], 0, NULL, TRUE);
+   // error = write( iAS3911_Fd, &as3911WriteCommand[0],  3 );
     AS3911_SEN_OFF();
 
-    SET_CPU_IPL(current_cpu_ipl);
 
     if (ERR_NONE != error)
         return ERR_IO;
@@ -171,14 +165,15 @@ s8 as3911ReadTestRegister(u8 address, u8 *data)
     s8 error = ERR_NONE;
     int current_cpu_ipl = 0;
     u8 as3911ReadCommand[2] = { AS3911_SPI_CMD_DIREC_CMD | AS3911_CMD_TEST_ACCESS, AS3911_SPI_CMD_READ_REGISTER | (address & AS3911_SPI_ADDRESS_MASK) };
-
-    SET_AND_SAVE_CPU_IPL(current_cpu_ipl, 7);
-
+    u8 ucaDataBuffer[ 1024 ] = { 0 };	
+    ucaDataBuffer[0]=as3911ReadCommand[1];
     AS3911_SEN_ON();
-    error |= spiRxTx(2, &as3911ReadCommand[0], 1, data, TRUE);
+   // error |= (2, &as3911ReadCommand[0], 1, data, TRUE);
+	
+    error = write( iAS3911_Fd, as3911ReadCommand,  1 );
+    read( iAS3911_Fd, ucaDataBuffer, 1);	
     AS3911_SEN_OFF();
-
-    SET_CPU_IPL(current_cpu_ipl);
+    *data=ucaDataBuffer[1]; 	
 
     if (ERR_NONE != error)
         return ERR_IO;
@@ -203,93 +198,105 @@ s8 as3911ModifyRegister(u8 address, u8 mask, u8 data)
 
 s8 as3911ContinuousWrite(u8 address, const u8 *data, u8 length)
 {
-    s8 error = ERR_NONE;
-    int current_cpu_ipl = 0;
+	s8 error = ERR_NONE;
+	int current_cpu_ipl = 0;
+	u8 ucaDataBuffer[ 1024 ] = { 0 };	
+	u8 as3911WriteCommand = AS3911_SPI_CMD_WRITE_REGISTER | (address & AS3911_SPI_ADDRESS_MASK);
 
-    SET_AND_SAVE_CPU_IPL(current_cpu_ipl, 7);
+	if (length == 0)
+	    return ERR_NONE;
 
-    if (length == 0)
-        return ERR_NONE;
+	ucaDataBuffer[ 0 ] = as3911WriteCommand;
+	memcpy( &ucaDataBuffer[ 1 ], data, length );
 
-    u8 as3911WriteCommand = AS3911_SPI_CMD_WRITE_REGISTER | (address & AS3911_SPI_ADDRESS_MASK);
-    AS3911_SEN_ON();
-    error |= spiRxTx(1, &as3911WriteCommand, 0, NULL, FALSE);
-    error |= spiRxTx(length, data, 0, NULL, TRUE);
-    AS3911_SEN_OFF();
+	error = write( iAS3911_Fd, ucaDataBuffer, length+1 );
 
-    SET_CPU_IPL(current_cpu_ipl);
 
-    if (ERR_NONE != error)
-        return ERR_IO;
-    else
-        return ERR_NONE;
+	if (ERR_NONE != error)
+	    return ERR_IO;
+	else
+	    return ERR_NONE;
 }
 
 s8 as3911ContinuousRead(u8 address, u8 *data, u8 length)
 {
-    s8 error = ERR_NONE;
-    int current_cpu_ipl = 0;
-    u8 as3911ReadCommand = AS3911_SPI_CMD_READ_REGISTER | (address & AS3911_SPI_ADDRESS_MASK);
+	s8 error = ERR_NONE;
+	u8 as3911ReadCommand = AS3911_SPI_CMD_READ_REGISTER | (address & AS3911_SPI_ADDRESS_MASK);
+	u8 ucaDataBuffer[ 1024 ] = { 0 };
 
-    SET_AND_SAVE_CPU_IPL(current_cpu_ipl, 7);
+	ucaDataBuffer[ 0 ] = as3911ReadCommand;
+	error = read( iAS3911_Fd, ucaDataBuffer, length);
 
-    AS3911_SEN_ON();
-    error |= spiRxTx(1, &as3911ReadCommand, length, data, TRUE);
-    AS3911_SEN_OFF();
-
-    SET_CPU_IPL(current_cpu_ipl);
-
-    if (ERR_NONE != error)
-        return ERR_IO;
-    else
-        return ERR_NONE;
+	if (ERR_NONE != error)
+	{
+		return ERR_IO;
+	}
+	else
+	{
+		memcpy( data, &ucaDataBuffer[ 1 ] , length );
+		return ERR_NONE;
+	}
 }
 
 s8 as3911WriteFifo(const u8 *data, u8 length)
 {
-    s8 error = ERR_NONE;
-    int current_cpu_ipl = 0;
-    u8 as3911WriteFifoCommand = AS3911_SPI_CMD_WRITE_FIFO;
+	s8 error = ERR_NONE;
+	u8 as3911WriteFifoCommand = AS3911_SPI_CMD_WRITE_FIFO;
+	u8 ucaDataBuffer[ 1024 ] = { 0 };
+	if(data == NULL)
+	{
+		printf("a1_errof\r\n");
+		return -1;
+	}	
+	if ( 0 == length )
+	    return ERR_NONE;
 
-    if (0 == length)
-        return ERR_NONE;
+	ucaDataBuffer[ 0 ] = as3911WriteFifoCommand;
+	memcpy( ucaDataBuffer + 1, data, length );
+	error = write( iAS3911_Fd, ucaDataBuffer, length+1 );
 
-    SET_AND_SAVE_CPU_IPL(current_cpu_ipl, 7);
-
-    AS3911_SEN_ON();
-    error |= spiRxTx(1, &as3911WriteFifoCommand, 0, NULL, TRUE);
-    error |= spiRxTx(length, data, 0, NULL, TRUE);
-    AS3911_SEN_OFF();
-
-    SET_CPU_IPL(current_cpu_ipl);
-
-    if (ERR_NONE != error)
-        return ERR_IO;
-    else
-        return ERR_NONE;
+	if ( ERR_NONE != error )
+	    return ERR_IO;
+	else
+	    return ERR_NONE;
 }
 
 s8 as3911ReadFifo(u8 *data, u8 length)
 {
-    s8 error = ERR_NONE;
-    int current_cpu_ipl = 0;
-    u8 as3911ReadFifoCommand = AS3911_SPI_CMD_READ_FIFO;
+	s8 error = ERR_NONE;
+	u8 as3911ReadFifoCommand = AS3911_SPI_CMD_READ_FIFO;
+	u8 ucaDataBuffer[ 1024 ] = { 0 };
+	
+	if (0 ==  length  )
+	{
+		return ERR_NONE;
+	}
+	if(data == NULL)
+	{
+		printf("a1_errof\r\n");
+		return -1;
+	}
+	
+	if (0 ==  length  )
+	{
+		return ERR_NONE;
+	}
 
-    if (length == 0)
-        return ERR_NONE;
+	ucaDataBuffer[ 0 ] = as3911ReadFifoCommand;
+	error = read( iAS3911_Fd, ucaDataBuffer, length);
 
-    SET_AND_SAVE_CPU_IPL(current_cpu_ipl, 7);
-
-    AS3911_SEN_ON();
-    error |= spiRxTx(1, &as3911ReadFifoCommand, length, data, TRUE);
-    AS3911_SEN_OFF();
-
-    SET_CPU_IPL(current_cpu_ipl);
-
-    if (ERR_NONE != error)
-        return ERR_IO;
-    else
-        return ERR_NONE;
+	if (ERR_NONE != error)
+	{
+		return ERR_IO;
+	}
+	else
+	{	
+		if (  data != NULL )
+		{
+			memcpy( data, &ucaDataBuffer [ 1 ], length );
+			return ERR_NONE;
+		}
+	}
 }
 
 s8 as3911ExecuteCommand(u8 directCommand)
@@ -298,13 +305,12 @@ s8 as3911ExecuteCommand(u8 directCommand)
     int current_cpu_ipl = 0;
     u8 as3911DirectCommand = AS3911_SPI_CMD_DIREC_CMD | (directCommand & AS3911_SPI_ADDRESS_MASK);
 
-    SET_AND_SAVE_CPU_IPL(current_cpu_ipl, 7);
 
     AS3911_SEN_ON();
-    error |= spiRxTx(1, &as3911DirectCommand, 0, NULL, TRUE);
+  //  error |= spiRxTx(1, &as3911DirectCommand, 0, NULL, TRUE);
+    error = write( iAS3911_Fd, &as3911DirectCommand, 1 );
     AS3911_SEN_OFF();
 
-    SET_CPU_IPL(current_cpu_ipl);
 
     if (ERR_NONE != error)
         return ERR_IO;

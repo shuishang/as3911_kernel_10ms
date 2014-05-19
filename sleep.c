@@ -92,9 +92,7 @@
 
 void sleepMilliseconds(unsigned int milliseconds)
 {
-    timerStart(milliseconds);
-    while(timerIsRunning())
-        ;
+	usleep(milliseconds*1000);
 }
 
 /*

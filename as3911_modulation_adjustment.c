@@ -193,8 +193,7 @@ void as3911AdjustModulationLevel()
 		for (count = 0; count < as3911ModulationLevelAutomaticAdjustmentData->delay; count++)
 		{
 			/* FIXME: replace with microseconds sleep from AMS base firmware. */
-			__asm__("REPEAT #0x99");
-			__asm__("NOP");
+
 		}
 	}
     else if (AS3911_MODULATION_LEVEL_FROM_AMPLITUDE == as3911ModulationLevelMode)

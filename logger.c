@@ -41,7 +41,6 @@
 #include "logger.h"
 #include "uart.h"
 #include "errno.h"
-#include <p24Fxxxx.h>
 #include <stdarg.h>
 
 /*
@@ -77,7 +76,6 @@ s8 dbgLog(const char* format, ...)
     u16 current_cpu_ipl;
 
     /* the USB interrupt is not handled via disi command -> use a "more direct" way */
-    SET_AND_SAVE_CPU_IPL(current_cpu_ipl, 7);  /* disable interrupts */
 
     va_list argptr;
     va_start(argptr, format);
@@ -275,7 +273,6 @@ s8 dbgLog(const char* format, ...)
     }
     va_end(argptr);
 
-    RESTORE_CPU_IPL(current_cpu_ipl);
 
     return ERR_NONE;
 }

@@ -195,7 +195,6 @@ s16 emvStartTerminalApplication(s16 (*application)(void))
 
 bool_t emvStopRequestReceived()
 {
-    ProcessIO();
 
     if (emvStopRequestReceivedFlag)
     {

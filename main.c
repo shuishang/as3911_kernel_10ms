@@ -125,40 +125,18 @@
 ******************************************************************************
 */
 #include "platform.h"
-#include "usb.h"
-#include "usb_function_hid.h"
-#include "usb_hid_stream_appl_handler.h"
-#include "usb_hid_stream_driver.h"
 #include "emv_gui.h"
 #include "main.h"
+
 #include "logger.h"
-#include "PPS.h"
-#include "spi_driver.h"
-#include "timer_driver.h"
 #include "as3911.h"
 #include "emv_hal.h"
 #include "sleep.h"
-#include "led.h"
-
-#if (USE_LOGGER == LOGGER_ON)
-#include "uart.h"
-#define UART_BUFFER_SIZE                256
-#endif
 
 //#include "emv_hal.h"
 #include "emv_typeA.h"
 #include "mifare.h"
-
-#ifdef HAS_BOOTLOADER
-extern void _resetPRI();
-u16 bltappId __attribute__ ((space(prog), section(".blid"))) = 0xBAAE;
-u16 bluserReset __attribute__ ((space(prog), section(".bladdr"))) = (u16)_resetPRI;
-#endif
 /** CONFIGURATION **************************************************/
-_CONFIG1(WDTPS_PS1 & FWPSA_PR32 & WINDIS_OFF & FWDTEN_OFF & ICS_PGx1 & GWRP_OFF & GCP_OFF & JTAGEN_OFF)
-_CONFIG2(POSCMOD_NONE & I2C1SEL_PRI & IOL1WAY_OFF & OSCIOFNC_OFF & FCKSM_CSDCMD & FNOSC_FRCPLL & PLL96MHZ_ON & PLLDIV_NODIV & IESO_ON)   /* OSCIOFNC_ON: get RA3 as digital I/O */
-_CONFIG3(WPFP_WPFP0 & SOSCSEL_IO & WUTSEL_LEG & WPDIS_WPDIS & WPCFG_WPCFGDIS & WPEND_WPENDMEM)   /* SOSCSEL_IO: get RA4 and RB4 as digital I/O */
-_CONFIG4(DSWDTPS_DSWDTPS3 & DSWDTOSC_LPRC & RTCOSC_SOSC & DSBOREN_OFF & DSWDTEN_OFF)
 
 /*
 ******************************************************************************
@@ -197,24 +175,9 @@ static AS3911GainTable_t mainGainTable = {
 	&mainGainTableY[0]
 	};
 	
-/*!
- *****************************************************************************
- * Indicates that a start of one of the EMV test applications has been
- * requested by the GUI. Possible Value:
- * 
- * 0:                         No test application start requested.
- * AMS_COM_EMV_DIGITAL:       Digital test application start requested.
- * AMS_COM_EMV_PREVALIDATION: Prevalidation test application start requested.
- *****************************************************************************
- */
+
 static u8 emvGuiTestApplicationRequested = 0;
 
-/*
-******************************************************************************
-* GLOBAL VARIABLES
-******************************************************************************
-*/
-umword IRQ_COUNT;
 
 #if (USE_LOGGER == LOGGER_ON)
 u32 gBaudRate = 0UL;
@@ -236,8 +199,6 @@ const char gAS3911FwVersion[] = AS3911_FW_VERSION;
  */
 s8 picInitialize (void);
 
-/* DECLARATIONS ***************************************************/
-#pragma code
 
 int main()
 {
@@ -247,67 +208,6 @@ int main()
 	u8 err = ERR_NONE;
 	EmvPicc_t picc;
     picInitialize();
-
-#if (USE_LOGGER == LOGGER_ON)
-    /* initialize UART1 which is used to log to a serial console via pin RP13 on MCU ICP (J1) */
-    uartTxInitialize(SYSCLK, 115200, &gBaudRate);
-#endif
-
-    //On the PIC24FJ64GB004 Family of USB microcontrollers, the PLL will not power up and be enabled
-    //by default, even if a PLL enabled oscillator configuration is selected (such as HS+PLL).
-    //This allows the device to power up at a lower initial operating frequency, which can be
-    //advantageous when powered from a source which is not guaranteed to be adequate for 32MHz
-    //operation.  On these devices, user firmware needs to manually set the CLKDIV<PLLEN> bit to
-    //power up the PLL.
-    {
-        unsigned int pll_startup_counter = 600;
-        CLKDIVbits.PLLEN = 1;
-        while(pll_startup_counter--);
-    }
-    //Device switches over automatically to PLL output after PLL is locked and ready.
-
-
-
-//	The USB specifications require that USB peripheral devices must never source
-//	current onto the Vbus pin.  Additionally, USB peripherals should not source
-//	current on D+ or D- when the host/hub is not actively powering the Vbus line.
-//	When designing a self powered (as opposed to bus powered) USB peripheral
-//	device, the firmware should make sure not to turn on the USB module and D+
-//	or D- pull up resistor unless Vbus is actively powered.  Therefore, the
-//	firmware needs some means to detect when Vbus is being powered by the host.
-//	A 5V tolerant I/O pin can be connected to Vbus (through a resistor), and
-// 	can be used to detect when Vbus is high (host actively powering), or low
-//	(host is shut down or otherwise not supplying power).  The USB firmware
-// 	can then periodically poll this I/O pin to know when it is okay to turn on
-//	the USB module/D+/D- pull up resistor.  When designing a purely bus powered
-//	peripheral device, it is not possible to source current on D+ or D- when the
-//	host is not actively providing power on Vbus. Therefore, implementing this
-//	bus sense feature is optional.  This firmware can be made to use this bus
-//	sense feature by making sure "USE_USB_BUS_SENSE_IO" has been defined in the
-//	HardwareProfile.h file.
-#if defined(USE_USB_BUS_SENSE_IO)
-    tris_usb_bus_sense = 1; // input pin
-#endif
-
-//	If the host PC sends a GetStatus (device) request, the firmware must respond
-//	and let the host know if the USB peripheral device is currently bus powered
-//	or self powered.  See chapter 9 in the official USB specifications for details
-//	regarding this request.  If the peripheral device is capable of being both
-//	self and bus powered, it should not return a hard coded value for this request.
-//	Instead, firmware should check if it is currently self or bus powered, and
-//	respond accordingly.  If the hardware has been configured like demonstrated
-//	on the PICDEM FS USB Demo Board, an I/O pin can be polled to determine the
-//	currently selected power source.  On the PICDEM FS USB Demo Board, "RA2"
-//	is used for	this purpose.  If using this feature, make sure "USE_SELF_POWER_SENSE_IO"
-//	has been defined in HardwareProfile.h, and that an appropriate I/O pin has been mapped
-//	to it in HardwareProfile.h.
-#if defined(USE_SELF_POWER_SENSE_IO)
-    tris_self_power = 1;	// input pin
-#endif
-    timerInitialize(SYSCLK);
-
-    spiConfig_t spiAs3911Config = { 4000000, 1, SPI_DEVICE_ID_AS3911, 0, 0};
-    spiInitialize(SYSCLK, &spiAs3911Config, NULL);
 
     /* Reset the AS3911 */
     as3911ExecuteCommand(AS3911_CMD_SET_DEFAULT);
@@ -325,42 +225,16 @@ int main()
     /* Enable AS3911 IRQ handling. */
     AS3911_IRQ_ON();
 
-    initUsbApplHandler(SYSCLK);
-    USBDeviceInit();	//usb_device.c.  Initializes USB module SFRs and firmware
-
     LOG("\n");
     LOG((const char*)gAS3911FwVersion);
     LOG("\n");
 
-    ledOn(LED_BLUE);
 
-#if defined(USB_INTERRUPT)
-    USBDeviceAttach();
-#endif
     
     while(1)
     {
-#if defined(USB_POLLING)
-        // Check bus status and service USB interrupts.
-        USBDeviceTasks(); // Interrupt or polling method.  If using polling, must call
-        // this function periodically.  This function will take care
-        // of processing and responding to SETUP transactions
-        // (such as during the enumeration process when you first
-        // plug in).  USB hosts require that USB devices should accept
-        // and process SETUP packets in a timely fashion.  Therefore,
-        // when using polling, this function should be called
-        // frequently (such as once about every 100 microseconds) at any
-        // time that a SETUP packet might reasonably be expected to
-        // be sent by the host to your device.  In most cases, the
-        // USBDeviceTasks() function does not take very long to
-        // execute (~50 instruction cycles) before it returns.
-#endif
 
         // Application-specific tasks.
-        // Application related code may be added here, or in the ProcessIO() function.
-#if 1
-        ProcessIO();
-
         if (APPL_COM_EMV_DIGITAL == emvGuiTestApplicationRequested)
         {
             emvGuiDigital();
@@ -371,92 +245,6 @@ int main()
             emvGuiPrevalidation();
             emvGuiTestApplicationRequested = 0;
         }
-#else
-        ProcessIO();
-
-        if (APPL_COM_EMV_DIGITAL == emvGuiTestApplicationRequested)
-        {
-			tbuf[0] = 0xff;
-			tbuf[1] = 0xff;
-			tbuf[2] = 0xff;
-			tbuf[3] = 0xff;
-			tbuf[4] = 0xff;
-			tbuf[5] = 0xff;
-			//as3911Initialize();
-			//iso14443ADeinitialize(0);
-			emvHalActivateField(0);
-			while (1) {
-				//iso14443AInitialize();
-				err = emvHalActivateField(TRUE);
-				sleepMilliseconds(5);
-				//emvHalSetStandard(EMV_HAL_TYPE_A);
-				//emvHalSetErrorHandling(EMV_HAL_PREACTIVATION_ERROR_HANDLING);
-
-				//as3911ModifyRegister(AS3911_REG_OP_CONTROL, 0x10, 0x10);
-				//as3911WriteRegister(AS3911_REG_RFO_AM_OFF_LEVEL, 0x80);
-				//as3911WriteRegister(AS3911_REG_MASK_RX_TIMER, 12);
-				//err = iso14443ASelect(ISO14443A_CMD_WUPA, &card);
-				picc.uidLength = 0;
-				err = emvTypeAAnticollision(&picc);
-				dbgLog("!!!!!%d\n", picc.uidLength);
-				//iso14443ADeinitialize(1);
-				err = mifareInitialize();
-				mifareResetCipher();
-				//tbuf[6] = card.actlength;
-				tbuf[6] = picc.uidLength;
-				//AMS_MEMCPY(&tbuf[7], card.uid, card.actlength);
-				for (i = 0; i < picc.uidLength; i++)
-					tbuf[7+i] = picc.uid[i];
-				dbgLog("!!!!!%x %x %x %x\n", tbuf[7], tbuf[8], tbuf[9], tbuf[10]);
-				for (i = 0; i < 5; i++) {
-					err = mifareAuthenticateStep1(MIFARE_AUTH_KEY_A,
-							i*4,
-							&tbuf[7],
-							tbuf[6],
-							&tbuf[0]);
-					if (ERR_NONE != err)
-					{
-						dbgLog("####################block %d authenticate step1 error####################\n", (i*4));
-						break;
-					}
-					err = mifareAuthenticateStep2(0x11223344);
-					if (ERR_NONE != err)
-					{
-						dbgLog("####################block %d authenticate step2 error####################\n", (i*4));
-						break;
-					}
-
-					/*mifare_request[0] = MIFARE_READ_BLOCK;
-					mifare_request[1] = i*4;
-
-					err = mifareSendRequest(mifare_request,
-						sizeof(mifare_request),
-						rbuf,
-						32,
-						&numBytesReceived,
-						MIFARE_READ_TIMEOUT,
-						FALSE);
-
-					if (ERR_NONE != err)
-					{
-						dbgLog("####################read block %d error####################\n", (i*4+3));
-						break;
-					} else {
-						dbgLog("block %d:", (i*4+3));
-						for (j = 0; j < numBytesReceived; j++)
-							dbgLog("%hhx ", rbuf[j]);
-						dbgLog("\n");
-					}*/
-				}
-
-				mifareDeinitialize(0);
-				as3911ModifyRegister(AS3911_REG_NUM_TX_BYTES2, 0x07, 0);
-				//delayNMilliSeconds(200);
-				sleepMilliseconds(200);
-			}
-		}
-#endif
-
     }//end while
 
     return 0;
@@ -498,7 +286,7 @@ void displayRegisterValue(u8 address)
 void displayTestRegisterValue(u8 address)
 {
     u8 value = 0;
-    as3911ReadTestRegister(address, &value);
+
     LOG("Test REG: 0x%hhx: 0x%hhx\n", address, value);
 }
 
@@ -717,74 +505,7 @@ u8 applProcessCmd (u8 const * rxData, const u8 rxSize, u8 * txData, u8 * txSize)
 
 s8 picInitialize (void)
 {
-    IRQ_COUNT = 0;
 
-    /* All I/O digital. */
-    AD1PCFG = 0xFFFF;
-
-    /* PIC24FJXXGB002
-     *
-     * set the following PORTA pin(s)as IN/OUT:
-     * PortPin, RPx, PinNr, IN/OUT, Description
-     * ----------------------------------------
-     * RA5 to RA15 are not routed to a pin.
-     * RA4 ,    ,  9, OUT, n. c.
-     * RA3 ,    ,  7,  IN, OSCI
-     * RA2 ,    ,  6,  IN, OSCO
-     * RA1 , RP6, 28, OUT, SCLK (AS3911)
-     * RA0 , RP5, 27, OUT, MOSI (AS3911)
-     */
-    TRISA = 0xFFEC;
-
-    /* PIC24FJXXGB002
-     * 
-     * set the following PORTB pin(s)as IN/OUT:
-     * PortPin, RPx, PinNr, IN/OUT, Description
-     * ----------------------------------------
-     * RB15, RP15, 23  OUT, LED 4
-     * RB14, RP14, 22, OUT, LED 3
-     * RB13, RP13, 21, OUT, LED 2
-     * RB12,     ,   ,  IN, n. a.
-     * RB11, RP11, 19,  IN, USB D-
-     * RB10, RP10, 18,  IN, USB D+
-     * RB9 , RP9 , 15,  IN, IRQ (AS3911)
-     * RB8 , RP8 , 14, OUT, SEN  (AS3911)
-     * RB7 , RP7 , 13,  IN, MISO (AS3911)
-     * RB6 ,     ,   ,  IN, n. a.
-     * RB5 ,     , 11, OUT, LED 1
-     * RB4 , RP4 ,  8,  IN, MCU_CLK (AS3911)
-     * RB3 , RP3 ,  4, OUT, debug pulse
-     * RB2 , RP2 ,  3, OUT, UART1 TX
-     * RB1 , RP1 ,  2,  IN, PGC1
-     * RB0 , RP0 ,  1,  IN, PGD1
-     */
-    TRISB = 0x1ED3;
-
-    /* Deactivate AS3911 SEN */
-    _LATB8 = 1;
-
-    /* Set debug measurement trigger to low. */
-    _LATB3 = 0;
-
-    /* Setup SPI pins. */
-    PPSOutput(PPS_RP6, PPS_SCK1OUT);
-    PPSOutput(PPS_RP5, PPS_SDO1);
-    PPSInput(PPS_SDI1, PPS_RP7);
-
-    /* Setup AS3911 irq signal, which is routed to the input
-     * capture module 1:
-     *
-     * - ICM<2:0> = 011 - interrupt every rising edge
-     */
-    IC1CON1bits.ICM1 = 1;
-    IC1CON1bits.ICM0 = 1;
-    PPSInput(PPS_IC1, PPS_RP9);
-
-#if (USE_LOGGER == LOGGER_ON)
-    PPSOutput(PPS_RP2, PPS_U1TX);
-#endif
-
-    IRQ_DEC_ENABLE();
-
+   
     return ERR_NONE;
 }

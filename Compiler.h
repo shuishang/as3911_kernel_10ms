@@ -56,7 +56,7 @@
 // Include proper device header file
 
 // PIC24F processor
-#include <p24Fxxxx.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -65,14 +65,5 @@
 #define PTR_BASE            unsigned short
 #define ROM_PTR_BASE        unsigned short
 
-// Definitions that apply to all 16-bit and 32-bit products
-// (PIC24F, PIC24H, dsPIC30F, dsPIC33F, and PIC32)
-#define	ROM                 const
-
-// 16-bit specific defines (PIC24F, PIC24H, dsPIC30F, dsPIC33F)
-#define Reset()             asm("reset")
-#define FAR                 __attribute__((far))
-#define WEAK                __attribute__((__weak__))
-#define INTERRUPT           __attribute__((interrupt, no_auto_psv))
 
 #endif

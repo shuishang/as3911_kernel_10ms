@@ -83,7 +83,7 @@
     #define USE_LOGGER  LOGGER_OFF
 #endif
 */
-#define USE_LOGGER  LOGGER_ON
+#define USE_LOGGER  LOGGER_OFF
 
 /*
 ******************************************************************************

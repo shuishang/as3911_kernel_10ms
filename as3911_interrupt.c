@@ -42,9 +42,10 @@
 #include "as3911_interrupt.h"
 
 #include "as3911.h"
-#include "timer_driver.h"
 #include "errno.h"
 
+#include <sys/time.h>
+#include <linux/ioctl.h>
 /*
 ******************************************************************************
 * DEFINES
@@ -62,7 +63,7 @@
  * \brief Clear the interrupt flag associated with the as3911 interrupt.
  *****************************************************************************
  */
-#define AS3911_IRQ_CLR() { _IC1IF = 0; }
+#define AS3911_IRQ_CLR() { ; }
 
 /*!
  *****************************************************************************
@@ -70,7 +71,7 @@
  * AS3911.
  *****************************************************************************
  */
-#define AS3911_IRQ_IS_SET() ( _RB9 != 0)
+#define AS3911_IRQ_IS_SET() ( 1)
 
 /*
 ******************************************************************************
@@ -89,29 +90,50 @@ static volatile u32 as3911InterruptMask = 0;
 /*! Accumulated AS3911 interrupt status. */
 static volatile u32 as3911InterruptStatus = 0;
 
-/*
-******************************************************************************
-* LOCAL TABLES
-******************************************************************************
-*/
+typedef struct {
 
-/*
-******************************************************************************
-* LOCAL FUNCTION PROTOTYPES
-******************************************************************************
-*/
+	unsigned long times;
+	long long clk_start;
+} AS3911_TIMER;
 
-/*
-******************************************************************************
-* GLOBAL VARIABLE DEFINITIONS
-******************************************************************************
-*/
+AS3911_TIMER As3911_Timer[ 2 ] = { 0 ,0 };
 
-/*
-******************************************************************************
-* GLOBAL FUNCTIONS
-******************************************************************************
-*/
+//(unsigned char TimerNo, int ms )
+//TimerNo  定时器编号
+// ms  延迟时间 ,单位 毫秒.
+void  TimerStart( unsigned char TimerNo, int ms )
+{
+	struct timeval tv ;
+	struct timezone tz;
+
+	gettimeofday( &tv, &tz );
+	As3911_Timer[ TimerNo ].clk_start = tv.tv_sec *1000 + tv.tv_usec/1000; //ms
+	As3911_Timer[ TimerNo ].times      = ms;
+}
+
+int TimerCheck( unsigned char TimerNo )
+{
+	long RestTime                                   = 0;
+	unsigned long CurrentTime            = 0;
+	unsigned long ElapsedTime            =0;	
+	struct timeval tv;
+	struct timezone tz;
+
+	gettimeofday( &tv, &tz );
+	CurrentTime = tv.tv_sec * 1000 + tv.tv_usec /1000;
+	ElapsedTime = CurrentTime - As3911_Timer[ TimerNo ].clk_start;
+	RestTime = As3911_Timer[ TimerNo ].times - ElapsedTime;
+	if ( RestTime > 0 )
+	{
+		return RestTime;
+	}
+	else
+	{
+		return 0;
+	}
+	
+}
+
 
 s8 as3911EnableInterrupts(u32 mask)
 {
@@ -174,30 +196,41 @@ s8 as3911ClearInterrupts(u32 mask)
 
 s8 as3911WaitForInterruptTimed(u32 mask, u16 timeout, u32 *irqs)
 {
-    bool_t timerExpired = FALSE;
-    u32 irqStatus = 0;
+	bool_t timerExpired  = FALSE;
+	u32      irqStatus        = 0;
 
-    if (timeout > 0)
-        timerStart(timeout);
+	if( timeout > 0 )
+	{
+		TimerStart( TIMER_INTERRUPT_STATUS, timeout );	
+	}
+	
+   	do
+   	{
+   		as3911ContinuousRead(AS3911_REG_IRQ_MAIN, (u8*) &irqStatus, 3);
+		as3911InterruptStatus |= irqStatus & as3911InterruptMask;
+		
+		irqStatus = as3911InterruptStatus & mask;
+		if ( timeout > 0 )
+		{
+			if ( TimerCheck( TIMER_INTERRUPT_STATUS ) > 0 )
+			{
+				timerExpired  = FALSE;
+			}
+			else
+			{
+				timerExpired  = TRUE;
+			}
+		}
+		
+	}while( !irqStatus && !timerExpired );
 
-    do
-    {
-        irqStatus = as3911InterruptStatus & mask;
+	//AS3911_IRQ_OFF();
+	as3911InterruptStatus &= ~irqStatus;
+	//AS3911_IRQ_ON();
 
-        if (timeout > 0)
-        {
-            if (!timerIsRunning())
-                timerExpired = TRUE;
-        }
-    } while (!irqStatus && !timerExpired);
+	*irqs = irqStatus;
 
-    AS3911_IRQ_OFF();
-    as3911InterruptStatus &= ~irqStatus;
-    AS3911_IRQ_ON();
-
-    *irqs = irqStatus;
-
-    return ERR_NONE;
+          return ERR_NONE;
 }
 
 s8 as3911GetInterrupts(u32 mask, u32 *irqs)
@@ -212,19 +245,7 @@ s8 as3911GetInterrupts(u32 mask, u32 *irqs)
     return ERR_NONE;
 }
 
-void __attribute__((interrupt, no_auto_psv)) _IC1Interrupt(void)
-// void as3911Isr(void)
-{
-    do
-    {
-        u32 irqStatus = 0;
 
-        AS3911_IRQ_CLR();
-
-        as3911ContinuousRead(AS3911_REG_IRQ_MAIN, (u8*) &irqStatus, 3);
-        as3911InterruptStatus |= irqStatus & as3911InterruptMask;
-    } while (AS3911_IRQ_IS_SET());
-}
 
 /*
 ******************************************************************************
