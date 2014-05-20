@@ -342,8 +342,11 @@ s16 as3911Receive(u8 *response, size_t maxResponseLength, size_t *responseLength
     bool_t overflowOccured = FALSE;
 
 //    LOG("----------------as3911Receive\n");
-
-    *responseLength = 0;
+    if(responseLength != NULL)
+    {
+	    *responseLength = 0;
+    }	
+	
     do
     {
 
@@ -497,8 +500,10 @@ s16 as3911Receive(u8 *response, size_t maxResponseLength, size_t *responseLength
                 as3911ExecuteCommand(AS3911_CMD_START_GP_TIMER);
 
                 as3911ReceptionInProgress = FALSE;
-                *responseLength = numBytesReceived;
-
+		if(responseLength != NULL)
+		{
+		 *responseLength = numBytesReceived;
+		}				
                 if (errorIrqStatus & AS3911_IRQ_MASK_COL)
                     return AS3911_COLLISION_ERROR;
                 else if (errorIrqStatus & AS3911_IRQ_MASK_ERR1)

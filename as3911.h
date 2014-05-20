@@ -55,7 +55,7 @@
 #include "as3911_interrupt.h"
 #include "as3911_com.h"
 #include "as3911_errno.h"
-
+#include <stdio.h>
 /*
 ******************************************************************************
 * DEFINES

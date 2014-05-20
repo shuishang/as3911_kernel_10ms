@@ -47,7 +47,8 @@
 #include "emv_typeA.h"
 #include "emv_standard.h"
 #include "emv_error_codes.h"
-
+#include <stdio.h>
+#define debug printf
 /*
 ******************************************************************************
 * DEFINES
@@ -100,7 +101,7 @@
 #define EMV_SAK_CASCADE_BIT_MASK                0x04
 /*! Mask for the ISO14443-4 compliance bit fo an ISO14443-A SAK. */
 #define EMV_SAK_ISO144434_COMPLIANT_BIT_MASK    0x20
-
+#define  PRINTF  printf
 /*
 ******************************************************************************
 * MACROS
@@ -167,7 +168,7 @@ s16 emvTypeACardPresent()
 {
     u8 atqa[2];
     size_t responseLength = 0;
-
+    debug("emvTypeACardPresent() \r\n");	 
     emvHalSetStandard(EMV_HAL_TYPE_A);
     emvHalSetErrorHandling(EMV_HAL_PREACTIVATION_ERROR_HANDLING);
 
@@ -175,10 +176,53 @@ s16 emvTypeACardPresent()
     s8 error = emvHalTransceive(NULL, 0, &atqa[0], sizeof(atqa), &responseLength, EMV_TYPEA_FDT_9, EMV_HAL_TRANSCEIVE_WUPA);
 
     /* Any response shall be taken as a card presence indication. */
-    if (EMV_HAL_ERR_TIMEOUT == error)
-        return 0;
-    else
-        return 1;
+    /* Any response shall be taken as a card presence indication. */
+	if (error == EMV_ERR_TIMEOUT)
+	{
+		PRINTF("  +a1 ");
+ 		return EMV_ERR_TIMEOUT;
+	}  
+	else if (error == EMV_ERR_STOPPED)
+	{
+	   PRINTF("  +a2 ");
+ 	   return EMV_ERR_STOPPED;
+	}
+	
+	else if (error != EMV_ERR_OK)
+	{
+	   PRINTF("  +a3 ");
+ 	   return EMV_ERR_COLLISION;
+	}		
+	else if (responseLength != 2)
+	{
+		//if(g_quck_flag)
+		{
+			PRINTF(" &");
+		}
+		return EMV_ERR_COLLISION;
+	}
+	    
+
+	/* Check correctness of ATQA. */
+	/* Check correctness of UID size encoding. */
+	if ((atqa[0] & EMV_ATQA_UID_SIZE_MASK) == EMV_ATQA_UID_SIZE_INVALID)
+	{
+	   PRINTF("  +a5 ");
+ 	   return EMV_ERR_PROTOCOL;
+ 	}	
+         char numBitsSetInAnticollisionBits=0;
+	char bitMask ;
+	/* Check correctness of bit frame anticollision bits. */
+	 for ( bitMask = 0x01; bitMask != 0x20; bitMask <<= 1)
+	 {
+	     if (atqa[0] & bitMask)
+	         numBitsSetInAnticollisionBits++;
+	 } 
+	 if (numBitsSetInAnticollisionBits != 1)
+	 {
+	   PRINTF("  +a6 ");
+ 	   return EMV_ERR_PROTOCOL;
+ 	 }	
 }
 
 s16 emvTypeAAnticollision(EmvPicc_t *picc)

@@ -177,7 +177,7 @@ static AS3911GainTable_t mainGainTable = {
 	};
 	
 
-static u8 emvGuiTestApplicationRequested = 0;
+static u8 emvGuiTestApplicationRequested = APPL_COM_EMV_DIGITAL;
 
 
 #if (USE_LOGGER == LOGGER_ON)

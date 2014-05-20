@@ -47,7 +47,7 @@
 #include "emv_main.h"
 #include "emv_typeA.h"
 #include "emv_typeB.h"
-
+#include <stdio.h>
 /*
 ******************************************************************************
 * DEFINES
@@ -56,7 +56,7 @@
 
 /*! Frame delay time (timeout) used for ISO14443-A HLTA commands. */
 #define EMV_HLTA_FDT   1250
-
+#define  debug  printf
 /*
 ******************************************************************************
 * MACROS
@@ -109,7 +109,7 @@ void emvPollSingleIteration()
 {
     emvTypeA = 0;
     emvTypeB = 0;
-
+    debug("emvPollSingleIteration()\r\n");
     emvHalSleepMilliseconds(EMV_T_P);
     if (emvTypeACardPresent())
     {
@@ -133,7 +133,7 @@ s16 emvPoll()
 {
     emvTypeA = 0;
     emvTypeB = 0;
-
+	 debug("emvPoll() \r\n");	 	
     /* Poll as long as no cards are found. */
     while (1)
     {
@@ -153,6 +153,7 @@ s16 emvPoll()
 
             /* Send HLTA command. */
             u8 hltaCommand[2] = { 0x50, 0x00 };
+	    debug("hltaCommand\r\n");	 	
             emvHalTransceive(hltaCommand, sizeof(hltaCommand), NULL, 0, NULL, EMV_HLTA_FDT, EMV_HAL_TRANSCEIVE_WITH_CRC);
         }
 
@@ -165,6 +166,7 @@ s16 emvPoll()
         if (emvTypeBCardPresent())
         {
             /* ISO14443-B card(s) found. */
+	   debug("emvTypeBCardPresent() \r\n");	 		
             emvTypeB = 1;
         }
     }

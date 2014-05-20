@@ -10,9 +10,9 @@ EXE    = pboc_test
 SOURCES := $(wildcard $(BFLLIBPATH)/*.c)
 
 LIBCOBJECTS = $(patsubst %.c,%.o,$(SOURCES))
-
+# -lpthread 
 INCLUDE = -I .
-CXXFLAGS = -W -g  $(INCLUDE) -O0 -L .  -lpthread 
+CXXFLAGS = -W -g  $(INCLUDE) -O0 -L . 
 CXXOPTIONS = -g -D "__DEBUG__" -O0 
 
 all:$(LIBCOBJECTS)
