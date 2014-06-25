@@ -150,7 +150,7 @@ s16 emvPoll()
         {
             /* ISO14443-A card(s) found. */
             emvTypeA = 1;
-
+	    debug("emvTypeACardPresent() \r\n");	 
             /* Send HLTA command. */
             u8 hltaCommand[2] = { 0x50, 0x00 };
 	    debug("hltaCommand\r\n");	 	

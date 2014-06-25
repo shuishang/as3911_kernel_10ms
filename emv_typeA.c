@@ -168,7 +168,7 @@ s16 emvTypeACardPresent()
 {
     u8 atqa[2];
     size_t responseLength = 0;
-    debug("emvTypeACardPresent() \r\n");	 
+
     emvHalSetStandard(EMV_HAL_TYPE_A);
     emvHalSetErrorHandling(EMV_HAL_PREACTIVATION_ERROR_HANDLING);
 
@@ -179,25 +179,25 @@ s16 emvTypeACardPresent()
     /* Any response shall be taken as a card presence indication. */
 	if (error == EMV_ERR_TIMEOUT)
 	{
-		PRINTF("  +a1 ");
+	//	PRINTF("  +a1 ");
  		return EMV_ERR_TIMEOUT;
 	}  
 	else if (error == EMV_ERR_STOPPED)
 	{
-	   PRINTF("  +a2 ");
+	//   PRINTF("  +a2 ");
  	   return EMV_ERR_STOPPED;
 	}
 	
 	else if (error != EMV_ERR_OK)
 	{
-	   PRINTF("  +a3 ");
+	  // PRINTF("  +a3 ");
  	   return EMV_ERR_COLLISION;
 	}		
 	else if (responseLength != 2)
 	{
 		//if(g_quck_flag)
 		{
-			PRINTF(" &");
+		//	PRINTF(" &");
 		}
 		return EMV_ERR_COLLISION;
 	}
@@ -207,7 +207,7 @@ s16 emvTypeACardPresent()
 	/* Check correctness of UID size encoding. */
 	if ((atqa[0] & EMV_ATQA_UID_SIZE_MASK) == EMV_ATQA_UID_SIZE_INVALID)
 	{
-	   PRINTF("  +a5 ");
+	 //  PRINTF("  +a5 ");
  	   return EMV_ERR_PROTOCOL;
  	}	
          char numBitsSetInAnticollisionBits=0;
@@ -220,7 +220,7 @@ s16 emvTypeACardPresent()
 	 } 
 	 if (numBitsSetInAnticollisionBits != 1)
 	 {
-	   PRINTF("  +a6 ");
+	   //PRINTF("  +a6 ");
  	   return EMV_ERR_PROTOCOL;
  	 }	
 }
