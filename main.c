@@ -32,7 +32,6 @@
 #include "emv_main.h"
 #include "emv_picc.h"
 #include "As3911_def.h"
-#include "As3911_irq.h"
 /*rfid ¿âÍ·ÎÄ¼þ*/
 
 
@@ -244,6 +243,42 @@ void printNum(long int num,int base,int sign)
 
 */
 
+void myTACE( char * fmt, ...)
+{
+	unsigned char c;
+	unsigned char base,sign;
+	va_list ap;
+	va_start(ap, fmt);
+	
+	
+	for(;*fmt!='\0';fmt++)
+	{
+		base=0;sign=0;
+		if(*fmt=='%')
+		{
+			fmt++;
+			c=*fmt;
+			switch(c)
+			{
+				case 'd':case 'D': base=10;sign=1;break;
+				case 'x':case 'X': base=16;sign=0;break;
+				default:
+				write( md_fd, &c, 1 );	
+			}
+			if(base)
+			{
+				printNum(( long int)va_arg(ap,long int),base,sign);
+				
+			}			
+		}
+		else
+		{
+			write( md_fd, fmt, 1 );	
+		}
+
+	}
+ 	va_end(ap);
+}
 
 
 /**************************************************************************
@@ -699,9 +734,7 @@ void *create(void *arg)
 		
     return (void *)0;
 }
-
-
-const char version[]={ "asd3911["__TIME__"]r\n"};
+const char version[]={ "as3911_src_v2[ "__TIME__"]\r\n"};
 int main(int argc, char **argv)
 {
 	int i =0;
@@ -712,16 +745,13 @@ int main(int argc, char **argv)
 	unsigned char  ucCarrierOffOn          = false;
 	pthread_t tidp;
 	 
-	md_fd = open("/dev/ttySAC0" ,O_RDWR);
+	md_fd = open("/dev/ttySAC1" ,O_RDWR);
 	if (md_fd < 0)
 	{    
-		printf("open Serial +dev+ttyS0 failed,errno:%d\n",md_fd);
+		printf("open Serial commuication port failed,errno:%d\n",md_fd);
 		return -1;
 	}
-         else
-         {
-		printf("open Serial +dev+ttyS0  succeed\r\n");
-	}
+
 	set_raw_mode( md_fd );
 	set_speed( md_fd, 115200 );
 
@@ -730,20 +760,17 @@ int main(int argc, char **argv)
 		printf("Set Parity Error\n");
 		return -1;
 	}
-	myTACE((char*)version);
+
 	res =AS3911_open();
 	if ( 0 != res )
 	{
 		printf( "RF open failed\n" );
 		return -1;
 	}
-        // AS3911_TEST_1();
-	//while(1);	 	
-        // AS3911_TEST_0();
-	//while(1);	 	 
+	
 	AS3911_init();
 	clear_serial_buffer();
-
+	myTACE((char*)version);
 	if(   pthread_create(&tidp, NULL, create, (void *)0))
 	{
 		printf("phread is not created...\n");
@@ -870,9 +897,6 @@ int main(int argc, char **argv)
 		    case APPL_COM_REG_READ:
 				show3911Reg();
 		    		break;		
-		    case APPL_NO_CARD_WUPA:
-
-		    		break;	
 		    case APPL_SET_GAIN_ADD:
 			{
 				u8 temp0;//AS3911_REG_RX_CONF3

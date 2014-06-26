@@ -177,38 +177,16 @@ s16 emvTypeACardPresent()
 
     /* Any response shall be taken as a card presence indication. */
     /* Any response shall be taken as a card presence indication. */
-	if (error == EMV_ERR_TIMEOUT)
+	 if (responseLength != 2)
 	{
-	//	PRINTF("  +a1 ");
- 		return EMV_ERR_TIMEOUT;
-	}  
-	else if (error == EMV_ERR_STOPPED)
-	{
-	//   PRINTF("  +a2 ");
- 	   return EMV_ERR_STOPPED;
+		error = EMV_ERR_COLLISION;
 	}
-	
-	else if (error != EMV_ERR_OK)
-	{
-	  // PRINTF("  +a3 ");
- 	   return EMV_ERR_COLLISION;
-	}		
-	else if (responseLength != 2)
-	{
-		//if(g_quck_flag)
-		{
-		//	PRINTF(" &");
-		}
-		return EMV_ERR_COLLISION;
-	}
-	    
-
 	/* Check correctness of ATQA. */
 	/* Check correctness of UID size encoding. */
 	if ((atqa[0] & EMV_ATQA_UID_SIZE_MASK) == EMV_ATQA_UID_SIZE_INVALID)
 	{
 	 //  PRINTF("  +a5 ");
- 	   return EMV_ERR_PROTOCOL;
+ 	   error =  EMV_ERR_PROTOCOL;
  	}	
          char numBitsSetInAnticollisionBits=0;
 	char bitMask ;
@@ -221,8 +199,9 @@ s16 emvTypeACardPresent()
 	 if (numBitsSetInAnticollisionBits != 1)
 	 {
 	   //PRINTF("  +a6 ");
- 	   return EMV_ERR_PROTOCOL;
+ 	   error =  EMV_ERR_PROTOCOL;
  	 }	
+	 return (!error);
 }
 
 s16 emvTypeAAnticollision(EmvPicc_t *picc)

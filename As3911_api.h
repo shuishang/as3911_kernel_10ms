@@ -212,5 +212,5 @@ void show3911Reg();
 void  appTestCmd ();
 void displayTestRegisterValue(unsigned char  address);
    void displayRegisterValue(unsigned char  address) ;
-#define myTACE  printf
+//#define myTACE  printf
 #endif//
