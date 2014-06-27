@@ -174,6 +174,55 @@ void emvHalSleepMilliseconds(u16 milliseconds)
 {
     sleepMilliseconds(milliseconds);
 }
+#define AS3911_REG_AM_MOD_DEPTH_CONTROL_mod_8percent       (0xb<<1)	
+#define AS3911_REG_AM_MOD_DEPTH_CONTROL_mod_10percent      (0xe<<1)	
+#define AS3911_REG_AM_MOD_DEPTH_CONTROL_mod_14percent      (0x14<<1)	
+#define AS3911_REG_AM_MOD_DEPTH_CONTROL_mod_20percent      (0x20<<1)	
+#define AS3911_REG_AM_MOD_DEPTH_CONTROL_mod_30percent      (0x37<<1)	
+#define AS3911_REG_AM_MOD_DEPTH_CONTROL_mod_33percent      (0x3f<<1)
+#define AS3911_REG_AM_MOD_DEPTH_CONTROL_mod_100percent     (0x20<<1)
+s8 as3911ExecuteCommandAndGetResult(u8 cmd, u8 resreg, u8 sleeptime, u8* result)
+{
+    s8 err;
+    u32 tmp;
+	
+    if (cmd == AS3911_CMD_ADJUST_REGULATORS)
+    {
+        err = as3911ExecuteCommand(cmd);
+        sleepMilliseconds(3);
+    }
+    else if (   (cmd >= AS3911_CMD_INITIAL_RF_COLLISION && cmd <= AS3911_CMD_RESPONSE_RF_COLLISION_0)
+            || (cmd == AS3911_CMD_MEASURE_AMPLITUDE)
+            || (cmd >= AS3911_CMD_ADJUST_REGULATORS && cmd <= AS3911_CMD_MEASURE_PHASE)
+            || (cmd >= AS3911_CMD_CALIBRATE_C_SENSOR && cmd <= AS3911_CMD_MEASURE_VSS)
+            || (cmd >= 0xFD && cmd <= 0xFE )
+       )
+    {
+        as3911EnableInterrupts(AS3911_IRQ_MASK_DCT);
+        as3911GetInterrupts(AS3911_IRQ_MASK_DCT,&tmp);
+        err = as3911ExecuteCommand(cmd);
+        as3911WaitForInterruptTimed(AS3911_IRQ_MASK_DCT, sleeptime,&tmp);
+        as3911DisableInterrupts(AS3911_IRQ_MASK_DCT);
+    }
+    else
+    {
+        err = as3911ExecuteCommand(cmd);
+        sleepMilliseconds(sleeptime);
+    }
+
+    /* read out the result if the pointer is not NULL */
+    if (result)
+        err |= as3911ReadRegister(resreg, result);
+
+    return err;
+}
+
+s8 as3911CalibrateModulationDepth(u8* result)
+{
+    return as3911ExecuteCommandAndGetResult(AS3911_CMD_CALIBRATE_MODULATION,
+                                        AS3911_REG_AM_MOD_DEPTH_RESULT,10,result);
+}
+
 
 s8 emvHalSetStandard(EmvHalStandard_t standard)
 {
@@ -222,6 +271,10 @@ s8 emvHalSetStandard(EmvHalStandard_t standard)
 
         /* Enable dynamic adjustment of the modulation level. */
         as3911SetModulationLevelMode(emvHalTypeBModulationLevelMode, emvHalTypeBModulationLevelModeData);
+		u8 tmp;
+        as3911WriteRegister(AS3911_REG_AM_MOD_DEPTH_CONF, AS3911_REG_AM_MOD_DEPTH_CONTROL_mod_10percent);
+ 	
+        as3911CalibrateModulationDepth(&tmp);	
     }
     else
     {
