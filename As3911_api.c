@@ -192,10 +192,10 @@ int AS3911_init(void)
 	    emvDisplayString("EMV: activating carrier\n");
 	    emvHalActivateField(TRUE);
 	}
-	/*if(Get_Test_Wupa_Quck())
-	{
-		appTestCmd ();
-	}*/
+	//if(Get_Test_Wupa_Quck())
+	//{
+		appTestCmd2();
+	//}
 	
 	return 0;	
 }
@@ -252,7 +252,7 @@ void show3911Reg()
         displayTestRegisterValue(AS3911_REG_ANALOG_TEST);	
 		
 }
- void  appTestCmd ()
+ void  appTestCmd()
 {
 	u8  * rxData; u8 rxSize;
 	rxData=data_quck;
@@ -334,7 +334,7 @@ void show3911Reg()
 	else
 		LOG("EMV: Error: unkown adaptive gain mode byte: 0x%x\n", gainMode);
 	*/
-	/*
+	
 	//Read ISO14443B modulation depth mode byte.
 	modulationDepthMode = *rxByte++;
 	LOG("EMV: modulationDepthMode: 0x%x\r\n", modulationDepthMode);
@@ -383,10 +383,51 @@ void show3911Reg()
 	else
 	{
 		LOG("Error: unkown ISO14443B modulation depth mode byte: 0x%x\r\n", modulationDepthMode);
-	}*/
+	}
 		
 	show3911Reg();
 	return;
 }
 
+ 
+u8 data_quck2[]={ 0x06,0x66,0x74,0x9a,0x80,0xbd,0x88,0xcc,0x8e,0xd3,0x8e,0x5c, 0x7c	};
+ void  appTestCmd2()
+{
+	u8  * rxData; u8 rxSize;
+	rxData=data_quck2;
+	rxSize=sizeof(data_quck);
+         s8 retVal = 0;
+	const u8 *rxByte;
+	u8 modulationDepthMode = 0;
+	u8 gainMode = 0;
+	int index = 0;
+	//show3911Reg();
+        /* EMV Mode initialization command. */
+	LOG("EMV: analog settings: \r\n");
+	rxByte = &rxData[0];
+
+	LOG("EMV: modulationDepthMode: 0x%x\r\n", modulationDepthMode);
+
+	mainModulationTable.length = *rxByte++;
+	for (index = 0; index < mainModulationTable.length; index++)
+	{
+		mainModulationTable.x[index] = *rxByte++;
+		mainModulationTable.y[index] = *rxByte++;
+	}
+	
+	LOG("EMV: using table based modulation depth adjustment\r\n");
+	LOG("EMV: modulation depth adjustment table length %d\r\n", mainModulationTable.length);
+	for (index = 0; index < mainModulationTable.length; index++)
+		printf("EMV: modulationTable[%d] = 0x%x, 0x%x\r\n", index, mainModulationTable.x[index], mainModulationTable.y[index]);
+	
+	// FIXME: configuration of the mod depth conf register should be done inside the
+	 //modulation level adjustment module.
+	//
+	as3911WriteRegister(AS3911_REG_AM_MOD_DEPTH_CONF, 0x80);
+	emvHalSetAs3911TypeBModulationMode(AS3911_MODULATION_LEVEL_FROM_AMPLITUDE, &mainModulationTable);
+	displayRegisterValue(AS3911_REG_RFO_AM_ON_LEVEL);
+	displayRegisterValue(AS3911_REG_RFO_AM_OFF_LEVEL);
+	//show3911Reg();
+	return;
+}
 
