@@ -239,6 +239,7 @@ void displayTestRegisterValue(unsigned char address)
 void show3911Reg()
 {
         LOG("EMV: show3911Reg()\r\n");
+	displayRegisterValue(0);	
         displayRegisterValue(AS3911_REG_IO_CONF2);
         displayRegisterValue(AS3911_REG_VSS_REGULATOR_CONF);
         displayRegisterValue(AS3911_REG_ANT_CAL_CONF);
@@ -249,7 +250,8 @@ void show3911Reg()
         displayRegisterValue(AS3911_REG_RX_CONF4);
         displayRegisterValue(AS3911_REG_AM_MOD_DEPTH_CONF);
         displayRegisterValue(AS3911_REG_RFO_AM_ON_LEVEL);	
-        displayTestRegisterValue(AS3911_REG_ANALOG_TEST);	
+       displayRegisterValue(0x27);	
+        //displayTestRegisterValue(AS3911_REG_ANALOG_TEST);	
 		
 }
  void  appTestCmd()
@@ -436,7 +438,7 @@ u8 data_quck2[]={ 0x06,0x3f,0xe4,0x6f,0xe4,0x85,0xe5,0x8f,0xe6,0x96,0xe6,0x98, 0
 	emvHalSetAs3911TypeBModulationMode(AS3911_MODULATION_LEVEL_FROM_AMPLITUDE, &mainModulationTable);
 	displayRegisterValue(AS3911_REG_RFO_AM_ON_LEVEL);
 	displayRegisterValue(AS3911_REG_RFO_AM_OFF_LEVEL);
-	//show3911Reg();
+	show3911Reg();
 	return;
 }
 
