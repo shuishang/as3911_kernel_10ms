@@ -254,145 +254,9 @@ void show3911Reg()
         //displayTestRegisterValue(AS3911_REG_ANALOG_TEST);	
 		
 }
- void  appTestCmd()
-{
-	u8  * rxData; u8 rxSize;
-	rxData=data_quck;
-	rxSize=sizeof(data_quck);
-         s8 retVal = 0;
-	const u8 *rxByte;
-	u8 modulationDepthMode = 0;
-	u8 gainMode = 0;
-	int index = 0;
-	show3911Reg();
-        /* EMV Mode initialization command. */
-	LOG("EMV: analog settings: ");
-	for (index = 0; index < rxSize; index++)
-		LOG("%x ", rxData[index]);
-	LOG("\r\n");
-
-	/* Voltage Regulator setup. */
-        as3911ModifyRegister(AS3911_REG_IO_CONF2, 0x80, (rxData[1] & 0x10) << 3);
-        if (0x00 == (rxData[1] & 0x0F))
-        {
-            /* Disable the voltage regulator. */
-	   LOG("EMV:  Disable the voltage regulator 2: \r\n");
-            as3911ModifyRegister(AS3911_REG_IO_CONF2, 0x40, 0x40);
-        }
-        else
-        {
-            /* Enable the voltage regulator. */
-	   LOG("EMV:  Enable the voltage regulator2: \r\n");		
-            as3911ModifyRegister(AS3911_REG_IO_CONF2, 0x40, 0x00);
-            as3911ModifyRegister(AS3911_REG_VSS_REGULATOR_CONF, 0xF8, 0x80 | ((rxData[1] & 0x0F) << 3));
-        }
-
-        /* Antenna trim setup. */
-        as3911ModifyRegister(AS3911_REG_ANT_CAL_CONF, 0xF8, 0x80 | ((rxData[2] & 0x0F) << 3));
-
-        /* Receive channel setup. */
-        as3911ModifyRegister(AS3911_REG_OP_CONTROL, 0x30, ((rxData[3] & 0x06) << 3));
-        as3911ModifyRegister(AS3911_REG_RX_CONF1, 0x80, ((rxData[3] & 0x01) << 7));
-
-        /* First stage gain reduction. */
-        as3911ModifyRegister(AS3911_REG_RX_CONF3, 0xFC, ((rxData[4] & 0x07) << 5) | ((rxData[5] & 0x07) << 2));
-
-        /* Second/Third stage gain reduction. */
-        as3911WriteRegister(AS3911_REG_RX_CONF4, ((rxData[6] & 0x0F) << 4) | (rxData[7] & 0x0F));
-        as3911ExecuteCommand(AS3911_CMD_CLEAR_SQUELCH);
-		
-        /* Test output. */
-        as3911WriteTestRegister(AS3911_REG_ANALOG_TEST, rxData[8] & 0x0F);
-
-	/* Automatic gain control and squelch. */
-	as3911ModifyRegister(AS3911_REG_RX_CONF2, 0x1F, rxData[9]);
-	        
-	/* Gain adjustment based on lookup table. */
-	/* Readout gain lookup table. */
-	rxByte = &rxData[10];
-	gainMode = *rxByte++;
-	mainGainTable.length = *rxByte++;
-	for (index = 0; index < mainGainTable.length; index++)
-	{
-		mainGainTableX[index] = *rxByte++;
-		mainGainTableY[index] = *rxByte++;
-	}
-	LOG("EMV: gain reduction table length %d\r\n", mainGainTable.length);
-	for (index = 0; index < mainGainTable.length; index++)
-		LOG("EMV: gainTable[%d] = 0x%x, 0x%x\r\n", index, mainGainTable.x[index], mainGainTable.y[index]);
-
-	if (0x00 == gainMode)
-	{
-		as3911SetGainMode(AS3911_GAIN_FIXED, NULL);
-		LOG("EMV: using fixed gain reduction\r\n");
-	}
-	/*else if (0x01 == gainMode)
-	{
-		int index;
-		
-		as3911SetGainMode(AS3911_GAIN_FROM_AMPLITUDE, &mainGainTable);
-		LOG("EMV: using table based gain reduction\n");
-	}
-	else
-		LOG("EMV: Error: unkown adaptive gain mode byte: 0x%x\n", gainMode);
-	*/
-	
-	//Read ISO14443B modulation depth mode byte.
-	modulationDepthMode = *rxByte++;
-	LOG("EMV: modulationDepthMode: 0x%x\r\n", modulationDepthMode);
-	if (0x00 == modulationDepthMode)
-	{
-		
-		u8 modulationDepth = *rxByte++;
-		as3911WriteRegister(AS3911_REG_AM_MOD_DEPTH_CONF, 0x80);
-		as3911WriteRegister(AS3911_REG_RFO_AM_ON_LEVEL, modulationDepth);
-		LOG("EMV: using fixed am driver strength %x\r\n", modulationDepth);
-		emvHalSetAs3911TypeBModulationMode(AS3911_MODULATION_LEVEL_FIXED, NULL);
-	}
-	else if (0x01 == modulationDepthMode)
-	{
-		u8 adjustmentTargetValue = *rxByte++;
-		u8 adjustmentDelay = *rxByte++;
-		
-		as3911WriteRegister(AS3911_REG_AM_MOD_DEPTH_CONF, 0x7F & adjustmentTargetValue);
-		LOG("EMV: using automatic modulation depth adjustment\r\n");
-		LOG("EMV: adjustment target value: %X\r\n", adjustmentTargetValue);
-		LOG("EMV: post adjustment delay: %x\r\n", adjustmentDelay);
-		mainModulationAutomaticAdjustmentData.targetValue = adjustmentTargetValue;
-		mainModulationAutomaticAdjustmentData.delay = adjustmentDelay;
-		emvHalSetAs3911TypeBModulationMode(AS3911_MODULATION_LEVEL_AUTOMATIC, &mainModulationAutomaticAdjustmentData);
-	}
-	else if (0x02 == modulationDepthMode)
-	{
-		mainModulationTable.length = *rxByte++;
-		for (index = 0; index < mainModulationTable.length; index++)
-		{
-			mainModulationTable.x[index] = *rxByte++;
-			mainModulationTable.y[index] = *rxByte++;
-		}
-		
-		LOG("EMV: using table based modulation depth adjustment\r\n");
-		LOG("EMV: modulation depth adjustment table length %d\r\n", mainModulationTable.length);
-		for (index = 0; index < mainModulationTable.length; index++)
-			LOG("EMV: modulationTable[%d] = 0x%x, 0x%x\r\n", index, mainModulationTable.x[index], mainModulationTable.y[index]);
-		
-		// FIXME: configuration of the mod depth conf register should be done inside the
-		 //modulation level adjustment module.
-		//
-		as3911WriteRegister(AS3911_REG_AM_MOD_DEPTH_CONF, 0x80);
-		emvHalSetAs3911TypeBModulationMode(AS3911_MODULATION_LEVEL_FROM_AMPLITUDE, &mainModulationTable);
-	}
-	else
-	{
-		LOG("Error: unkown ISO14443B modulation depth mode byte: 0x%x\r\n", modulationDepthMode);
-	}
-		
-	show3911Reg();
-	return;
-}
-
  
-//u8 data_quck2[]={ 0x06,0x66,0x74,0x9a,0x80,0xbd,0x88,0xcc,0x8e,0xd3,0x8e,0x5c, 0x7c	};
+	
+ //·Ç0x9e°æ±¾
 //4ºÅ°å.
 //u8 data_quck2[]={ 0x06,0x43,0xdc,0xb3,0xd8,0xc1,0xe0,0xc4,0xe2,0xc9,0xe3,0xca, 0xe3	};
 //5ºÅ°å.
@@ -400,13 +264,23 @@ void show3911Reg()
 //1ºÅ°å.
 //u8 data_quck2[]={ 0x06,0x6d,0xd8,0xdb,0xd6,0xe6,0xde,0xe8,0xe2,0xeb,0xe5,0xed, 0xe4	};
 //3ºÅ°å.
-u8 data_quck2[]={ 0x06,0x3f,0xe4,0x6f,0xe4,0x85,0xe5,0x8f,0xe6,0x96,0xe6,0x98, 0xe6	};
+//u8 data_quck2[]={ 0x06,0x3f,0xe4,0x6f,0xe4,0x85,0xe5,0x8f,0xe6,0x96,0xe6,0x98, 0xe6	};
+
+//0x9e°æ±¾
+//4ºÅ°å.
+//u8 data_quck2[]={ 0x06,0x43,0xdc,0xb3,0xd8,0xc1,0xe0,0xc4,0xe2,0xc9,0xe3,0xca, 0xe3	};
+//5ºÅ°å.
+//u8 data_quck2[]={ 0x06,0xf,0xf4,0x33,0xe8,0x7e,0xe5,0xa4,0xe4,0xad,0xec,0xb0, 0xf0	};
+//1ºÅ°å.
+//u8 data_quck2[]={ 0x06,0x72,0xdc,0xdb,0xd8,0xe5,0xde,0xe8,0xe3,0xea,0xe4,0xeb, 0xe4	};
+//3ºÅ°å.
+//u8 data_quck2[]={ 0x06,0x3c,0xe8,0x6e,0xe6,0x81,0xe7,0x8d,0xe6,0x93,0xe8,0x98, 0xe8	};
 
  void  appTestCmd2()
 {
 	u8  * rxData; u8 rxSize;
 	rxData=data_quck2;
-	rxSize=sizeof(data_quck);
+	rxSize=sizeof(data_quck2);
          s8 retVal = 0;
 	const u8 *rxByte;
 	u8 modulationDepthMode = 0;
@@ -414,10 +288,10 @@ u8 data_quck2[]={ 0x06,0x3f,0xe4,0x6f,0xe4,0x85,0xe5,0x8f,0xe6,0x96,0xe6,0x98, 0
 	int index = 0;
 	//show3911Reg();
         /* EMV Mode initialization command. */
-	LOG("EMV: analog settings: \r\n");
+	printf("EMV: analog settings: \r\n");
 	rxByte = &rxData[0];
 
-	LOG("EMV: modulationDepthMode: 0x%x\r\n", modulationDepthMode);
+	printf("EMV: modulationDepthMode: 0x%x\r\n", modulationDepthMode);
 
 	mainModulationTable.length = *rxByte++;
 	for (index = 0; index < mainModulationTable.length; index++)
@@ -426,8 +300,8 @@ u8 data_quck2[]={ 0x06,0x3f,0xe4,0x6f,0xe4,0x85,0xe5,0x8f,0xe6,0x96,0xe6,0x98, 0
 		mainModulationTable.y[index] = *rxByte++;
 	}
 	
-	LOG("EMV: using table based modulation depth adjustment\r\n");
-	LOG("EMV: modulation depth adjustment table length %d\r\n", mainModulationTable.length);
+	printf("EMV: using table based modulation depth adjustment\r\n");
+	printf("EMV: modulation depth adjustment table length %d\r\n", mainModulationTable.length);
 	for (index = 0; index < mainModulationTable.length; index++)
 		printf("EMV: modulationTable[%d] = 0x%x, 0x%x\r\n", index, mainModulationTable.x[index], mainModulationTable.y[index]);
 	
