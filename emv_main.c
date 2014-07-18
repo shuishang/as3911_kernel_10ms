@@ -183,7 +183,7 @@ s16 emvStartTerminalApplication(s16 (*application)(void))
         if (EMV_ERR_OK != error)
             continue;
 
-        emvHalResetField();
+     //   emvHalResetField();
 //test in 2014-1-9
         /* Card removal. */
         emvDisplayMessage(EMV_M_REMOVE_CARD);
