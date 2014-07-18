@@ -48,6 +48,9 @@
 #include "emv_typeA.h"
 #include "emv_typeB.h"
 #include <stdio.h>
+
+#include <sys/time.h>
+ #include <sys/timeb.h>
 /*
 ******************************************************************************
 * DEFINES
@@ -129,23 +132,37 @@ void emvPollSingleIteration()
     }
 }
 
+void  package_monitor_save_time()
+{
+	char buf[1024];
+	struct timeb tp;
+	struct tm	*tm;
+
+	ftime(&tp);
+	tm = localtime(&(tp.time));
+	printf("[%03d] ", tp.millitm );
+
+	return -1	 ;
+
+}
+
 s16 emvPoll()
 {
     emvTypeA = 0;
     emvTypeB = 0;
-	 debug("emvPoll() \r\n");	 	
+    debug("emvPoll() \r\n");	 	
     /* Poll as long as no cards are found. */
     while (1)
     {
         if (emvStopRequestReceived())
             return EMV_ERR_STOPPED;
-
         if (emvTypeA != 0)
             break;
 
         /* Wait for t_p. */
         emvHalSleepMilliseconds(EMV_T_P);
-
+	package_monitor_save_time();	  
+	printf("    A\r\n");	
         if (emvTypeACardPresent())
         {
             /* ISO14443-A card(s) found. */
@@ -161,8 +178,9 @@ s16 emvPoll()
             break;
 
         /* Wait for t_p. */
-        emvHalSleepMilliseconds (EMV_T_P);
-
+        emvHalSleepMilliseconds (3);
+        package_monitor_save_time();
+        printf("   B\r\n");	
         if (emvTypeBCardPresent())
         {
             /* ISO14443-B card(s) found. */
