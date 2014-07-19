@@ -271,7 +271,7 @@ s8 emvHalSetStandard(EmvHalStandard_t standard)
 
         /* Enable dynamic adjustment of the modulation level. */
         as3911SetModulationLevelMode(emvHalTypeBModulationLevelMode, emvHalTypeBModulationLevelModeData);
-		u8 tmp;
+		//u8 tmp;
       //  as3911WriteRegister(AS3911_REG_AM_MOD_DEPTH_CONF, AS3911_REG_AM_MOD_DEPTH_CONTROL_mod_10percent);
  	
  //       as3911CalibrateModulationDepth(&tmp);	

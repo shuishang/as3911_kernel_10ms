@@ -15,8 +15,8 @@
 #include "emv_main.h"
 #include "sleep.h"
 #include "emv_picc.h"
-
-
+#include "as3911_io.h"
+#include "main.h"
 #define FALSE                               0
 #define TRUE                                 1
 #define MIFARE_DEFAULT_READER_NONCE             0xAA55AA55
@@ -63,7 +63,7 @@
 typedef unsigned char                    Bool;
 
 
-
+/*
 #define MAX_GAIN_TABLE_SIZE 9
 static u8 mainGainTableX[MAX_GAIN_TABLE_SIZE];
 static u8 mainGainTableY[MAX_GAIN_TABLE_SIZE];
@@ -71,7 +71,7 @@ static AS3911GainTable_t mainGainTable = {
 	0,
 	&mainGainTableX[0],
 	&mainGainTableY[0]
-	};
+	};*/
 #define MAX_MODULATION_TABLE_SIZE 9
 static u8 mainModulationTableX[MAX_MODULATION_TABLE_SIZE];
 static u8 mainModulationTableY[MAX_MODULATION_TABLE_SIZE];
@@ -85,21 +85,21 @@ static AS3911ModulationLevelTable_t mainModulationTable = {
  //  AS3911ModulationLevelTable_t mainModulationTable ;
 #define LOG myTACE
 #define myTACE printk
-/*
+
 void displayRegisterValue(unsigned char  address)
 {
     u8 value = 0;
     as3911ReadRegister(address, &value);
-    LOG("REG: 0x%x: 0x%x\r\n", address, value);
+    printk("REG: 0x%x: 0x%x\r\n", address, value);
    // printk("\033[40;44mREG: 0x%x: 0x%x\r\n\033[5m", address, value);
 }
    
 void displayTestRegisterValue(unsigned char address)
 {
     u8 value = 0;
-    LOG("Test REG: 0x%x: 0x%x\r\n", address, value);
+    printk("Test REG: 0x%x: 0x%x\r\n", address, value);
 }
-void show3911Reg()
+void show3911Reg(void)
 {
 	displayRegisterValue(0);	
         displayRegisterValue(AS3911_REG_IO_CONF2);
@@ -115,7 +115,7 @@ void show3911Reg()
        displayRegisterValue(0x27);	
         //displayTestRegisterValue(AS3911_REG_ANALOG_TEST);	
 		
-}*/
+}
  
 	
  //·Ç0x9e°æ±¾
@@ -140,18 +140,12 @@ u8 data_quck2[]={ 0x06,0xf,0xf4,0x33,0xe8,0x7e,0xe5,0xa4,0xe4,0xad,0xec,0xb0, 0x
 
  void  appTestCmd2(void)
 {
-	u8  * rxData; u8 rxSize;
-	rxData=data_quck2;
-	rxSize=sizeof(data_quck2);
-	const u8 *rxByte;
-	u8 modulationDepthMode = 0;
-	u8 gainMode = 0;
+	u8 rxSize;
+	u8 *rxByte;
+	
 	int index = 0;
-        /* EMV Mode initialization command. */
-	printk("EMV: analog settings: \r\n");
-	rxByte = &rxData[0];
-
-	printk("EMV: modulationDepthMode: 0x%x\r\n", modulationDepthMode);
+	rxSize=sizeof(data_quck2);
+	rxByte = &data_quck2[0];
 
 	mainModulationTable.length = *rxByte++;
 	for (index = 0; index < mainModulationTable.length; index++)
@@ -160,7 +154,6 @@ u8 data_quck2[]={ 0x06,0xf,0xf4,0x33,0xe8,0x7e,0xe5,0xa4,0xe4,0xad,0xec,0xb0, 0x
 		mainModulationTable.y[index] = *rxByte++;
 	}
 	
-	printk("EMV: using table based modulation depth adjustment\r\n");
 	printk("EMV: modulation depth adjustment table length %d\r\n", mainModulationTable.length);
 	for (index = 0; index < mainModulationTable.length; index++)
 		printk("EMV: modulationTable[%d] = 0x%x, 0x%x\r\n", index, mainModulationTable.x[index], mainModulationTable.y[index]);

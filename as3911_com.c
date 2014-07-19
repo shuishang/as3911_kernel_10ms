@@ -573,7 +573,7 @@ s16 as3911Transceive(const u8 *request, u32 requestLength
 
     /* Enable interrupts. */
     as3911EnableInterrupts(AS3911_IRQ_MASK_ALL);
-    AS3911_IRQ_ON();
+//    AS3911_IRQ_ON();
 
     as3911Transmit(request, requestLength, requestFlags);
     returnValue = as3911Receive(response, maxResponseLength, responseLength);
@@ -581,7 +581,7 @@ s16 as3911Transceive(const u8 *request, u32 requestLength
     /* Restore old irq settings. */
     /* Disable AS3911 interrupts. */
     as3911DisableInterrupts(AS3911_IRQ_MASK_ALL);
-    AS3911_IRQ_OFF();
+    //AS3911_IRQ_OFF();
 
     return returnValue;
 }

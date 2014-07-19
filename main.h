@@ -37,6 +37,6 @@
 #define MAIN_H
 
 #include <linux/kernel.h> 
-
-
+#include "emv_display.h"
+#include "sleep.h"
 #endif /* MAIN_H */

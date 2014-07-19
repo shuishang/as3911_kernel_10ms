@@ -166,12 +166,12 @@ s16 emvTypeACardPresent(void)
 {
     u8 atqa[2];
     u32 responseLength = 0;
-
+   s8 error;	
     emvHalSetStandard(EMV_HAL_TYPE_A);
     emvHalSetErrorHandling(EMV_HAL_PREACTIVATION_ERROR_HANDLING);
 
     /* Send WUPA command. */
-    s8 error = emvHalTransceive(NULL, 0, &atqa[0], sizeof(atqa), &responseLength, EMV_TYPEA_FDT_9, EMV_HAL_TRANSCEIVE_WUPA);
+    error = emvHalTransceive(NULL, 0, &atqa[0], sizeof(atqa), &responseLength, EMV_TYPEA_FDT_9, EMV_HAL_TRANSCEIVE_WUPA);
 
     /* Any response shall be taken as a card presence indication. */
     /* Any response shall be taken as a card presence indication. */
@@ -293,7 +293,7 @@ s16 emvTypeAAnticollision(EmvPicc_t *picc)
     }
 }
 
-s16 emvTypeAActivation(EmvPicc_t *picc)
+int emvTypeAActivation(EmvPicc_t *picc)
 {
     u8 rats[2];
     u8 ats[22];

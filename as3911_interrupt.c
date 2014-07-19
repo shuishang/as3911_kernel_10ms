@@ -142,14 +142,14 @@ s8 as3911EnableInterrupts(u32 mask)
     s8 error = ERR_NONE;
     u32 irqMask = 0;
 
-    AS3911_IRQ_OFF();
+    //AS3911_IRQ_OFF();
 
     error |= as3911ContinuousRead(AS3911_REG_IRQ_MASK_MAIN, (u8*) &irqMask, 3);
     irqMask &= ~mask;
     as3911InterruptMask |= mask;
     error |= as3911ContinuousWrite(AS3911_REG_IRQ_MASK_MAIN, (u8*) &irqMask, 3);
 
-    AS3911_IRQ_ON();
+    //AS3911_IRQ_ON();
 
     if (ERR_NONE == error)
         return ERR_NONE;
@@ -162,14 +162,14 @@ s8 as3911DisableInterrupts(u32 mask)
     s8 error = ERR_NONE;
     u32 irqMask = 0;
 
-    AS3911_IRQ_OFF();
+    //AS3911_IRQ_OFF();
 
     error |= as3911ContinuousRead(AS3911_REG_IRQ_MASK_MAIN, (u8*) &irqMask, 3);
     irqMask |= mask;
     as3911InterruptMask &=  ~mask;
     error |= as3911ContinuousWrite(AS3911_REG_IRQ_MASK_MAIN, (u8*) &irqMask, 3);
 
-    AS3911_IRQ_ON();
+    //AS3911_IRQ_ON();
 
     if (ERR_NONE == error)
         return ERR_NONE;
@@ -182,13 +182,13 @@ s8 as3911ClearInterrupts(u32 mask)
     s8 error = ERR_NONE;
     u32 irqStatus = 0;
 
-    AS3911_IRQ_OFF();
+    //AS3911_IRQ_OFF();
 
     error |= as3911ContinuousRead(AS3911_REG_IRQ_MAIN, (u8*) &irqStatus, 3);
     as3911InterruptStatus |= irqStatus & as3911InterruptMask;
     as3911InterruptStatus &= ~mask;
 
-    AS3911_IRQ_ON();
+    //AS3911_IRQ_ON();
 
     if (ERR_NONE == error)
         return ERR_NONE;
@@ -237,12 +237,12 @@ s8 as3911WaitForInterruptTimed(u32 mask, u16 timeout, u32 *irqs)
 
 s8 as3911GetInterrupts(u32 mask, u32 *irqs)
 {
-    AS3911_IRQ_OFF();
+    //AS3911_IRQ_OFF();
 
     *irqs = as3911InterruptStatus & mask;
     as3911InterruptStatus &= ~mask;
 
-    AS3911_IRQ_ON();
+    //AS3911_IRQ_ON();
 
     return ERR_NONE;
 }

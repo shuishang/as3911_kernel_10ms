@@ -46,7 +46,7 @@
 
 #include "emv_layer4.h"
 #include "emv_response_buffer.h"
-
+#include "main.h"
 /*
 ******************************************************************************
 * DEFINES

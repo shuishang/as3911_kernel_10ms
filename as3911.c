@@ -44,6 +44,7 @@
 */
 
 #include "as3911.h"
+#include "main.h"
 
 /*
 ******************************************************************************
@@ -75,7 +76,7 @@
 ******************************************************************************
 */
 
-s8 as3911Initialize()
+s8 as3911Initialize(void)
 {
     /* Reset the AS3911 */
     as3911ExecuteCommand(AS3911_CMD_SET_DEFAULT);
@@ -91,5 +92,8 @@ s8 as3911Initialize()
     // as3911WriteTestRegister(0x01, 0x03);
 
     /* Enable AS3911 IRQ handling. */
-    AS3911_IRQ_ON();
+//    AS3911_IRQ_ON();
+    return 1;
 }
+
+

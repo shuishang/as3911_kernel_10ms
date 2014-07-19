@@ -82,7 +82,7 @@ typedef struct EmvPicc_s
     u8 dPiccPcd; /*!< Datarate bits PICC->PCD. */
     u8 dPcdPicc; /*!< Datarate bits PCD->PICC. */
 
-    s16 (*activate)(struct EmvPicc_s *picc); /*!< Activation function callback. */
+    int (*activate)(struct EmvPicc_s *picc); /*!< Activation function callback. */
     s16 (*remove)(struct EmvPicc_s *picc); /*!< Card removal function callback. */
 } EmvPicc_t;
 
