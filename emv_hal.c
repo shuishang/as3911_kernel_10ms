@@ -360,8 +360,8 @@ s8 emvHalResetField()
         return ERR_IO;
 }
 
-s8 emvHalTransceive(const u8 *request, size_t requestLength, u8 *response
-    , size_t maxResponseLength, size_t *responseLength, u32 timeout, EmvHalTransceiveMode_t transceiveMode)
+s8 emvHalTransceive(const u8 *request, u32 requestLength, u8 *response
+    , u32 maxResponseLength, u32 *responseLength, u32 timeout, EmvHalTransceiveMode_t transceiveMode)
 {
     s16 error = AS3911_NO_ERROR;
 

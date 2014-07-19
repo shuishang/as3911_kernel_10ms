@@ -2,11 +2,10 @@
 
 /*AS3911应用调用接口*/
 
-#include "AS3911_api.h"
+#include "As3911_api.h"
 #include "as3911_gain_adjustment.h"
 #include "as3911_def.h"
 #include "ams_types.h"
-#include "mifare.h"
 #include "emv_error_codes.h"
 #include "emv_hal.h"
 #include "emv_response_buffer.h"
@@ -132,7 +131,6 @@ void displayTestRegisterValue(unsigned char address)
 }
 void show3911Reg()
 {
-        LOG("EMV: show3911Reg()\r\n");
 	displayRegisterValue(0);	
         displayRegisterValue(AS3911_REG_IO_CONF2);
         displayRegisterValue(AS3911_REG_VSS_REGULATOR_CONF);
@@ -180,7 +178,6 @@ u8 data_quck2[]={ 0x06,0xf,0xf4,0x33,0xe8,0x7e,0xe5,0xa4,0xe4,0xad,0xec,0xb0, 0x
 	u8 modulationDepthMode = 0;
 	u8 gainMode = 0;
 	int index = 0;
-	//show3911Reg();
         /* EMV Mode initialization command. */
 	printk("EMV: analog settings: \r\n");
 	rxByte = &rxData[0];

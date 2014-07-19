@@ -116,7 +116,7 @@
  *****************************************************************************
  *  \brief  Writes out a formated string via UART interface
  *
- *  This function is used to write a formated string via the UART interface.
+ *  This function is used to quck_write_printk a formated string via the UART interface.
  *  \note This function shall not be called directly. Instead the #DEBUG
  *  macro should be used.
  *

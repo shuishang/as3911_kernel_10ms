@@ -259,7 +259,7 @@ bool_t as3911EmvExceptionProcessingIsEnabled();
  * \param[in] transmissionErrorThreshold Transmission error threshold (bytes).
  *****************************************************************************
  */
-void as3911SetTransmissionErrorThreshold(size_t transmissionErrorThreshold);
+void as3911SetTransmissionErrorThreshold(u32 transmissionErrorThreshold);
 
 /*! \ingroup as3911RfidCom
  *****************************************************************************
@@ -268,7 +268,7 @@ void as3911SetTransmissionErrorThreshold(size_t transmissionErrorThreshold);
  * \return The transmission error threshold.
  *****************************************************************************
  */
-size_t as3911GetTransmissionErrorThreshold();
+u32 as3911GetTransmissionErrorThreshold();
 
 /*! \ingroup as3911RfidCom
  *****************************************************************************
@@ -343,7 +343,7 @@ void as3911SetReceiveTimeout(u32 receiveTimeout);
  * ignored.
  *****************************************************************************
  */
-void as3911Transmit(const u8 *message, size_t messageLength, AS3911RequestFlags_t requestFlags);
+void as3911Transmit(const u8 *message, u32 messageLength, AS3911RequestFlags_t requestFlags);
 
 /*! \ingroup as3911RfidCom
  *****************************************************************************
@@ -367,7 +367,7 @@ void as3911Transmit(const u8 *message, size_t messageLength, AS3911RequestFlags_
  * \return AS3911_NO_ERROR: No error, received an error free card response.
  *****************************************************************************
  */
-s16 as3911Receive(u8 *response, size_t maxResponseLength, size_t *responseLength);
+s16 as3911Receive(u8 *response, u32 maxResponseLength, u32 *responseLength);
 
 /*! \ingroup as3911RfidCom
  *****************************************************************************
@@ -396,8 +396,8 @@ s16 as3911Receive(u8 *response, size_t maxResponseLength, size_t *responseLength
  *
  * \return See as3911Receive for a description of the return values.
  */
-s16 as3911Transceive(const u8 *request, size_t requestLength
-    , u8 *response, size_t maxResponseLength, size_t *responseLength
+s16 as3911Transceive(const u8 *request, u32 requestLength
+    , u8 *response, u32 maxResponseLength, u32 *responseLength
     , u32 timeout, AS3911RequestFlags_t requestFlags);
 
 

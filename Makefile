@@ -18,7 +18,7 @@ ifneq ($(KERNELRELEASE),)
   #mymodule-objs := file1.o file2.o file3.o
 obj-m := spi_rfid.o
 spi_rfid-y := main.o      
-spi_rfid-y += as911_api.o          
+spi_rfid-y += As3911_api.o          
 spi_rfid-y += as3911.o  
 spi_rfid-y += as3911_com.o  
 spi_rfid-y += as3911_gain_adjustment.o  

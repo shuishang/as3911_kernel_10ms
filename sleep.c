@@ -1,93 +1,32 @@
-/*
- *****************************************************************************
- * Copyright by ams AG                                                       *
- * All rights are reserved.                                                  *
- *                                                                           *
- * IMPORTANT - PLEASE READ CAREFULLY BEFORE COPYING, INSTALLING OR USING     *
- * THE SOFTWARE.                                                             *
- *                                                                           *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       *
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT         *
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS         *
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT  *
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,     *
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT          *
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,     *
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY     *
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT       *
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE     *
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.      *
- *****************************************************************************
- */
-/*
- *      PROJECT:   AS3911 firmware
- *      $Revision: $
- *      LANGUAGE:  ANSI C
- */
-
-/*! \file sleep.c
- *
- *  \author Oliver Regenfelder
- *
- *  \brief Sleep function.
- */
-
-/*
-******************************************************************************
-* INCLUDES
-******************************************************************************
-*/
+#include <linux/module.h>
+#include <linux/errno.h>
+#include <linux/kernel.h> 
+#include <linux/init.h>
+#include <linux/cdev.h>
+#include <linux/fcntl.h> 
+#include <linux/proc_fs.h>  
+#include <linux/fs.h>   
+#include <linux/interrupt.h>
+#include <linux/delay.h>
+#include <linux/wait.h>
+#include <linux/jiffies.h>
+#include <linux/sched.h>  /* current and everything */
+#include <linux/platform_device.h>
+#include <linux/irq.h>
+#include <asm/hardware.h>
+#include <asm/uaccess.h> /**copy_to_user()**/
+#include <asm/io.h>
+#include <asm/atomic.h>
+#include <asm/irq.h>
+#include <asm/io.h>
+#include <asm/arch/regs-gpio.h>
+#include <asm/arch/regs-gpioj.h>
+#include <asm/arch/map.h>
 
 #include "sleep.h"
 
 
-/*
-******************************************************************************
-* DEFINES
-******************************************************************************
-*/
 
-/*
-******************************************************************************
-* MACROS
-******************************************************************************
-*/
-
-/*
-******************************************************************************
-* LOCAL DATA TYPES
-******************************************************************************
-*/
-
-/*
-******************************************************************************
-* LOCAL VARIABLES
-******************************************************************************
-*/
-
-/*
-******************************************************************************
-* LOCAL TABLES
-******************************************************************************
-*/
-
-/*
-******************************************************************************
-* LOCAL FUNCTION PROTOTYPES
-******************************************************************************
-*/
-
-/*
-******************************************************************************
-* GLOBAL VARIABLE DEFINITIONS
-******************************************************************************
-*/
-
-/*
-******************************************************************************
-* GLOBAL FUNCTIONS
-******************************************************************************
-*/
 
 void sleepMilliseconds(unsigned int milliseconds)
 {

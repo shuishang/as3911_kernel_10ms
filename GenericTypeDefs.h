@@ -45,9 +45,11 @@
 *******************************************************************/
 
 #ifndef __GENERIC_TYPE_DEFS_H_
+/*
+
 #define __GENERIC_TYPE_DEFS_H_
 
-/* Specify an extension for GCC based compilers */
+// Specify an extension for GCC based compilers //
 #if defined(__GNUC__)
 #define __EXTENSION __extension__
 #else
@@ -58,28 +60,28 @@
     #define __PACKED
 #endif
 
-/* get compiler defined type definitions (NULL, size_t, etc) */
+// get compiler defined type definitions (NULL, u32, etc) //
 #include <stddef.h> 
 
-typedef enum _BOOL { FALSE = 0, TRUE } BOOL;    /* Undefined size */
+typedef enum _BOOL { FALSE = 0, TRUE } BOOL;    // Undefined size //
 typedef enum _BIT { CLEAR = 0, SET } BIT;
 
-#define PUBLIC                                  /* Function attributes */
+#define PUBLIC                              // Function attributes //
 #define PROTECTED
 #define PRIVATE   static
 
-/* INT is processor specific in length may vary in size */
+// INT is processor specific in length may vary in size //
 typedef signed int          INT;
 typedef signed char         INT8;
 typedef signed short int    INT16;
 typedef signed long int     INT32;
 __EXTENSION typedef signed long long    INT64;
 
-/* UINT is processor specific in length may vary in size */
+// UINT is processor specific in length may vary in size //
 typedef unsigned int        UINT;
 typedef unsigned char       UINT8;
 typedef unsigned short int  UINT16;
-typedef unsigned long int   UINT32;     /* other name for 32-bit integer */
+typedef unsigned long int   UINT32;     // other name for 32-bit integer//
 __EXTENSION typedef unsigned long long  UINT64;
 
 typedef union
@@ -274,26 +276,25 @@ typedef union
     } bits;
 } UINT64_VAL;
 
-/***********************************************************************************/
 
-/* Alternate definitions */
+// Alternate definitions //
 typedef void                    VOID;
 
 typedef char                    CHAR8;
 typedef unsigned char           UCHAR8;
 
-typedef unsigned char           BYTE;                           /* 8-bit unsigned  */
-typedef unsigned short int      WORD;                           /* 16-bit unsigned */
-typedef unsigned long           DWORD;                          /* 32-bit unsigned */
-/* MPLAB C Compiler for PIC18 does not support 64-bit integers */
+typedef unsigned char           BYTE;                         
+typedef unsigned short int      WORD;                      
+typedef unsigned long           DWORD;                        
+
 __EXTENSION
-typedef unsigned long long      QWORD;                          /* 64-bit unsigned */
-typedef signed char             CHAR;                           /* 8-bit signed    */
-typedef signed short int        SHORT;                          /* 16-bit signed   */
-typedef signed long             LONG;                           /* 32-bit signed   */
-/* MPLAB C Compiler for PIC18 does not support 64-bit integers */
+typedef unsigned long long      QWORD;                         // 64-bit unsigned //
+typedef signed char             CHAR;                          // 8-bit signed   //
+typedef signed short int        SHORT;                          // 16-bit signed   //
+typedef signed long             LONG;                           // 32-bit signed  //
+// MPLAB C Compiler for PIC18 does not support 64-bit integers //
 __EXTENSION
-typedef signed long long        LONGLONG;                       /* 64-bit signed   */
+typedef signed long long        LONGLONG;                       // 64-bit signed   //
 typedef union
 {
     BYTE Val;
@@ -399,7 +400,6 @@ typedef union
     } bits;
 } DWORD_VAL;
 
-/* MPLAB C Compiler for PIC18 does not support 64-bit integers */
 typedef union
 {
     QWORD Val;
@@ -488,5 +488,5 @@ typedef union
 } QWORD_VAL;
 
 #undef __EXTENSION
-
+*/
 #endif /* __GENERIC_TYPE_DEFS_H_ */

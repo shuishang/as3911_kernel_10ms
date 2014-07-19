@@ -97,8 +97,8 @@
  * \return EMV_ERR_TRANSMISSION: An errornous card response has been received.
  *****************************************************************************
  */
-s8 emvPrelayer4Transceive(const u8 *request, size_t requestLength,
-        u8 *response, size_t maxResponseLength, size_t *responseLength,
+s8 emvPrelayer4Transceive(const u8 *request, u32 requestLength,
+        u8 *response, u32 maxResponseLength, u32 *responseLength,
         u32 timeout, EmvHalTransceiveMode_t transceiveMode);
 
 #endif /* EMV_PRELAYER4_H */

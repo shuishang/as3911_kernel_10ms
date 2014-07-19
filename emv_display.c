@@ -107,16 +107,16 @@ void emvDisplayString(const char *string)
     EMV_LOG(string);
 }
 
-void emvDisplayByteArray(const u8 *array, size_t length)
+void emvDisplayByteArray(const u8 *array, u32 length)
 {
-    size_t index = 0;
+    u32 index = 0;
     for (index = 0; index < length; index++)
         EMV_LOG("%hhx", array[index]);
 }
 
-void emvDisplayUid(const u8 *uid, size_t length)
+void emvDisplayUid(const u8 *uid, u32 length)
 {
-    size_t index = length - 1;
+    u32 index = length - 1;
 
     do
     {
@@ -170,14 +170,14 @@ void emvDisplayMessage(s16 messageCode)
     }
 }
 
-void emvDisplayCAPDU(const u8 *apdu, size_t length)
+void emvDisplayCAPDU(const u8 *apdu, u32 length)
 {
     emvDisplayString("EMV: C-APDU ");
     emvDisplayByteArray(apdu, length);
     emvDisplayString("\n");
 }
 
-void emvDisplayRAPDU(const u8 *apdu, size_t length)
+void emvDisplayRAPDU(const u8 *apdu, u32 length)
 {
     emvDisplayString("EMV: R-APDU ");
     emvDisplayByteArray(apdu, length);

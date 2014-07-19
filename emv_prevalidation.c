@@ -100,7 +100,7 @@ static const u8 emvPrevalidationApdu[] = { 0x00, 0xA4, 0x04, 0x00, 0x0E
 s16 emvPrevalidationApplication()
 {
     s16 error = EMV_ERR_OK;
-    size_t responseLength = 0;
+    u32 responseLength = 0;
     emvDisplayCAPDU(emvPrevalidationApdu, sizeof(emvPrevalidationApdu));
 
     error = emvTransceiveApdu(emvPrevalidationApdu, sizeof(emvPrevalidationApdu),

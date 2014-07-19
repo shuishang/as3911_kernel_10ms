@@ -74,6 +74,6 @@
  * \param milliseconds Milliseconds to sleep.
  *****************************************************************************
  */
-void sleepMilliseconds(u16 milliseconds);
+void sleepMilliseconds(unsigned int milliseconds);
 
 #endif /* SLEEP_H */

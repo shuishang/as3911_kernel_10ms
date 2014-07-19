@@ -41,10 +41,7 @@
 #include "logger.h"
 
 #include "errno.h"
-#include <stdarg.h>
-#include <stdarg.h>
 
-#include <stdio.h>
 /*
 ******************************************************************************
 * LOCAL DEFINES

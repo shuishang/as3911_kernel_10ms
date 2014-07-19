@@ -100,7 +100,7 @@ static const u8 emvSelectppseApdu[] = { 0x00, 0xA4, 0x04, 0x00, 0x0E
 s16 emvDigitalApplication()
 {
     s16 error = EMV_ERR_OK;
-    size_t responseLength = 0;
+    u32 responseLength = 0;
 
     emvDisplayCAPDU(emvSelectppseApdu, sizeof(emvSelectppseApdu));
 

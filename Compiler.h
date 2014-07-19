@@ -57,9 +57,6 @@
 
 // PIC24F processor
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 // Base RAM and ROM pointer types for given architecture
 #define PTR_BASE            unsigned short

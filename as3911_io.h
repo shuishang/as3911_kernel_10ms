@@ -189,12 +189,12 @@ s8 as3911ReadTestRegister(u8 address, u8 *data);
  * increment mode.
  *
  * \param[in] address Start address of the continuous write operation.
- * \param[in] data The data to write to the registers \a address to \a address
+ * \param[in] data The data to quck_write_printk to the registers \a address to \a address
  * + \a length - 1
- * \param[in] length Number of bytes to write to the AS3911.
+ * \param[in] length Number of bytes to quck_write_printk to the AS3911.
  *
  * \return ERR_IO: Error during communication.
- * \return ERR_NONE: No error, continuous write operation successful.
+ * \return ERR_NONE: No error, continuous quck_write_printk operation successful.
  *****************************************************************************
  */
 s8 as3911ContinuousWrite(u8 address, const u8 *data, u8 length);
@@ -222,11 +222,11 @@ s8 as3911ContinuousRead(u8 address, u8 *data, u8 length);
  *****************************************************************************
  * \brief Write to the FIFO of the AS3911.
  *
- * \param[in] data The data to write into the FIFO.
- * \param[in] length Number of bytes to write into the FIFO.
+ * \param[in] data The data to quck_write_printk into the FIFO.
+ * \param[in] length Number of bytes to quck_write_printk into the FIFO.
  *
  * \return ERR_IO: Error during communication.
- * \return ERR_NONE: No error, FIFO write operation successful.
+ * \return ERR_NONE: No error, FIFO quck_write_printk operation successful.
  *****************************************************************************
  */
 s8 as3911WriteFifo(const u8 *data, u8 length);

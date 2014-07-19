@@ -169,8 +169,8 @@ static u8 emvBlockBuffer[EMV_FSD_MIN_PCD];
  * response APDU.
  *****************************************************************************
  */
-static s16 emvTransceiveBlock(u8 pcb, const u8 *inf, size_t infLength,
-    u8 *response, size_t maxResponseLength, size_t *responseLength,
+static s16 emvTransceiveBlock(u8 pcb, const u8 *inf, u32 infLength,
+    u8 *response, u32 maxResponseLength, u32 *responseLength,
     enum EMVRetransmissionRequestType retransmissionRequestType);
 
 /*
@@ -192,12 +192,12 @@ s16 emvInitLayer4(EmvPicc_t *picc)
     return EMV_ERR_OK;
 }
 
-s16 emvTransceiveApdu(const u8 *apdu, size_t apduLength, u8 *response, size_t maxResponseLength, size_t *responseLength)
+s16 emvTransceiveApdu(const u8 *apdu, u32 apduLength, u8 *response, u32 maxResponseLength, u32 *responseLength)
 {
-    size_t numApduBytesTransmitted = 0;
-    size_t numResponseBytesReceived = 0;
-    size_t index = 0;
-    size_t piccResponseLength = 0;
+    u32 numApduBytesTransmitted = 0;
+    u32 numResponseBytesReceived = 0;
+    u32 index = 0;
+    u32 piccResponseLength = 0;
     u16 fsc = 0;
     u8 pcb = 0;
     u8 numIBlockRetransmissions = 0;
@@ -390,11 +390,11 @@ s16 emvTransceiveApdu(const u8 *apdu, size_t apduLength, u8 *response, size_t ma
 ******************************************************************************
 */
 
-static s16 emvTransceiveBlock(u8 pcb, const u8 *inf, size_t infLength,
-    u8 *response, size_t maxResponseLength, size_t *responseLength,
+static s16 emvTransceiveBlock(u8 pcb, const u8 *inf, u32 infLength,
+    u8 *response, u32 maxResponseLength, u32 *responseLength,
     enum EMVRetransmissionRequestType retransmissionRequestType)
 {
-    size_t index = 0;
+    u32 index = 0;
     s16 error = EMV_HAL_ERR_OK;
     u8 numRetransmissions = 0;
     u8 numConsecutiveSwtxRequestsAfterRnakReceived = 0;

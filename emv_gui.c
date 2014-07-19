@@ -104,7 +104,7 @@ void emvGuiReset()
 void emvGuiWupa()
 {
     /* EMV TTA L1 WUPA command. */
-    size_t numBytesReceived;
+    u32 numBytesReceived;
     s8 error;
     u8 atqa[2];
 
@@ -149,7 +149,7 @@ void emvGuiWupb()
     /* EMV TTA L1 WUPB command. */
     u8 wupb[3];
     u8 atqb[32];
-    size_t numBytesReceived;
+    u32 numBytesReceived;
     s8 error;
 
     if (!emvHalFieldIsActivated())

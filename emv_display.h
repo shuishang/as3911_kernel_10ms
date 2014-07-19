@@ -96,7 +96,7 @@ void emvDisplayString(const char *string);
  * \param length Length of the array in bytes.
  *****************************************************************************
  */
-void emvDisplayByteArray(const u8 *array, size_t length);
+void emvDisplayByteArray(const u8 *array, u32 length);
 
 /*!
  *****************************************************************************
@@ -109,7 +109,7 @@ void emvDisplayByteArray(const u8 *array, size_t length);
  * \param length Length of the UID in bytes.
  *****************************************************************************
  */
-void emvDisplayUid(const u8 *uid, size_t length);
+void emvDisplayUid(const u8 *uid, u32 length);
 
 /*!
  *****************************************************************************
@@ -137,7 +137,7 @@ void emvDisplayMessage(s16 messageCode);
  * \param length Length of the command APDU in bytes.
  *****************************************************************************
  */
-void emvDisplayCAPDU(const u8 *apdu, size_t length);
+void emvDisplayCAPDU(const u8 *apdu, u32 length);
 
 /*!
  *****************************************************************************
@@ -147,6 +147,6 @@ void emvDisplayCAPDU(const u8 *apdu, size_t length);
  * \param length Length of the response APDU in bytes.
  *****************************************************************************
  */
-void emvDisplayRAPDU(const u8 *apdu, size_t length);
+void emvDisplayRAPDU(const u8 *apdu, u32 length);
 
 #endif /* EMV_DISPLAY_H */

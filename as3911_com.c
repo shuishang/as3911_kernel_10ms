@@ -129,7 +129,7 @@ static bool_t as3911EmvExceptionProcessing = FALSE;
  * receive another frame.
  *****************************************************************************
  */
-static size_t as3911TransmissionErrorThreshold = 0;
+static u32 as3911TransmissionErrorThreshold = 0;
 
 /*
 ******************************************************************************
@@ -175,12 +175,12 @@ bool_t as3911EmvExceptionProcessingIsEnabled()
     return as3911EmvExceptionProcessing;
 }
 
-void as3911SetTransmissionErrorThreshold(size_t transmissionErrorThreshold)
+void as3911SetTransmissionErrorThreshold(u32 transmissionErrorThreshold)
 {
     as3911TransmissionErrorThreshold = transmissionErrorThreshold;
 }
 
-size_t as3911GetTransmissionErrorThreshold()
+u32 as3911GetTransmissionErrorThreshold()
 {
     return as3911TransmissionErrorThreshold;
 }
@@ -255,10 +255,10 @@ u32 as3911GetFrameDelayTime()
     return as3911FrameDelayTime;
 }
 
-void as3911Transmit(const u8 *message, size_t messageLength, AS3911RequestFlags_t requestFlags)
+void as3911Transmit(const u8 *message, u32 messageLength, AS3911RequestFlags_t requestFlags)
 {
     u8 numBytesForFifo = 0;
-    size_t numBytesTransmitted = 0;
+    u32 numBytesTransmitted = 0;
     u32 irqStatus = 0;
     AS3911RequestFlags_t transmissionModeFlags = requestFlags & AS3911_TX_MODE_MASK;
 
@@ -312,7 +312,7 @@ void as3911Transmit(const u8 *message, size_t messageLength, AS3911RequestFlags_
             /* FIFO water level interrupt. */
             if(numBytesTransmitted < messageLength)
             {
-                size_t numBytesForFifo = messageLength - numBytesTransmitted;
+                u32 numBytesForFifo = messageLength - numBytesTransmitted;
 
                 if(numBytesForFifo > (AS3911_FIFO_SIZE - AS3911_FIFO_TRANSMIT_WL0))
                 {
@@ -333,10 +333,10 @@ void as3911Transmit(const u8 *message, size_t messageLength, AS3911RequestFlags_
     return;
 }
 
-s16 as3911Receive(u8 *response, size_t maxResponseLength, size_t *responseLength)
+s16 as3911Receive(u8 *response, u32 maxResponseLength, u32 *responseLength)
 {
     u32 irqStatus = 0;
-    size_t numBytesReceived = 0;
+    u32 numBytesReceived = 0;
     bool_t receiving = FALSE;
     bool_t nrtExpired = FALSE;
     bool_t overflowOccured = FALSE;
@@ -530,8 +530,8 @@ s16 as3911Receive(u8 *response, size_t maxResponseLength, size_t *responseLength
     return AS3911_INTERNAL_ERROR;
 }
 
-s16 as3911Transceive(const u8 *request, size_t requestLength
-    , u8 *response, size_t maxResponseLength, size_t *responseLength
+s16 as3911Transceive(const u8 *request, u32 requestLength
+    , u8 *response, u32 maxResponseLength, u32 *responseLength
     , u32 timeout, AS3911RequestFlags_t requestFlags)
 {
     s16 returnValue = AS3911_NO_ERROR;

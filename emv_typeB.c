@@ -102,7 +102,7 @@ s16 emvTypeBCardPresent()
     u8 wupb[3];
     u8 atqb[13+2];
     s8 error = EMV_HAL_ERR_OK;
-    size_t responseLength = 0;
+    u32 responseLength = 0;
 
     emvHalSetStandard(EMV_HAL_TYPE_B);
     emvHalSetErrorHandling(EMV_HAL_PREACTIVATION_ERROR_HANDLING);
@@ -126,8 +126,8 @@ s16 emvTypeBAnticollision(EmvPicc_t *picc)
     u8 wupb[3];
     u8 atqb[13 + 2];
     s8 error = EMV_ERR_OK;
-    size_t index = 0;
-    size_t responseLength = 0;
+    u32 index = 0;
+    u32 responseLength = 0;
 
     emvHalSetStandard(EMV_HAL_TYPE_B);
     emvHalSetErrorHandling(EMV_HAL_PREACTIVATION_ERROR_HANDLING);
@@ -199,9 +199,9 @@ int emvTypeBActivation(EmvPicc_t *picc)
     u8 attrib[9];
     u8 response[1+2];
     s8 error = EMV_ERR_OK;
-    size_t responseLength = 0;
+    u32 responseLength = 0;
     u32 timeoutInCarrierCycles = 0;
-    size_t index = 0;
+    u32 index = 0;
     
     emvHalSetErrorHandling(EMV_HAL_LAYER4_ERROR_HANDLING);
 

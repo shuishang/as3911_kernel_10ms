@@ -47,10 +47,7 @@
 #include "emv_main.h"
 #include "emv_typeA.h"
 #include "emv_typeB.h"
-#include <stdio.h>
 
-#include <sys/time.h>
- #include <sys/timeb.h>
 /*
 ******************************************************************************
 * DEFINES
@@ -133,7 +130,7 @@ void emvPollSingleIteration()
 }
 
 void  package_monitor_save_time()
-{
+{/*
 	char buf[1024];
 	struct timeb tp;
 	struct tm	*tm;
@@ -142,7 +139,7 @@ void  package_monitor_save_time()
 	tm = localtime(&(tp.time));
 	printk("[%03d] ", tp.millitm );
 
-	return -1	 ;
+	return -1	 ;*/
 
 }
 

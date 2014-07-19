@@ -44,7 +44,6 @@
 #include "as3911.h"
 #include "errno.h"
 
-#include <sys/time.h>
 #include <linux/ioctl.h>
 /*
 ******************************************************************************
@@ -103,17 +102,20 @@ AS3911_TIMER As3911_Timer[ 2 ] = { 0 ,0 };
 // ms  延迟时间 ,单位 毫秒.
 void  TimerStart( unsigned char TimerNo, int ms )
 {
-	struct timeval tv ;
+	TimerNo=TimerNo;
+	ms=TimerNo;
+
+/*	struct timeval tv ;
 	struct timezone tz;
 
 	gettimeofday( &tv, &tz );
 	As3911_Timer[ TimerNo ].clk_start = tv.tv_sec *1000 + tv.tv_usec/1000; //ms
-	As3911_Timer[ TimerNo ].times      = ms;
+	As3911_Timer[ TimerNo ].times      = ms;*/
 }
 
 int TimerCheck( unsigned char TimerNo )
 {
-	long RestTime                                   = 0;
+	/*long RestTime                                   = 0;
 	unsigned long CurrentTime            = 0;
 	unsigned long ElapsedTime            =0;	
 	struct timeval tv;
@@ -130,8 +132,8 @@ int TimerCheck( unsigned char TimerNo )
 	else
 	{
 		return 0;
-	}
-	
+	}*/
+	return 0;
 }
 
 

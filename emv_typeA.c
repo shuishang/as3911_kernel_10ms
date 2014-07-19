@@ -47,7 +47,6 @@
 #include "emv_typeA.h"
 #include "emv_standard.h"
 #include "emv_error_codes.h"
-#include <stdio.h>
 #define debug printk
 /*
 ******************************************************************************
@@ -167,7 +166,7 @@ static s16 emvAnticollisionLevelx(u8 sel, bool_t cascaded, u8 *uid);
 s16 emvTypeACardPresent()
 {
     u8 atqa[2];
-    size_t responseLength = 0;
+    u32 responseLength = 0;
 
     emvHalSetStandard(EMV_HAL_TYPE_A);
     emvHalSetErrorHandling(EMV_HAL_PREACTIVATION_ERROR_HANDLING);
@@ -208,7 +207,7 @@ s16 emvTypeAAnticollision(EmvPicc_t *picc)
 {
     s8 error = EMV_ERR_OK;
     u8 atqa[2];
-    size_t responseLength = 0;
+    u32 responseLength = 0;
 
     /* Set ISO14443-A mode. */
     emvHalSetStandard(EMV_HAL_TYPE_A);
@@ -301,7 +300,7 @@ s16 emvTypeAActivation(EmvPicc_t *picc)
     u8 ats[22];
     u8 t0 = 0;
     s8 error = EMV_ERR_OK;
-    size_t responseLength = 0;
+    u32 responseLength = 0;
 
     /* tx_byte first points to the potential location of TA(1)
      * then to the potential location of TB(1) and at last to
@@ -429,7 +428,7 @@ static s16 emvAnticollisionLevelx(u8 sel, bool_t cascaded, u8 *uid)
     u8 command[7];
     u8 response[5];
     u8 bcc = 0;
-    size_t responseLength = 0;
+    u32 responseLength = 0;
 
     /* Send CLx anticollision command. */
     command[0] = sel;

@@ -126,7 +126,7 @@ s16 emvTypeBAnticollision(EmvPicc_t *picc);
  * \return EMV_ERR_PROTOCOL: A protocol error occured during the activation.
  *****************************************************************************
  */
-s16 emvTypeBActivation(EmvPicc_t *picc);
+int emvTypeBActivation(EmvPicc_t *picc);
 
 /*! \ingroup emvCardTechnologySpecific
  *****************************************************************************

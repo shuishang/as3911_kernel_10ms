@@ -120,7 +120,7 @@ s16 emvInitLayer4(EmvPicc_t *picc);
  * response APDU.
  *****************************************************************************
  */
-s16 emvTransceiveApdu(const u8 *apdu, size_t apduLength, u8 *response,
-        size_t maxResponseLength, size_t *responseLength);
+s16 emvTransceiveApdu(const u8 *apdu, u32 apduLength, u8 *response,
+        u32 maxResponseLength, u32 *responseLength);
 
 #endif /* EMV_LAYER4_H */

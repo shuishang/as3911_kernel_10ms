@@ -37,37 +37,11 @@
 #define AMS_TYPES_H
 
 #include "GenericTypeDefs.h"
-
+#include <asm/types.h>
 /*! \defgroup datatypes Basic datatypes
  * Basic datatypes are mapped to ams datatypes that
  * shall be used in all ams projects.
  */
-typedef unsigned char u8;   /*!< \ingroup datatypes
-							  represents an unsigned 8bit-wide type */
-typedef signed char s8;     /*!< \ingroup datatypes
-							  represents a signed 8bit-wide type */
-typedef unsigned int u16;   /*!< \ingroup datatypes
-							  represents an unsigned 16bit-wide type */
-typedef signed int s16;     /*!< \ingroup datatypes
-							  represents a signed 16bit-wide type */
-typedef unsigned long u32;  /*!< \ingroup datatypes
-							  represents an unsigned 32bit-wide type */
-typedef unsigned long long u64;  /*!< \ingroup datatypes
-								   represents an unsigned 64bit-wide type */
-typedef signed long s32;      /*!< \ingroup datatypes
-								represents a signed 32bit-wide type */
-typedef u16 umword; /*!< \ingroup datatypes
-                        USE WITH CARE!!! unsigned machine word:
-                        8 bit on 8bit machines, 16 bit on 16 bit machines... */
-typedef s16 smword; /*!< \ingroup datatypes
-                        USE WITH CARE!!! signed machine word:
-                         8 bit on 8bit machines, 16 bit on 16 bit machines... */
-typedef unsigned int uint; /*!< \ingroup datatypes
-                            type for unsigned integer types,
-                            useful as indices for arrays and loop variables */
-typedef signed int sint; /*!< \ingroup datatypes
-                            type for integer types, 
-                            useful as indices for arrays and loop variables */
 
 #define U8_C(x)     (x) /*!< \ingroup datatypes
                          Define a constant of type u8 */
@@ -104,13 +78,32 @@ typedef umword bool_t; /*!< \ingroup datatypes
 #endif
 
 #else 
-typedef BOOL bool_t;
+//typedef BOOL bool_t;
 #endif
 
+#define bool_t char 
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+#ifndef false
+#define  false 0
+#endif
+
+#ifndef FALSE
+#define  FALSE 0
+#endif
+
+/*
+#ifndef NULL
+#define NULL (void*)0 
+#endif
+#define bool_t char 
+#define bool_t char */
 
 #ifndef NULL
-#define NULL (void*)0 /*!< \ingroup datatypes
-		 represents a NULL pointer */
+#define NULL (void*)0 
 #endif
 
 #endif /* AMS_TYPES_H */
