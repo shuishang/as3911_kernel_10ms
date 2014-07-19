@@ -87,10 +87,11 @@ typedef umword bool_t; /*!< \ingroup datatypes
 #define TRUE 1
 #endif
 
+/*
 #ifndef false
 #define  false 0
 #endif
-
+*/
 #ifndef FALSE
 #define  FALSE 0
 #endif

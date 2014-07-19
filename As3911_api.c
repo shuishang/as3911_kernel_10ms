@@ -63,34 +63,6 @@
 typedef unsigned char                    Bool;
 
 
-int AS3911_init(void)
-{		
-	/* Reset the AS3911 */
-	as3911ExecuteCommand(AS3911_CMD_SET_DEFAULT);//c1
-	
-	/* MCU_CLK and LF MCU_CLK off, 27MHz XTAL */
-	as3911WriteRegister(AS3911_REG_IO_CONF1, 0x0F);
-	
-	/* Enable Oscillator, Transmitter and receiver. */
-	as3911WriteRegister(AS3911_REG_OP_CONTROL, 0xC8);
-	
-	sleepMilliseconds(5);//5
-	
-	 /* Reset field and continue with polling. */
-	emvHalResetField();
-	 
-	if (!emvHalFieldIsActivated())
-	{
-	    emvDisplayString("EMV: activating carrier\n");
-	    emvHalActivateField(TRUE);
-	}
-	//if(Get_Test_Wupa_Quck())
-	//{
-		appTestCmd2();
-	//}
-	
-	return 0;	
-}
 
 #define MAX_GAIN_TABLE_SIZE 9
 static u8 mainGainTableX[MAX_GAIN_TABLE_SIZE];
@@ -110,17 +82,15 @@ static AS3911ModulationLevelTable_t mainModulationTable = {
 	};
 
 
-u8 data_quck[]={ 0xef,0x00,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x12,0x00,0x00,0x02,0x05,0x66,0x74,0x9a,0x80,0xbd,0x88,0xcc,0x8e,0xd3,0x8e	};
-   AS3911ModulationLevelAutomaticAdjustmentData_t  mainModulationAutomaticAdjustmentData;
  //  AS3911ModulationLevelTable_t mainModulationTable ;
 #define LOG myTACE
 #define myTACE printk
-
+/*
 void displayRegisterValue(unsigned char  address)
 {
     u8 value = 0;
     as3911ReadRegister(address, &value);
-  LOG("REG: 0x%x: 0x%x\r\n", address, value);
+    LOG("REG: 0x%x: 0x%x\r\n", address, value);
    // printk("\033[40;44mREG: 0x%x: 0x%x\r\n\033[5m", address, value);
 }
    
@@ -145,7 +115,7 @@ void show3911Reg()
        displayRegisterValue(0x27);	
         //displayTestRegisterValue(AS3911_REG_ANALOG_TEST);	
 		
-}
+}*/
  
 	
  //·Ç0x9e°æ±¾
@@ -203,7 +173,39 @@ u8 data_quck2[]={ 0x06,0xf,0xf4,0x33,0xe8,0x7e,0xe5,0xa4,0xe4,0xad,0xec,0xb0, 0x
 	emvHalSetAs3911TypeBModulationMode(AS3911_MODULATION_LEVEL_FROM_AMPLITUDE, &mainModulationTable);
 	displayRegisterValue(AS3911_REG_RFO_AM_ON_LEVEL);
 	displayRegisterValue(AS3911_REG_RFO_AM_OFF_LEVEL);
-	show3911Reg();
+	//show3911Reg();
 	return;
 }
+
+int AS3911_init(void)
+{		
+	/* Reset the AS3911 */
+	as3911ExecuteCommand(AS3911_CMD_SET_DEFAULT);//c1
+	
+	/* MCU_CLK and LF MCU_CLK off, 27MHz XTAL */
+	as3911WriteRegister(AS3911_REG_IO_CONF1, 0x0F);
+	
+	/* Enable Oscillator, Transmitter and receiver. */
+	as3911WriteRegister(AS3911_REG_OP_CONTROL, 0xC8);
+	
+	sleepMilliseconds(5);//5
+	
+	 /* Reset field and continue with polling. */
+	emvHalResetField();
+	 
+	if (!emvHalFieldIsActivated())
+	{
+	    emvDisplayString("EMV: activating carrier\n");
+	    emvHalActivateField(TRUE);
+	}
+	//if(Get_Test_Wupa_Quck())
+	//{
+		appTestCmd2();
+	//}
+	
+	return 0;	
+}
+
+
+
 

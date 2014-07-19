@@ -39,8 +39,7 @@
 ******************************************************************************
 */
 
-#include <stddef.h>
-
+#include <linux/stddef.h>
 #include "emv_hal.h"
 #include "emv_prelayer4.h"
 #include "emv_poll.h"

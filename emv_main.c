@@ -39,7 +39,7 @@
 ******************************************************************************
 */
 
-#include <stddef.h>
+#include <linux/stddef.h>
 
 
 
@@ -49,6 +49,7 @@
 #include "emv_layer4.h"
 #include "emv_display.h"
 #include "sleep.h"
+#include "emv_main.h"
 
 /*
 ******************************************************************************

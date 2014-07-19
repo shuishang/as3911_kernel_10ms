@@ -39,8 +39,7 @@
 ******************************************************************************
 */
 
-#include <stddef.h>
-
+#include <linux/stddef.h>
 #include "emv_display.h"
 #include "emv_layer4.h"
 #include "emv_response_buffer.h"

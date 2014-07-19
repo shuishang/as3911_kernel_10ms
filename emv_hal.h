@@ -57,7 +57,7 @@
 ******************************************************************************
 */
 
-#include <stddef.h>
+#include <linux/stddef.h>
 #include "ams_types.h"
 #include "as3911_modulation_adjustment.h"
 

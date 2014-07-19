@@ -61,8 +61,7 @@
 #endif
 
 // get compiler defined type definitions (NULL, u32, etc) //
-#include <stddef.h> 
-
+#include <linux/stddef.h>
 typedef enum _BOOL { FALSE = 0, TRUE } BOOL;    // Undefined size //
 typedef enum _BIT { CLEAR = 0, SET } BIT;
 
