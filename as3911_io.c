@@ -128,12 +128,12 @@ s8 as3911ReadRegister(u8 address, u8 *data)
 	error = read( iAS3911_Fd, as3911ReadCommand, 1 );	
 	if (ERR_NONE != error)
 	{
-		//printf( "error as3911ReadCommand: %X\n",as3911ReadCommand[1] );
+		//printk( "error as3911ReadCommand: %X\n",as3911ReadCommand[1] );
 		return ERR_IO;
 	}
 	else
 	{	
-		//printf( "as3911ReadCommand: %X\n",as3911ReadCommand[1] );
+		//printk( "as3911ReadCommand: %X\n",as3911ReadCommand[1] );
 		*data = as3911ReadCommand[ 1 ];
 		return ERR_NONE;
 	}

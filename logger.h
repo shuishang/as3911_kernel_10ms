@@ -34,7 +34,7 @@
  */
 /*!
  * \defgroup logeer Serial output log driver
- * This driver provides a printf-like way to output log messages
+ * This driver provides a printk-like way to output log messages
  * via the UART interface. It makes use of the uart driver.
  *
  * API:
@@ -146,6 +146,6 @@
  *****************************************************************************
  */
 extern void dbgHexDump (unsigned char *buffer, u16 length);
-#define  dbgLog printf
+#define  dbgLog printk
 #endif /* LOGGER_H */
 

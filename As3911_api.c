@@ -1,34 +1,7 @@
-/* /////////////////////////////////////////////////////////////////////////////////////////////////
-//                     Copyright (c) Strong Lion
-//
-//         All rights are reserved. Reproduction in whole or in part is
-//        prohibited without the written consent of the copyright owner.
-//    Philips reserves the right to make changes without notice at any time.
-//   Philips makes no warranty, expressed, implied or statutory, including but
-//   not limited to any implied warranty of merchantability or fitness for any
-//  particular purpose, or that the use will not infringe any third party patent,
-//   copyright or trademark. Philips must not be liable for any loss or damage
-//                            arising from its use.
-///////////////////////////////////////////////////////////////////////////////////////////////// */
-#include <stdio.h>
-#include <fcntl.h> 
-#include <errno.h>
-#include <fcntl.h>
-#include <termio.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <time.h>
-#include <sys/timeb.h>
-#include <termios.h>
-#include <signal.h>
-#include <sys/types.h>
-#include  <linux/fs.h>
 
 
 /*AS3911应用调用接口*/
-//#include "emv_picc.h"
+
 #include "AS3911_api.h"
 #include "as3911_gain_adjustment.h"
 #include "as3911_def.h"
@@ -44,11 +17,7 @@
 #include "sleep.h"
 #include "emv_picc.h"
 
-#define AS3911_PW_CTL	"/proc/strong_lion/power_manager/rfid"
 
-/**************************************************************************
-*                            模块内部宏定义                               *
-**************************************************************************/
 #define FALSE                               0
 #define TRUE                                 1
 #define MIFARE_DEFAULT_READER_NONCE             0xAA55AA55
@@ -93,82 +62,6 @@
 
 //#define DEBUG_PBOC                     
 typedef unsigned char                    Bool;
-
-
-
-
-EmvPicc_t picc;
-
-int iAS3911_Fd = -1;       /*AS3911设备ID*/
-                                                                                       	                                         
-/**************************************************************************
-*                            模块内部变量                        *
-**************************************************************************/
- /* Buffer for data transfer (send/receive) */
- unsigned char buffer[256];
- unsigned char rcvBuf[256];
-
- /**************************************************************************
- *                           局部函数原型                                  *
- **************************************************************************/
-
-
-/**************************************************************************
- *                          全局函数实现                                      *
- **************************************************************************/
-extern void as3911Isr( int t );
-
-
-static int as3911startsignal( void )
-{
-	/*int oflags = 0;
-
-	signal( SIGIO, as3911Isr );
-	fcntl(iAS3911_Fd,F_SETOWN,getpid());
-	oflags = fcntl( iAS3911_Fd, F_GETFL);
-	fcntl(iAS3911_Fd,F_SETFL,oflags |FASYNC );*/
-	return 0;
-}
-
- 
- 
-
-static int AS3911_Spi_close(void)
-{
-	if  ( iAS3911_Fd  >  0 )
-	{
-		close( iAS3911_Fd );
-		iAS3911_Fd = -1;
-		return 0;
-	}
-	else
-	{
-		return -1;
-	}
-}
-
-
-static int AS3911_Spi_open(void)
-{
-	if (( iAS3911_Fd  =  open( "/dev/spi_rfid", O_RDWR ) )  <  0 ) 
-	{
-		myTACE("open %s failed \n", "/dev/spi_rfid");
-		return -1;	
-	}
-	
-	return 0;
-	
-}
-
-int AS3911_open(void)
-{
-	return AS3911_Spi_open();
-}
-
-int AS3911_close(void)
-{
-	return AS3911_Spi_close();
-}
 
 
 int AS3911_init(void)
@@ -222,13 +115,14 @@ u8 data_quck[]={ 0xef,0x00,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x12,0x00,0x00,0x0
    AS3911ModulationLevelAutomaticAdjustmentData_t  mainModulationAutomaticAdjustmentData;
  //  AS3911ModulationLevelTable_t mainModulationTable ;
 #define LOG myTACE
-#define myTACE printf
-   void displayRegisterValue(unsigned char  address)
+#define myTACE printk
+
+void displayRegisterValue(unsigned char  address)
 {
     u8 value = 0;
     as3911ReadRegister(address, &value);
   LOG("REG: 0x%x: 0x%x\r\n", address, value);
-   // printf("\033[40;44mREG: 0x%x: 0x%x\r\n\033[5m", address, value);
+   // printk("\033[40;44mREG: 0x%x: 0x%x\r\n\033[5m", address, value);
 }
    
 void displayTestRegisterValue(unsigned char address)
@@ -288,10 +182,10 @@ u8 data_quck2[]={ 0x06,0xf,0xf4,0x33,0xe8,0x7e,0xe5,0xa4,0xe4,0xad,0xec,0xb0, 0x
 	int index = 0;
 	//show3911Reg();
         /* EMV Mode initialization command. */
-	printf("EMV: analog settings: \r\n");
+	printk("EMV: analog settings: \r\n");
 	rxByte = &rxData[0];
 
-	printf("EMV: modulationDepthMode: 0x%x\r\n", modulationDepthMode);
+	printk("EMV: modulationDepthMode: 0x%x\r\n", modulationDepthMode);
 
 	mainModulationTable.length = *rxByte++;
 	for (index = 0; index < mainModulationTable.length; index++)
@@ -300,10 +194,10 @@ u8 data_quck2[]={ 0x06,0xf,0xf4,0x33,0xe8,0x7e,0xe5,0xa4,0xe4,0xad,0xec,0xb0, 0x
 		mainModulationTable.y[index] = *rxByte++;
 	}
 	
-	printf("EMV: using table based modulation depth adjustment\r\n");
-	printf("EMV: modulation depth adjustment table length %d\r\n", mainModulationTable.length);
+	printk("EMV: using table based modulation depth adjustment\r\n");
+	printk("EMV: modulation depth adjustment table length %d\r\n", mainModulationTable.length);
 	for (index = 0; index < mainModulationTable.length; index++)
-		printf("EMV: modulationTable[%d] = 0x%x, 0x%x\r\n", index, mainModulationTable.x[index], mainModulationTable.y[index]);
+		printk("EMV: modulationTable[%d] = 0x%x, 0x%x\r\n", index, mainModulationTable.x[index], mainModulationTable.y[index]);
 	
 	// FIXME: configuration of the mod depth conf register should be done inside the
 	 //modulation level adjustment module.

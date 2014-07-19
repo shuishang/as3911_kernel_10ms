@@ -59,7 +59,7 @@
 
 /*! Frame delay time (timeout) used for ISO14443-A HLTA commands. */
 #define EMV_HLTA_FDT   1250
-#define  debug  printf
+#define  debug  printk
 /*
 ******************************************************************************
 * MACROS
@@ -140,7 +140,7 @@ void  package_monitor_save_time()
 
 	ftime(&tp);
 	tm = localtime(&(tp.time));
-	printf("[%03d] ", tp.millitm );
+	printk("[%03d] ", tp.millitm );
 
 	return -1	 ;
 
@@ -162,7 +162,7 @@ s16 emvPoll()
         /* Wait for t_p. */
         emvHalSleepMilliseconds(EMV_T_P);
 	package_monitor_save_time();	  
-	printf("    A\r\n");	
+	printk("    A\r\n");	
         if (emvTypeACardPresent())
         {
             /* ISO14443-A card(s) found. */
@@ -180,7 +180,7 @@ s16 emvPoll()
         /* Wait for t_p. */
         emvHalSleepMilliseconds (3);
         package_monitor_save_time();
-        printf("   B\r\n");	
+        printk("   B\r\n");	
         if (emvTypeBCardPresent())
         {
             /* ISO14443-B card(s) found. */

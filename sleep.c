@@ -91,7 +91,8 @@
 
 void sleepMilliseconds(unsigned int milliseconds)
 {
-	usleep(milliseconds*1000);
+	//udelay(milliseconds*1000);
+	mdelay(milliseconds);
 }
 
 /*

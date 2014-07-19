@@ -48,7 +48,7 @@
 #include "emv_standard.h"
 #include "emv_error_codes.h"
 #include <stdio.h>
-#define debug printf
+#define debug printk
 /*
 ******************************************************************************
 * DEFINES
@@ -101,7 +101,7 @@
 #define EMV_SAK_CASCADE_BIT_MASK                0x04
 /*! Mask for the ISO14443-4 compliance bit fo an ISO14443-A SAK. */
 #define EMV_SAK_ISO144434_COMPLIANT_BIT_MASK    0x20
-#define  PRINTF  printf
+#define  PRINTF  printk
 /*
 ******************************************************************************
 * MACROS
