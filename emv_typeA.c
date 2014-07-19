@@ -162,7 +162,7 @@ static s16 emvAnticollisionLevelx(u8 sel, bool_t cascaded, u8 *uid);
 ******************************************************************************
 */
 
-s16 emvTypeACardPresent()
+s16 emvTypeACardPresent(void)
 {
     u8 atqa[2];
     u32 responseLength = 0;

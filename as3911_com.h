@@ -245,7 +245,7 @@ void as3911EnableEmvExceptionProcessing(bool_t enableEmvExceptionProcessing);
  * \return false: EMV layer 4 exception processing is disabled.
  *****************************************************************************
  */
-bool_t as3911EmvExceptionProcessingIsEnabled();
+bool_t as3911EmvExceptionProcessingIsEnabled(void);
 
 /*! \ingroup as3911RfidCom
  *****************************************************************************
@@ -267,7 +267,7 @@ void as3911SetTransmissionErrorThreshold(u32 transmissionErrorThreshold);
  * \return The transmission error threshold.
  *****************************************************************************
  */
-u32 as3911GetTransmissionErrorThreshold();
+u32 as3911GetTransmissionErrorThreshold(void);
 
 /*! \ingroup as3911RfidCom
  *****************************************************************************
@@ -290,7 +290,7 @@ void as3911SetFrameDelayTime(u32 frameDelayTime);
  * \return The frame delay time currently used.
  *****************************************************************************
  */
-u32 as3911GetFrameDelayTime();
+u32 as3911GetFrameDelayTime(void);
 
 /*! \ingroup as3911RfidCom
  *****************************************************************************

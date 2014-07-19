@@ -84,7 +84,7 @@
  * \return 1: Type B card(s) detected.
  *****************************************************************************
  */
-s16 emvTypeBCardPresent();
+s16 emvTypeBCardPresent(void);
 
 /*! \ingroup emvCardTechnologySpecific
  *****************************************************************************

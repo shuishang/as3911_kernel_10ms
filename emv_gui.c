@@ -62,7 +62,7 @@
 ******************************************************************************
 */
 
-void emvGuiToggleCarrier()
+void emvGuiToggleCarrier(void)
 {
     /* EMV Testpad toggle CARRIER command. */
     if (emvHalFieldIsActivated())
@@ -77,7 +77,7 @@ void emvGuiToggleCarrier()
     }
 }
 
-void emvGuiPoll()
+void emvGuiPoll(void)
 {
     if (!emvHalFieldIsActivated())
     {
@@ -89,7 +89,7 @@ void emvGuiPoll()
     emvPollSingleIteration();
 }
 
-void emvGuiReset()
+void emvGuiReset(void)
 {
     if (!emvHalFieldIsActivated())
     {
@@ -101,7 +101,7 @@ void emvGuiReset()
     emvHalResetField();
 }
 
-void emvGuiWupa()
+void emvGuiWupa(void)
 {
     /* EMV TTA L1 WUPA command. */
     u32 numBytesReceived;
@@ -144,7 +144,7 @@ void emvGuiWupa()
     }
 }
 
-void emvGuiWupb()
+void emvGuiWupb(void)
 {
     /* EMV TTA L1 WUPB command. */
     u8 wupb[3];
@@ -194,7 +194,7 @@ void emvGuiWupb()
     }
 }
 
-void emvGuiRats()
+void emvGuiRats(void)
 {
     /* EMV Testpad RATS command. */
     int error = 0;
@@ -224,7 +224,7 @@ void emvGuiRats()
         emvDisplayError(error);
 }
 
-void emvGuiAttrib()
+void emvGuiAttrib(void)
 {
     /* EMV Testpad ATTRIB command. */
     int error = 0;
@@ -254,7 +254,7 @@ void emvGuiAttrib()
         emvDisplayError(error);
 }
 
-void emvGuiPrevalidation()
+void emvGuiPrevalidation(void)
 {
     /* EMV Testpad pre validation application. */
     s16 error;
@@ -275,7 +275,7 @@ void emvGuiPrevalidation()
         emvDisplayError(error);
 }
 
-void emvGuiDigital()
+void emvGuiDigital(void)
 {
     /* EMV Testpad digital application. */
     s16 error;
@@ -296,7 +296,7 @@ void emvGuiDigital()
         emvDisplayError(error);
 }
 
-void emvGuiStop()
+void emvGuiStop(void)
 {
     emvStopTerminalApplication();
 }

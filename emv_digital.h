@@ -87,6 +87,6 @@
  * error codes.
  *****************************************************************************
  */
-s16 emvDigitalApplication();
+s16 emvDigitalApplication(void);
 
 #endif /* EMV_DIGITAL_H */

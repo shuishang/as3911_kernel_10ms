@@ -151,7 +151,7 @@ static u32 as3911TransmissionErrorThreshold = 0;
  * \return FALSE: The FDT is not running.
  *****************************************************************************
  */
-static bool_t as3911FdtIsRunning();
+static bool_t as3911FdtIsRunning(void);
 
 /*
 ******************************************************************************
@@ -170,7 +170,7 @@ void as3911EnableEmvExceptionProcessing(bool_t enableEmvExceptionProcessing)
     as3911EmvExceptionProcessing = enableEmvExceptionProcessing;
 }
 
-bool_t as3911EmvExceptionProcessingIsEnabled()
+bool_t as3911EmvExceptionProcessingIsEnabled(void)
 {
     return as3911EmvExceptionProcessing;
 }
@@ -180,7 +180,7 @@ void as3911SetTransmissionErrorThreshold(u32 transmissionErrorThreshold)
     as3911TransmissionErrorThreshold = transmissionErrorThreshold;
 }
 
-u32 as3911GetTransmissionErrorThreshold()
+u32 as3911GetTransmissionErrorThreshold(void)
 {
     return as3911TransmissionErrorThreshold;
 }
@@ -250,7 +250,7 @@ void as3911SetFrameDelayTime(u32 frameDelayTime)
     as3911WriteRegister(AS3911_REG_GPT2, (u8) (gptValue & 0xFF));
 }
 
-u32 as3911GetFrameDelayTime()
+u32 as3911GetFrameDelayTime(void)
 {
     return as3911FrameDelayTime;
 }

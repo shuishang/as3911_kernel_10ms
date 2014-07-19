@@ -96,7 +96,7 @@ static const u8 emvSelectppseApdu[] = { 0x00, 0xA4, 0x04, 0x00, 0x0E
 ******************************************************************************
 */
 
-s16 emvDigitalApplication()
+s16 emvDigitalApplication(void)
 {
     s16 error = EMV_ERR_OK;
     u32 responseLength = 0;

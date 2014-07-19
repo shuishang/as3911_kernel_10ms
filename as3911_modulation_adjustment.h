@@ -177,6 +177,6 @@ void as3911GetModulationLevelMode(AS3911ModulationLevelMode_t *modulationLevelMo
  * modulation level adjustment mode.
  *****************************************************************************
  */
-void as3911AdjustModulationLevel();
+void as3911AdjustModulationLevel(void);
 
 #endif /* AS3911_MODULATION_ADJUSTMENT_H */

@@ -115,7 +115,7 @@ void as3911GetGainMode(AS3911GainMode_t *modulationLevelMode
     modulationLevelTable = as3911GainTable;
 }
 
-void as3911AdjustGain()
+void as3911AdjustGain(void)
 {
     u32 irqs = 0;
     u8 measurementCommand = 0;

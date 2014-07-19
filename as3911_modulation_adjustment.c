@@ -165,7 +165,7 @@ void as3911GetModulationLevelMode(AS3911ModulationLevelMode_t *modulationLevelMo
 	}
 }
 
-void as3911AdjustModulationLevel()
+void as3911AdjustModulationLevel(void)
 {
     u32 irqs = 0;
     u8 measurementCommand = 0;

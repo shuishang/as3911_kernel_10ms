@@ -194,7 +194,7 @@ s16 emvStartTerminalApplication(s16 (*application)(void))
     }
 }
 
-bool_t emvStopRequestReceived()
+bool_t emvStopRequestReceived(void)
 {
 
     if (emvStopRequestReceivedFlag)
@@ -206,7 +206,7 @@ bool_t emvStopRequestReceived()
     return FALSE;
 }
 
-void emvStopTerminalApplication()
+void emvStopTerminalApplication(void)
 {
     emvStopRequestReceivedFlag = TRUE;
 }

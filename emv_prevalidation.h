@@ -87,6 +87,6 @@
  * error codes.
  *****************************************************************************
  */
-s16 emvPrevalidationApplication();
+s16 emvPrevalidationApplication(void);
 
 #endif /* EMV_PREVALIDATION_H */

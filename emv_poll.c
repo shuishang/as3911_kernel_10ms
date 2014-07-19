@@ -104,7 +104,7 @@ static int emvTypeB;
 ******************************************************************************
 */
 
-void emvPollSingleIteration()
+void emvPollSingleIteration(void)
 {
     emvTypeA = 0;
     emvTypeB = 0;
@@ -142,7 +142,7 @@ void  package_monitor_save_time()
 
 }
 
-s16 emvPoll()
+s16 emvPoll(void)
 {
     emvTypeA = 0;
     emvTypeB = 0;

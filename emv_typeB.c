@@ -96,7 +96,7 @@
 ******************************************************************************
 */
 
-s16 emvTypeBCardPresent()
+s16 emvTypeBCardPresent(void)
 {
     u8 wupb[3];
     u8 atqb[13+2];

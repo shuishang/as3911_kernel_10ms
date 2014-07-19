@@ -60,7 +60,7 @@
  * Toggles the reader field between active and inactive state
  ****************************************************************************
  */
-void emvGuiToggleCarrier();
+void emvGuiToggleCarrier(void);
 
 /*! \ingroup usb
  ****************************************************************************
@@ -69,7 +69,7 @@ void emvGuiToggleCarrier();
  * Perform a single iteration of the EMV card polling loop.
  ****************************************************************************
  */
-void emvGuiPoll();
+void emvGuiPoll(void);
 
 /*! \ingroup usb
  ****************************************************************************
@@ -78,7 +78,7 @@ void emvGuiPoll();
  * Perform a reader field reset.
  ****************************************************************************
  */
-void emvGuiReset();
+void emvGuiReset(void);
 
 /*! \ingroup usb
  ****************************************************************************
@@ -87,7 +87,7 @@ void emvGuiReset();
  * Send a single WUPA request.
  ****************************************************************************
  */
-void emvGuiWupa();
+void emvGuiWupa(void);
 
 /*! \ingroup usb
  ****************************************************************************
@@ -96,7 +96,7 @@ void emvGuiWupa();
  * Send a single WUPB request.
  ****************************************************************************
  */
-void emvGuiWupb();
+void emvGuiWupb(void);
 
 /*! \ingroup usb
  ****************************************************************************
@@ -105,7 +105,7 @@ void emvGuiWupb();
  * Perform a WUPA, RATS sequence.
  ****************************************************************************
  */
-void emvGuiRats();
+void emvGuiRats(void);
 
 /*! \ingroup usb
  ****************************************************************************
@@ -114,7 +114,7 @@ void emvGuiRats();
  * Perform a WUPB, ATTRIB sequence.
  ****************************************************************************
  */
-void emvGuiAttrib();
+void emvGuiAttrib(void);
 
 /*! \ingroup usb
  ****************************************************************************
@@ -125,7 +125,7 @@ void emvGuiAttrib();
  * \note This function call blocks until emvGuiStop() is called.
  ****************************************************************************
  */
-void emvGuiPrevalidation();
+void emvGuiPrevalidation(void);
 
 /*! \ingroup usb
  ****************************************************************************
@@ -136,7 +136,7 @@ void emvGuiPrevalidation();
  * \note This function call blocks until emvGuiStop is called.
  ****************************************************************************
  */
-void emvGuiDigital();
+void emvGuiDigital(void);
 
 /*! \ingroup usb
  ****************************************************************************
@@ -145,6 +145,6 @@ void emvGuiDigital();
  * Stop any running digital or prevalidation test application.
  ****************************************************************************
  */
-void emvGuiStop();
+void emvGuiStop(void);
 
 #endif /* EMV_GUI_H */

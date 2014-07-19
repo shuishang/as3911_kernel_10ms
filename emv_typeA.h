@@ -84,7 +84,7 @@
  * \return 1: Type A card(s) detected.
  *****************************************************************************
  */
-s16 emvTypeACardPresent();
+s16 emvTypeACardPresent(void);
 
 /*! \ingroup emvCardTechnologySpecific
  *****************************************************************************

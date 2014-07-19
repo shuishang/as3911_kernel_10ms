@@ -183,7 +183,7 @@ s8 emvHalActivateField(bool_t activateField);
  * \return FALSE: The reader field is deactivated.
  *****************************************************************************
  */
-bool_t emvHalFieldIsActivated();
+bool_t emvHalFieldIsActivated(void);
 
 /*! \ingroup emvHal
  *****************************************************************************
@@ -198,7 +198,7 @@ bool_t emvHalFieldIsActivated();
  * \return EMV_HAL_ERR_IO: Error during communication.
  *****************************************************************************
  */
-s8 emvHalResetField();
+s8 emvHalResetField(void);
 
 /*! \ingroup emvHal
  *****************************************************************************

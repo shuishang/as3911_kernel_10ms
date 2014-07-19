@@ -333,7 +333,7 @@ s8 emvHalActivateField(bool_t activateField)
         return ERR_IO;
 }
 
-bool_t emvHalFieldIsActivated()
+bool_t emvHalFieldIsActivated(void)
 {
     u8 regOpcontrol = 0;
 
@@ -346,7 +346,7 @@ bool_t emvHalFieldIsActivated()
         return FALSE;
 }
 
-s8 emvHalResetField()
+s8 emvHalResetField(void)
 {
     s8 error = ERR_NONE;
 

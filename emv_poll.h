@@ -86,7 +86,7 @@
  * compliant terminal.
  *****************************************************************************
  */
-void emvPollSingleIteration();
+void emvPollSingleIteration(void);
 
 /*!
  *****************************************************************************
@@ -106,7 +106,7 @@ void emvPollSingleIteration();
  * \return EMV_ERR_STOPPED: A stop request has been received.
  *****************************************************************************
  */
-s16 emvPoll();
+s16 emvPoll(void);
 
 /*!
  *****************************************************************************

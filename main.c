@@ -33,6 +33,7 @@
 #include "emv_picc.h"
 #include "As3911_def.h"
 #include <linux/strong_lion_def.h> 
+#include "emv_gui.h"
 
 /**mach-smdk2416.c*/
 #define SPI_RFID_NAME		          "spi_rfid"
@@ -603,18 +604,5 @@ module_exit(cleanup_Spi_rfid);
 MODULE_AUTHOR("lxyvslyr@yahoo.com.cn");
 MODULE_DESCRIPTION(" Spi_rfid  for strong lion pos");
 MODULE_LICENSE("GPL");
-
-
-
-
-int main(int argc, char **argv)
-{
-
-
-
-	 emvGuiDigital();
-	 while(1);
-		
-}
 
 

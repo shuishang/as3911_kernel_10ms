@@ -181,13 +181,13 @@ s16 emvStartTerminalApplication(s16 (*application)(void));
  * \return FALSE: No stop terminal request has been received.
  *****************************************************************************
  */
-bool_t emvStopRequestReceived();
+bool_t emvStopRequestReceived(void);
 
 /*! \ingroup emvMain
  *****************************************************************************
  * \brief Request that any running emv terminal application is stopped.
  *****************************************************************************
  */
-void emvStopTerminalApplication();
+void emvStopTerminalApplication(void);
 
 #endif /* EMV_MAIN_H */
