@@ -39,4 +39,9 @@
 #include <linux/kernel.h> 
 #include "emv_display.h"
 #include "sleep.h"
+#include "As3911_def.h"
+
+u8 quck_read_printk(unsigned int fd,u8 *databuf,u8 i);
+u8 quck_write_printk(unsigned int fd,u8 *databuf,u8 i);
+
 #endif /* MAIN_H */

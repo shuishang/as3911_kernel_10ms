@@ -26,7 +26,7 @@
 #include <asm/arch/regs-gpio.h>
 #include <asm/arch/regs-gpioj.h>
 #include <asm/arch/map.h>
-
+#include <linux/jiffies.h>
 
 #include "As3911_api.h"
 #include "emv_main.h"
@@ -91,7 +91,7 @@ SPI 时钟极性0   CPOL = 0  正向电平
 #define SPI_PARA_CO		1
 #define SPI_DELAY_BASE	10
 
-#define BUF_SIZE		1024
+#define BUF_SIZE		240
 
 static struct proc_dir_entry *Spi_rfid_ver;
 const char version[]={ "as3911_src_v2[ "__TIME__"]\r\n"};
@@ -375,7 +375,7 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 	{
 		return -ENOTTY;
 	}
-
+	printk("  Spi_rfid_ioctl(%x);\n",cmd);
 	switch ( cmd )
 	{
 		case IOC_SPI_ENABLE_IRQ :
@@ -391,6 +391,7 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 			}
 			break;
 		case IOC_SPI_STAUS_IRQ:
+			printk("  IOC_SPI_STAUS_IRQ\n");
 			get_user( ucValue, (unsigned char *) arg );
 			if ( 0 == ucValue )
 			{
@@ -407,6 +408,82 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 	}
 
 	return ret;
+}
+
+//0成功  ,其他失败.
+
+u8 quck_read_printk(unsigned int fd,u8 *buf,u8 count)
+{
+	int iNum                      = 0;
+	int ret                           = (int)fd;
+	
+	if ( count > BUF_SIZE )
+	{
+		return 2;
+	}
+	
+	if ( !count )
+	{
+		return 0;
+	}
+	//local_irq_save(flags);
+	
+	Spi_Select();
+	ret = Spi_Write_Byte( buf[ 0 ] );
+	if ( ret )
+	{
+		return 2;
+	}
+	
+	for ( iNum = 0;iNum < count; iNum++ )
+	{
+		buf[ iNum+1 ] = Spi_Read_Byte( );
+	}
+	
+	Spi_Deselect();
+	//local_irq_restore(flags);
+	
+	return 0;
+
+}
+//0成功  ,其他失败.
+//static ssize_t Spi_rfid_write(struct file *filp, const char *buf, u32 count, loff_t *f_pos)
+u8 quck_write_printk(unsigned int fd, u8 * buf ,u8 count )
+{
+	int iNum = 0;
+	int ret     = (int)fd;
+	if ( count > BUF_SIZE )
+	{
+		return 2;
+	}
+	
+	if ( !count )
+	{
+		return 0;	
+	}
+	
+	/*if ( copy_from_user( Snd_data_buf, buf, count ) )
+	{
+		printk("get user data from user failed.\n");
+		return  -EFAULT;
+	}*/
+	//memcpy(Snd_data_buf, buf, count );
+	//local_irq_save(flags);
+	Spi_Select();
+	for ( iNum = 0;iNum < count; iNum++ )
+	{
+		ret = Spi_Write_Byte( buf[ iNum ]);
+		if ( ret )
+		{
+			return 2;
+		}
+	}
+	
+	Spi_Deselect();
+	//local_irq_restore(flags);
+	
+	return 0;
+
 }
 
 struct file_operations  Spi_rfid_fops =
@@ -589,6 +666,8 @@ static struct platform_driver Spi_rfid_driver = {
 static int __init init_Spi_rfid( void )
 {
 	printk((char*)version);
+	printk(" %x \n",HZ);
+	printk(" %lx \n",jiffies);
 	return platform_driver_register(&Spi_rfid_driver);
 }
 

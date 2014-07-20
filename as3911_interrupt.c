@@ -43,7 +43,7 @@
 
 #include "as3911.h"
 #include "errno.h"
-
+#include <linux/jiffies.h>
 #include <linux/ioctl.h>
 /*
 ******************************************************************************
@@ -88,23 +88,28 @@
 static volatile u32 as3911InterruptMask = 0;
 /*! Accumulated AS3911 interrupt status. */
 static volatile u32 as3911InterruptStatus = 0;
-
+/*
 typedef struct {
 
 	unsigned long times;
 	long long clk_start;
 } AS3911_TIMER;
 
-AS3911_TIMER As3911_Timer[ 2 ] = { 0 ,0 };
-
+AS3911_TIMER As3911_Timer[ 2 ] = { 0 ,0 };*/
+u32 g_jiffies;
+u32 g_jiffies_count;
+#define QUCK_HZ_DEF 5
 //(unsigned char TimerNo, int ms )
 //TimerNo  定时器编号
 // ms  延迟时间 ,单位 毫秒.
 void  TimerStart( unsigned char TimerNo, int ms )
 {
 	TimerNo=TimerNo;
-	ms=TimerNo;
-
+	//ms=(ms/QUCK_HZ_DEF? ms/QUCK_HZ_DEF:2);
+	//ms+=50;
+	ms*=5;
+	g_jiffies=jiffies;
+	g_jiffies_count=ms;
 /*	struct timeval tv ;
 	struct timezone tz;
 
@@ -112,9 +117,14 @@ void  TimerStart( unsigned char TimerNo, int ms )
 	As3911_Timer[ TimerNo ].clk_start = tv.tv_sec *1000 + tv.tv_usec/1000; //ms
 	As3911_Timer[ TimerNo ].times      = ms;*/
 }
-
+//返回0超时了, 返回其他整数没有超时.
 int TimerCheck( unsigned char TimerNo )
 {
+
+	u32 temp;
+
+	temp=jiffies-g_jiffies;
+	return (temp>=g_jiffies_count? 0:1);
 	/*long RestTime                                   = 0;
 	unsigned long CurrentTime            = 0;
 	unsigned long ElapsedTime            =0;	

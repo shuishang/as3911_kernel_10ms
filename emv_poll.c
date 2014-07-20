@@ -162,7 +162,7 @@ s16 emvPoll(void)
         /* Wait for t_p. */
         emvHalSleepMilliseconds(EMV_T_P);
 	package_monitor_save_time();	  
-	printk("    A\r\n");	
+	//printk("    A\r\n");	
         if (emvTypeACardPresent())
         {
             /* ISO14443-A card(s) found. */
@@ -171,7 +171,7 @@ s16 emvPoll(void)
             /* Send HLTA command. */
              hltaCommand[0] = 0x50;
 	    hltaCommand[1] = 0x00;	
-	    debug("hltaCommand\r\n");	 	
+	 //   debug("hltaCommand\r\n");	 	
             emvHalTransceive(hltaCommand, sizeof(hltaCommand), NULL, 0, NULL, EMV_HLTA_FDT, EMV_HAL_TRANSCEIVE_WITH_CRC);
         }
 
@@ -181,7 +181,7 @@ s16 emvPoll(void)
         /* Wait for t_p. */
         emvHalSleepMilliseconds (3);
         package_monitor_save_time();
-        printk("   B\r\n");	
+     //   printk("   B\r\n");	
         if (emvTypeBCardPresent())
         {
             /* ISO14443-B card(s) found. */
