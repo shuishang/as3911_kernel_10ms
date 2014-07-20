@@ -167,7 +167,8 @@ s16 emvTypeACardPresent(void)
     u8 atqa[2];
     u32 responseLength = 0;
    s8 error;	
-    emvHalSetStandard(EMV_HAL_TYPE_A);
+    char numBitsSetInAnticollisionBits=0;
+    char bitMask ;    emvHalSetStandard(EMV_HAL_TYPE_A);
     emvHalSetErrorHandling(EMV_HAL_PREACTIVATION_ERROR_HANDLING);
 
     /* Send WUPA command. */
@@ -186,8 +187,7 @@ s16 emvTypeACardPresent(void)
 	 //  PRINTF("  +a5 ");
  	   error =  EMV_ERR_PROTOCOL;
  	}	
-         char numBitsSetInAnticollisionBits=0;
-	char bitMask ;
+
 	/* Check correctness of bit frame anticollision bits. */
 	 for ( bitMask = 0x01; bitMask != 0x20; bitMask <<= 1)
 	 {

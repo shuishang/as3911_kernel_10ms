@@ -46,7 +46,7 @@
 #include "emv_main.h"
 #include "emv_typeA.h"
 #include "emv_typeB.h"
-
+#include "main.h"
 /*
 ******************************************************************************
 * DEFINES
@@ -106,6 +106,7 @@ static int emvTypeB;
 
 void emvPollSingleIteration(void)
 {
+    u8 hltaCommand[2];
     emvTypeA = 0;
     emvTypeB = 0;
     debug("emvPollSingleIteration()\r\n");
@@ -116,7 +117,8 @@ void emvPollSingleIteration(void)
         emvTypeA = 1;
 
         /* Send HLTA command. */
-        u8 hltaCommand[2] = { 0x50, 0x00 };
+        hltaCommand[0] = 0x50;
+        hltaCommand[1] = 0x00 ; 	
         emvHalTransceive(hltaCommand, sizeof(hltaCommand), NULL, 0, NULL, EMV_HLTA_FDT, EMV_HAL_TRANSCEIVE_WITH_CRC);
     }
 
@@ -128,7 +130,7 @@ void emvPollSingleIteration(void)
     }
 }
 
-void  package_monitor_save_time()
+void  package_monitor_save_time(void)
 {/*
 	char buf[1024];
 	struct timeb tp;
@@ -144,8 +146,10 @@ void  package_monitor_save_time()
 
 s16 emvPoll(void)
 {
+    u8 hltaCommand[2];
     emvTypeA = 0;
     emvTypeB = 0;
+    
     debug("emvPoll() \r\n");	 	
     /* Poll as long as no cards are found. */
     while (1)
@@ -165,7 +169,8 @@ s16 emvPoll(void)
             emvTypeA = 1;
 	    debug("emvTypeACardPresent() \r\n");	 
             /* Send HLTA command. */
-            u8 hltaCommand[2] = { 0x50, 0x00 };
+             hltaCommand[0] = 0x50;
+	    hltaCommand[1] = 0x00;	
 	    debug("hltaCommand\r\n");	 	
             emvHalTransceive(hltaCommand, sizeof(hltaCommand), NULL, 0, NULL, EMV_HLTA_FDT, EMV_HAL_TRANSCEIVE_WITH_CRC);
         }
