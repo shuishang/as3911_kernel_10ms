@@ -72,7 +72,7 @@ void dbgHexDump(unsigned char *buffer, u16 length)
     {
         for (i = 0; i < length/8; i++)
         {
-            dbgLog("%hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx\n",
+            dbgLog("%02x %02x %02x %02x %02x %02x %02x %02x\n",
                      buffer[i*8],
                      buffer[i*8+1],
                      buffer[i*8+2],
@@ -88,7 +88,7 @@ void dbgHexDump(unsigned char *buffer, u16 length)
     {
         for (i = length/8 * 8; i < length; i++)
         {
-            dbgLog("%hhx ", buffer[i]);
+            dbgLog("%02x ", buffer[i]);
         }
         dbgLog("\n");
     }

@@ -110,7 +110,7 @@ void emvDisplayByteArray(const u8 *array, u32 length)
 {
     u32 index = 0;
     for (index = 0; index < length; index++)
-        EMV_LOG("%hhx", array[index]);
+        EMV_LOG(",%02x", array[index]);
 }
 
 void emvDisplayUid(const u8 *uid, u32 length)
@@ -119,7 +119,7 @@ void emvDisplayUid(const u8 *uid, u32 length)
 
     do
     {
-        EMV_LOG("%hhx", uid[index]);
+        EMV_LOG("%02x", uid[index]);
         index--;
     } while (index > 0);
 }
