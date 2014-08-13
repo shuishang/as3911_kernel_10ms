@@ -69,7 +69,13 @@
 #include "emv_display.h"
 #include "sleep.h"
 #include "As3911_def.h"
-
+ void SSelect(void);
+ 
+ void SDeselect(void);
+  void QSelect(void);
+ 
+ void QDeselect(void);
+ 
 u8 quck_read_printk(unsigned int fd,u8 *databuf,u8 i);
 u8 quck_write_printk(unsigned int fd,u8 *databuf,u8 i);
 

@@ -107,7 +107,11 @@ void  TimerStart( unsigned char TimerNo, int ms )
 	TimerNo=TimerNo;
 	//ms=(ms/QUCK_HZ_DEF? ms/QUCK_HZ_DEF:2);
 	//ms+=50;
-	ms*=5;
+	//ms*=5;
+	/*if(ms >=5)
+	{
+		ms=100;
+	}*/
 	g_jiffies=jiffies;
 	g_jiffies_count=ms;
 /*	struct timeval tv ;

@@ -191,6 +191,8 @@ s16 emvStartTerminalApplication(s16 (*application)(void))
         error = emvRemove(&picc);
       if (EMV_ERR_OK != error)
             continue;
+	//debug
+	
     }
 }
 

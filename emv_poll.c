@@ -130,28 +130,28 @@ void emvPollSingleIteration(void)
     }
 }
 
-void  package_monitor_save_time(void)
-{/*
-	char buf[1024];
-	struct timeb tp;
-	struct tm	*tm;
 
-	ftime(&tp);
-	tm = localtime(&(tp.time));
-	printk("[%03d] ", tp.millitm );
-
-	return -1	 ;*/
-
-}
-
+			/*while(1)
+			{	
+				local_irq_save(flags);
+				SSelect();QSelect();
+				quck_udelay(1000);
+				SDeselect();QDeselect();
+				quck_udelay(1000);
+			 
+			}
+			 local_irq_restore(flags);
+			*/
 s16 emvPoll(void)
 {
     u8 hltaCommand[2];
+    unsigned long flags;		
     emvTypeA = 0;
     emvTypeB = 0;
     
     debug("emvPoll() \r\n");	 	
     /* Poll as long as no cards are found. */
+     local_irq_save(flags);
     while (1)
     {
         if (emvStopRequestReceived())
@@ -161,7 +161,7 @@ s16 emvPoll(void)
 
         /* Wait for t_p. */
         emvHalSleepMilliseconds(EMV_T_P);
-	package_monitor_save_time();	  
+	SSelect();  
 	//printk("    A\r\n");	
         if (emvTypeACardPresent())
         {
@@ -179,8 +179,8 @@ s16 emvPoll(void)
             break;
 
         /* Wait for t_p. */
-        emvHalSleepMilliseconds (3);
-        package_monitor_save_time();
+        emvHalSleepMilliseconds (EMV_T_P);
+   	SDeselect();
      //   printk("   B\r\n");	
         if (emvTypeBCardPresent())
         {
@@ -189,7 +189,8 @@ s16 emvPoll(void)
             emvTypeB = 1;
         }
     }
-
+    local_irq_restore(flags);
+	
     return EMV_ERR_OK;
 }
 

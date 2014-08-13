@@ -71,7 +71,7 @@
 /*! Maximum value of t_p (milliseconds). */
 #define EMV_T_P_MAX             10
 /*! Value of t_p used (in milliseconds). */
-#define EMV_T_P                 6
+#define EMV_T_P                 5
 
 /*!
  *****************************************************************************

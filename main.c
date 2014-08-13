@@ -93,7 +93,7 @@ SPI 时钟极性0   CPOL = 0  正向电平
 #define AS3911_STATUS_IRQ     IRQ_EINT3
 
 #define SPI_PARA_CO		1
-#define SPI_DELAY_BASE	10
+#define SPI_DELAY_BASE	1
 
 #define BUF_SIZE		240
 
@@ -122,23 +122,36 @@ struct Spi_dev {
 struct Spi_dev *spi_devp; 
 
 struct fasync_struct *async_queue;
+#define quck_udelay(x)  quck_udelay_sub(x)
 volatile int quck_time;
 volatile int quck_time2;
-void quck_udelay(int t)
+//1000次大概是延迟0.97毫秒
+inline void quck_udelay_sub(unsigned int t)
 {
-	int i;
+	
+/*	int i;
+	for(i=0;i<t;i++)
+	{
+	udelay(1);
+	}*/
+		
+	unsigned int i;
 	quck_time=t;
 	for(i=0;i<quck_time;i++)
 	{
-		for(quck_time2=0;quck_time2<37;quck_time2++)
-		{
-			
-		}		
+		//for(quck_time2=0;quck_time2<37;quck_time2++);//这个大概是1us
+		for(quck_time2=0;quck_time2<36;quck_time2++);
 	}
 }
-void sleepMilliseconds(unsigned int milliseconds)
+void sleepMilliseconds(unsigned int t)
 {
-	quck_udelay(milliseconds*1000);
+	//quck_udelay(t*1000);
+	unsigned int i;
+	
+	for(i=0;i<t*1000;i++)
+	{
+		udelay(1); 
+	 }
 	//mdelay(milliseconds);
 }
 
@@ -190,6 +203,32 @@ inline static void Spi_Deselect(void)
 {
 	gpio_set_pin_type(RF_CS, GPIO_PIN_TYPE_OUTPUT );	
 	gpio_set_pin_val(RF_CS,1);		
+	return;
+}
+//TP8 ,B26.
+ void SSelect(void)
+{
+	gpio_set_pin_type(BCM5892_GPB26, GPIO_PIN_TYPE_OUTPUT );
+	gpio_set_pin_val(BCM5892_GPB26,0);	
+}
+
+ void SDeselect(void)
+{
+	gpio_set_pin_type(BCM5892_GPB26, GPIO_PIN_TYPE_OUTPUT );	
+	gpio_set_pin_val(BCM5892_GPB26,1);		
+	return;
+}
+//TP9,B27.
+ void QSelect(void)
+{
+	gpio_set_pin_type(BCM5892_GPB27, GPIO_PIN_TYPE_OUTPUT );
+	gpio_set_pin_val(BCM5892_GPB27,0);	
+}
+
+ void QDeselect(void)
+{
+	gpio_set_pin_type(BCM5892_GPB27, GPIO_PIN_TYPE_OUTPUT );	
+	gpio_set_pin_val(BCM5892_GPB27,1);		
 	return;
 }
 
@@ -392,7 +431,7 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 {
 	int ret=0;
 	unsigned char ucValue = 0;
-		
+	unsigned long flags;	
 	if ( _IOC_TYPE(cmd) != SPI_RFID_IOC_MAGIC ) 
 	{
 		return -ENOTTY;
@@ -411,6 +450,18 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 			{
 			
 			}
+			/*while(1)
+			{	
+				local_irq_save(flags);
+				SSelect();QSelect();
+				quck_udelay(1000);
+				SDeselect();QDeselect();
+				quck_udelay(1000);
+			 
+			}
+			 local_irq_restore(flags);*/
+			
+			
 			break;
 		case IOC_SPI_STAUS_IRQ:
 			printk("  IOC_SPI_STAUS_IRQ\n");
