@@ -42,28 +42,18 @@
  * Basic datatypes are mapped to ams datatypes that
  * shall be used in all ams projects.
  */
-
-#define U8_C(x)     (x) /*!< \ingroup datatypes
-                         Define a constant of type u8 */
-#define S8_C(x)     (x) /*!< \ingroup datatypes
-                         Define a constant of type s8 */
-#define U16_C(x)    (x) /*!< \ingroup datatypes
-                         Define a constant of type u16 */
-#define S16_C(x)    (x) /*!< \ingroup datatypes
-                         Define a constant of type s16 */
-#define U32_C(x)    (x##UL) /*!< \ingroup datatypes
-                             Define a constant of type u32 */
-#define S32_C(x)    (x##L) /*!< \ingroup datatypes
-                            Define a constant of type s32 */
-#define U64_C(x)    (x##ULL) /*!< \ingroup datatypes
-                              Define a constant of type u64 */
-#define S64_C(x)    (x##LL) /*!< \ingroup datatypes
-                             Define a constant of type s64 */
-#define UMWORD_C(x) (x) /*!< \ingroup datatypes
-                         Define a constant of type umword */
-#define MWORD_C(x)  (x) /*!< \ingroup datatypes
-                         Define a constant of type mword */
-
+/*
+#define U8_C(x)     (x)
+#define S8_C(x)     (x) 
+#define U16_C(x)    (x) 
+#define S16_C(x)    (x)
+#define U32_C(x)    (x##UL) 
+#define S32_C(x)    (x##L)
+#define U64_C(x)    (x##ULL)
+#define S64_C(x)    (x##LL) 
+#define UMWORD_C(x) (x) 
+#define MWORD_C(x)  (x) 
+*/
 #if 0
 typedef umword bool_t; /*!< \ingroup datatypes
                             represents a boolean type */

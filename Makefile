@@ -3,15 +3,10 @@
 
 # Add your debugging flag (or not) to CFLAGS
 # "-O" is needed to expand inlines
-ifeq ($(DEBUG),y)
-  DEBFLAGS = -O -g
-else
-  DEBFLAGS = -O2
-endif
 
-CFLAGS += $(DEBFLAGS) -I..
 
 ifneq ($(KERNELRELEASE),)
+EXTRA_CFLAGS += $(DEBFLAGS) -I..
 # call from kernel build system  
   #obj-m	:= spi_rfid.o
   #obj-m := mymodule.o

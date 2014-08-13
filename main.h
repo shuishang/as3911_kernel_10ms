@@ -36,7 +36,36 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#include <linux/module.h>
+#include <linux/errno.h>
 #include <linux/kernel.h> 
+#include <linux/init.h>
+#include <linux/cdev.h>
+#include <linux/fcntl.h> 
+#include <linux/proc_fs.h>  
+#include <linux/fs.h>   
+#include <linux/interrupt.h>
+#include <linux/delay.h>
+#include <linux/wait.h>
+#include <linux/jiffies.h>
+#include <linux/sched.h>  // current and everything //
+#include <linux/platform_device.h>
+#include <linux/irq.h>
+
+#include <mach/hardware.h>
+#include <asm/uaccess.h> //copy_to_user()//
+#include <asm/io.h>
+#include <asm/atomic.h>
+#include <asm/irq.h>
+
+#include <asm/mach/map.h>
+/*
+#include <asm/arch/regs-gpio.h>
+#include <asm/arch/regs-gpioj.h>
+
+*/
+//2014Äê5ÔÂ22ÈÕ13:43:22  by quck
+#include <mach/reg_gpio.h>
 #include "emv_display.h"
 #include "sleep.h"
 #include "As3911_def.h"

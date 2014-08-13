@@ -1,5 +1,6 @@
 
 
+
 #include <linux/module.h>
 #include <linux/errno.h>
 #include <linux/kernel.h> 
@@ -12,21 +13,24 @@
 #include <linux/delay.h>
 #include <linux/wait.h>
 #include <linux/jiffies.h>
-#include <linux/sched.h>  /* current and everything */
+#include <linux/sched.h>  // current and everything //
 #include <linux/platform_device.h>
 #include <linux/irq.h>
 
-#include <asm/hardware.h>
-#include <asm/uaccess.h> /**copy_to_user()**/
+#include <mach/hardware.h>
+#include <asm/uaccess.h> //copy_to_user()//
 #include <asm/io.h>
 #include <asm/atomic.h>
 #include <asm/irq.h>
 
-#include <asm/io.h>
+#include <asm/mach/map.h>
+/*
 #include <asm/arch/regs-gpio.h>
 #include <asm/arch/regs-gpioj.h>
-#include <asm/arch/map.h>
-#include <linux/jiffies.h>
+
+*/
+//2014年5月22日13:43:22  by quck
+#include <mach/reg_gpio.h>
 
 #include "As3911_api.h"
 #include "emv_main.h"
@@ -93,6 +97,15 @@ SPI 时钟极性0   CPOL = 0  正向电平
 
 #define BUF_SIZE		240
 
+
+//--------------2014年8月13日11:02:09
+#define RF_CS    BCM5892_GPA7  
+#define RF_MISO    BCM5892_GPA5    
+#define RF_MOSI  BCM5892_GPA6
+#define RF_SCL     BCM5892_GPA4
+#define RF_POWER     BCM5892_GPB31
+
+
 static struct proc_dir_entry *Spi_rfid_ver;
 const char version[]={ "as3911_src_v2[ "__TIME__"]\r\n"};
 int opend  = 0;
@@ -109,6 +122,25 @@ struct Spi_dev {
 struct Spi_dev *spi_devp; 
 
 struct fasync_struct *async_queue;
+volatile int quck_time;
+volatile int quck_time2;
+void quck_udelay(int t)
+{
+	int i;
+	quck_time=t;
+	for(i=0;i<quck_time;i++)
+	{
+		for(quck_time2=0;quck_time2<37;quck_time2++)
+		{
+			
+		}		
+	}
+}
+void sleepMilliseconds(unsigned int milliseconds)
+{
+	quck_udelay(milliseconds*1000);
+	//mdelay(milliseconds);
+}
 
 int Spi_rfid_fasync( int fd, struct file *filp, int mode )
 {
@@ -128,46 +160,36 @@ static irqreturn_t AS3911_Interrupt( int irq, void * dev_id )
 inline static void Spi_Set_Scl( int state )
 {
 	//change to output pin
-	__raw_writel( (__raw_readl(S3C2410_GPECON) & ~(3<<28)) | (1<<28) , S3C2410_GPECON);	
+	gpio_set_pin_type(RF_SCL, GPIO_PIN_TYPE_OUTPUT );
+	gpio_set_pin_val(RF_SCL,state);		
 
-	if (state)
-		writel(readl(S3C2410_GPEDAT) | (1<<14), S3C2410_GPEDAT);
-	else
-		writel(readl(S3C2410_GPEDAT) & ~(1<<14), S3C2410_GPEDAT);
 }
 
 inline static void Spi_Write_Bit( int state )
 {
-	__raw_writel( (__raw_readl(S3C2410_GPECON) & ~(3<<24)) | (1<<24) , S3C2410_GPECON);	
-
-	if ( state )
-		writel(readl(S3C2410_GPEDAT) | (1<<12), S3C2410_GPEDAT);
-	else
-		writel(readl(S3C2410_GPEDAT) & ~(1<<12), S3C2410_GPEDAT);
+	gpio_set_pin_type(RF_MOSI, GPIO_PIN_TYPE_OUTPUT );
+	gpio_set_pin_val(RF_MOSI,state);	
+	
 	
 }
 
 inline static int Spi_Read_Bit( void )
 {
-	/* GPE15 [31:30] 00= INPUT 01=OUTPUT 10=  用于读取数据*/
-	__raw_writel(__raw_readl(S3C2410_GPECON) & ~(3<<30), S3C2410_GPECON);	
-
-	return (readl(S3C2410_GPEDAT) & (1<<15)) ? 1 : 0;
+	// GPE15 [31:30] 00= INPUT 01=OUTPUT 10=  用于读取数据//
+	gpio_set_pin_type(RF_MISO, GPIO_PIN_TYPE_INPUT );
+	return reg_gpio_get_pin(RF_MISO);	
 }
 
 inline static void Spi_Select(void)
 {
-	__raw_writel( (__raw_readl(S3C2410_GPDCON) & ~(3<<10)) | (1<<10) , S3C2410_GPDCON);		
-	writel(readl(S3C2410_GPDDAT) & ~(1<<5), S3C2410_GPDDAT);
-	
-	return;
+	gpio_set_pin_type(RF_CS, GPIO_PIN_TYPE_OUTPUT );
+	gpio_set_pin_val(RF_CS,0);	
 }
 
 inline static void Spi_Deselect(void)
 {
-	__raw_writel( (__raw_readl(S3C2410_GPDCON) & ~(3<<10)) | (1<<10) , S3C2410_GPDCON);		
-	writel(readl(S3C2410_GPDDAT) | (1<<5), S3C2410_GPDDAT);
-	
+	gpio_set_pin_type(RF_CS, GPIO_PIN_TYPE_OUTPUT );	
+	gpio_set_pin_val(RF_CS,1);		
 	return;
 }
 
@@ -201,9 +223,9 @@ int Spi_Write_Byte( unsigned char ucData )
 			Spi_Write_Bit( SPI_BIT_LOW );
 		}
 
-		udelay( SPI_PARA_CO * SPI_DELAY_BASE );
+		quck_udelay( SPI_PARA_CO * SPI_DELAY_BASE );
 		Spi_Set_Scl( SPI_CLK_LOW );
-		udelay( SPI_PARA_CO * SPI_DELAY_BASE );
+		quck_udelay( SPI_PARA_CO * SPI_DELAY_BASE );
 
 		ucTemp <<= 1;
 	}
@@ -231,7 +253,7 @@ int Spi_Read_Byte( void )
 	{
 		ucTemp <<= 1;
 		Spi_Set_Scl( SPI_CLK_HIGH );       
-		udelay( SPI_PARA_CO * SPI_DELAY_BASE );
+		quck_udelay( SPI_PARA_CO * SPI_DELAY_BASE );
 
 		ucReceiveBit = Spi_Read_Bit();
 		if ( ucReceiveBit ) 
@@ -240,7 +262,7 @@ int Spi_Read_Byte( void )
 		}
 		  
 	        Spi_Set_Scl( SPI_CLK_LOW );
-		udelay( SPI_PARA_CO * SPI_DELAY_BASE );
+		quck_udelay( SPI_PARA_CO * SPI_DELAY_BASE );
 	}
 
 	return( ucTemp );
@@ -519,33 +541,35 @@ static int proc_read_Spi_rfid_ver(char *page,char **start,off_t off,
 static void hareware_init(void)
 {
 
-	//cs
-	s3c2410_gpio_pullup(S3C2410_GPD5, 0);  /* pull-up/down disable */
-	s3c2410_gpio_cfgpin(S3C2410_GPD5, S3C2410_GPD5_OUTP); //output
-	s3c2410_gpio_setpin(S3C2410_GPD5, 0); 	 //slave			
+	gpio_set_pin_type(RF_POWER, GPIO_PIN_TYPE_OUTPUT );
+        reg_gpio_set_pull_up_down_disable(RF_POWER);
+	gpio_set_pin_val(RF_POWER,1);	
 	
-	mdelay(10);
+	//RF_CS	 BCM5892_GPA7   
+	gpio_set_pin_type(RF_CS, GPIO_PIN_TYPE_OUTPUT );
+    reg_gpio_set_pull_up_down_disable(RF_CS);
+	gpio_set_pin_val(RF_CS,0);
 
-	//RF_MISO 
-	s3c2410_gpio_pullup(S3C2410_GPE15, 0);  /* pull-up/down disable */
-	s3c2410_gpio_cfgpin(S3C2410_GPE15, S3C2410_GPE15_INP); //output 
-	//s3c2410_gpio_setpin(S3C2410_GPE15, 1); 	/* out 1 */      //
+	quck_udelay(50000);
+	//RF_MISO    BCM5892_GPA5    
+	gpio_set_pin_val(RF_MISO,0);
+	gpio_set_pin_type(RF_MISO, GPIO_PIN_TYPE_INPUT );
+    reg_gpio_set_pull_up_down_disable(RF_MISO);
 
-	//RF_MOSI
-	s3c2410_gpio_pullup(S3C2410_GPE12, 0);  /* pull-up/down disaapble */
-	s3c2410_gpio_cfgpin(S3C2410_GPE12, S3C2410_GPE12_OUTP); //output 
-	s3c2410_gpio_setpin(S3C2410_GPE12, 1); 	/* out 1 */      //
-
-	//RF_SCL
-	s3c2410_gpio_pullup(S3C2410_GPE14, 0);  /* pull-up/down enable */
-	s3c2410_gpio_cfgpin(S3C2410_GPE14, S3C2410_GPE14_OUTP); //output
-	s3c2410_gpio_setpin(S3C2410_GPE14, 0); 	/* out 1 */      //	
-
-	//RF_IRQ:   GPF3
-	s3c2410_gpio_pullup(S3C2410_GPF3, 0);  /* pull-up/down disable */
-	s3c2410_gpio_cfgpin(S3C2410_GPF3, S3C2410_GPF3_EINT3); //output S3C2410_GPF3_EINT3
-	__raw_writel((__raw_readl(S3C2410_EXTINT0) & ~(0x7<<12)) | (4<<12) , S3C2410_EXTINT0);
+	//RF_MOSI  BCM5892_GPA6
+	gpio_set_pin_type(RF_MOSI, GPIO_PIN_TYPE_OUTPUT );
+    reg_gpio_set_pull_up_down_disable(RF_MOSI);
+	gpio_set_pin_val(RF_MOSI,0);
 	
+	//RF_SCL     BCM5892_GPA4
+	gpio_set_pin_type(RF_SCL, GPIO_PIN_TYPE_OUTPUT );
+    reg_gpio_set_pull_up_down_disable(RF_SCL);
+	gpio_set_pin_val(RF_SCL,0);
+
+	//RF_IRQ:   BCM5892_GPB12
+	gpio_set_pin_type(BCM5892_GPB12, GPIO_PIN_TYPE_INPUT );
+    reg_gpio_set_pull_up_down_disable(BCM5892_GPB12);
+	gpio_set_pin_val(BCM5892_GPB12,0);
 }
 
 static int Spi_rfid_probe(struct platform_device *pdev)
@@ -588,7 +612,7 @@ static int Spi_rfid_probe(struct platform_device *pdev)
    
 	Spi_rfid_ver->data = NULL;
 	Spi_rfid_ver->read_proc = &proc_read_Spi_rfid_ver;
-	Spi_rfid_ver->owner = THIS_MODULE;
+	//Spi_rfid_ver->owner = THIS_MODULE;
 
 	printk(SPI_RFID_NAME " initialized\n");
 	ret = 0;
@@ -627,16 +651,7 @@ static int Spi_rfid_remove(struct platform_device *pdev )
 static int Spi_rfid_suspend(struct platform_device *dev,pm_message_t state)
 {
 	printk("Spi_rfid_suspend\n");
-	
-	//RF_SDA
-	s3c2410_gpio_pullup(S3C2410_GPE15, 0);  /* pull-up/down disable */
-	s3c2410_gpio_cfgpin(S3C2410_GPE15, S3C2410_GPE15_OUTP); //output 
-	s3c2410_gpio_setpin(S3C2410_GPE15, 0); 	/* out 0 */      //
 
-	//RF_SCL
-	s3c2410_gpio_pullup(S3C2410_GPE14, 0);  /* pull-up/down enable */
-	s3c2410_gpio_setpin(S3C2410_GPE14, 0); 	/* out 0 */      //		
- 
 	return 0;
 }
 
