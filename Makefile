@@ -45,7 +45,7 @@ spi_rfid-y += sleep.o
 
 else
 
-  KERNELDIR="/home/ljj/work/kernel2416"
+  KERNELDIR="/home/ljj/work/scl_85000/linux-2.6.32.9"
   PWD       := $(shell pwd)
 
 default:

@@ -663,8 +663,27 @@ static struct platform_driver Spi_rfid_driver = {
 	},
 };
 
+
+static void idtech_enmsr_release(struct device *dev)
+{
+
+}
+
+static struct platform_device idtech_enmsr_device = {
+	.name = "spi_rfid",
+	.dev = {
+		//.platform_data = &idtech_pdata,
+		.release = idtech_enmsr_release,
+	},
+};
+
 static int __init init_Spi_rfid( void )
 {
+    int ret ;
+	ret = platform_device_register(&idtech_enmsr_device);
+	if (ret) {
+		printk("enmsr: register platform device failed: %d\n", ret);
+	}
 	printk((char*)version);
 	printk(" %x \n",HZ);
 	printk(" %lx \n",jiffies);
@@ -674,9 +693,10 @@ static int __init init_Spi_rfid( void )
 static void __exit cleanup_Spi_rfid( void )
 {
 	platform_driver_unregister(&Spi_rfid_driver);
-
+	platform_device_unregister(&idtech_enmsr_device);
 	printk("unregister SPI RFID module\n");
 }
+
 module_init(init_Spi_rfid);
 module_exit(cleanup_Spi_rfid);
 
