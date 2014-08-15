@@ -15,8 +15,8 @@
 *.i
 *.lst
 *.symtypes
-
-#
+modules.order
+.order
 # Top-level generic files
 #
 tags
