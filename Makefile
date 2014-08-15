@@ -45,7 +45,7 @@ else
 
 default:
 	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
-	cp -f spi_rfid.ko /mnt/hgfs/wintolinux/lw_ftp
+	cp -f spi_rfid.ko /mnt/hgfs/HeGuoJin/wintolinux/lw_ftp
 
 endif
 
