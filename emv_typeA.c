@@ -173,33 +173,15 @@ s16 emvTypeACardPresent(void)
 
     /* Send WUPA command. */
     error = emvHalTransceive(NULL, 0, &atqa[0], sizeof(atqa), &responseLength, EMV_TYPEA_FDT_9, EMV_HAL_TRANSCEIVE_WUPA);
-
-    /* Any response shall be taken as a card presence indication. */
-    /* Any response shall be taken as a card presence indication. */
-	 if (responseLength != 2)
+	if(EMV_HAL_ERR_TIMEOUT == error)
 	{
-		error = EMV_ERR_COLLISION;
+		return 0;
 	}
-	/* Check correctness of ATQA. */
-	/* Check correctness of UID size encoding. */
-	if ((atqa[0] & EMV_ATQA_UID_SIZE_MASK) == EMV_ATQA_UID_SIZE_INVALID)
+	else
 	{
-	 //  PRINTF("  +a5 ");
- 	   error =  EMV_ERR_PROTOCOL;
- 	}	
+		return 1;
+	}
 
-	/* Check correctness of bit frame anticollision bits. */
-	 for ( bitMask = 0x01; bitMask != 0x20; bitMask <<= 1)
-	 {
-	     if (atqa[0] & bitMask)
-	         numBitsSetInAnticollisionBits++;
-	 } 
-	 if (numBitsSetInAnticollisionBits != 1)
-	 {
-	   //PRINTF("  +a6 ");
- 	   error =  EMV_ERR_PROTOCOL;
- 	 }	
-	 return (!error);
 }
 
 s16 emvTypeAAnticollision(EmvPicc_t *picc)
