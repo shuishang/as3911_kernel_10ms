@@ -74,8 +74,8 @@
  void SDeselect(void);
   void QSelect(void);
  
- void QDeselect(void);
- 
+
+ u8 QDeselect(void);
 u8 quck_read_printk(unsigned int fd,u8 *databuf,u8 i);
 u8 quck_write_printk(unsigned int fd,u8 *databuf,u8 i);
 

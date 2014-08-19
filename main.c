@@ -140,7 +140,7 @@ inline void quck_udelay_sub(unsigned int t)
 	for(i=0;i<quck_time;i++)
 	{
 		//for(quck_time2=0;quck_time2<37;quck_time2++);//这个大概是1us
-		for(quck_time2=0;quck_time2<36;quck_time2++);
+		for(quck_time2=0;quck_time2<34;quck_time2++);
 	}
 }
 void sleepMilliseconds(unsigned int t)
@@ -148,7 +148,7 @@ void sleepMilliseconds(unsigned int t)
 	//quck_udelay(t*1000);
 	unsigned int i;
 	
-	for(i=0;i<t*1000;i++)
+	for(i=0;i<t*980;i++)
 	{
 		udelay(1); 
 	 }
@@ -222,14 +222,16 @@ inline static void Spi_Deselect(void)
  void QSelect(void)
 {
 	gpio_set_pin_type(BCM5892_GPB27, GPIO_PIN_TYPE_OUTPUT );
-	gpio_set_pin_val(BCM5892_GPB27,0);	
+	 	gpio_set_pin_val(BCM5892_GPB27,1);	
+	 	reg_gpio_set_pull_up_down_enable(BCM5892_GPB27);
+	 	gpio_set_pin_type(BCM5892_GPB27, GPIO_PIN_TYPE_INPUT );
+
 }
 
- void QDeselect(void)
+ u8 QDeselect(void)
 {
-	gpio_set_pin_type(BCM5892_GPB27, GPIO_PIN_TYPE_OUTPUT );	
-	gpio_set_pin_val(BCM5892_GPB27,1);		
-	return;
+	  return reg_gpio_get_pin(BCM5892_GPB27);
+
 }
 
 /**************************************************************************
@@ -621,6 +623,7 @@ static void hareware_init(void)
 	gpio_set_pin_type(BCM5892_GPB12, GPIO_PIN_TYPE_INPUT );
     reg_gpio_set_pull_up_down_disable(BCM5892_GPB12);
 	gpio_set_pin_val(BCM5892_GPB12,0);
+	QSelect();
 }
 
 static int Spi_rfid_probe(struct platform_device *pdev)

@@ -50,6 +50,7 @@
 #include "emv_display.h"
 #include "sleep.h"
 #include "emv_main.h"
+#include "main.h"
 
 /*
 ******************************************************************************
@@ -199,7 +200,7 @@ s16 emvStartTerminalApplication(s16 (*application)(void))
 bool_t emvStopRequestReceived(void)
 {
 
-    if (emvStopRequestReceivedFlag)
+  if (QDeselect())
     {
         emvStopRequestReceivedFlag = FALSE;
         return TRUE;
