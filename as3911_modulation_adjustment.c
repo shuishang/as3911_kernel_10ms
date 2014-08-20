@@ -229,29 +229,17 @@ void as3911AdjustModulationLevel(void)
 
     for (index = 0; index < as3911ModulationLevelTable->length; index++)
     {
-        if(amplitudePhase <= as3911ModulationLevelTable->x[index])
-            break;
+        if(amplitudePhase >= as3911ModulationLevelTable->x[index])
+        {
+
+			 antennaDriverStrength =as3911ModulationLevelTable->y[index];
+			 break;
+		}
+           
     }
     /* Use the last interpolation level dataset for any values outside the highest.
      * x-value from the datasets.
      */
-    if (index == as3911ModulationLevelTable->length)
-        index--;
-
-    if (index == 0)
-        antennaDriverStrength = as3911GetInterpolatedValue(
-            as3911ModulationLevelTable->x[index],
-            as3911ModulationLevelTable->y[index],
-            as3911ModulationLevelTable->x[index+1],
-            as3911ModulationLevelTable->y[index+1],
-            amplitudePhase);
-    else
-        antennaDriverStrength = as3911GetInterpolatedValue(
-            as3911ModulationLevelTable->x[index-1],
-            as3911ModulationLevelTable->y[index-1],
-            as3911ModulationLevelTable->x[index],
-            as3911ModulationLevelTable->y[index],
-            amplitudePhase);
 
     as3911WriteRegister(AS3911_REG_RFO_AM_ON_LEVEL, antennaDriverStrength);
 }
