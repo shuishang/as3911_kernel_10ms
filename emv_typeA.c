@@ -168,7 +168,8 @@ s16 emvTypeACardPresent(void)
     u32 responseLength = 0;
    s8 error;	
     char numBitsSetInAnticollisionBits=0;
-    char bitMask ;    emvHalSetStandard(EMV_HAL_TYPE_A);
+    char bitMask ;    
+	emvHalSetStandard(EMV_HAL_TYPE_A);
     emvHalSetErrorHandling(EMV_HAL_PREACTIVATION_ERROR_HANDLING);
 
     /* Send WUPA command. */

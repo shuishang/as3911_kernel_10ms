@@ -134,9 +134,8 @@ void emvPollSingleIteration(void)
 			/*while(1)
 			{	
 				local_irq_save(flags);
-				SSelect();QSelect();
 				quck_udelay(1000);
-				SDeselect();QDeselect();
+				SDeselect();
 				quck_udelay(1000);
 			 
 			}

@@ -50,7 +50,7 @@ default:
 endif
 
 clean:
-	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c *.symvers .tmp_versions
+	rm -rf *.o *~ core .depend .*.cmd modules.order *.ko *.mod.c *.symvers .tmp_versions 
 
 depend .depend dep:
 	$(CC) $(CFLAGS) -M *.c > .depend
