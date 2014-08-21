@@ -46,7 +46,9 @@
 #include "emv_typeA.h"
 #include "emv_standard.h"
 #include "emv_error_codes.h"
+#include "main.h"
 #define debug printk
+
 /*
 ******************************************************************************
 * DEFINES
@@ -226,6 +228,8 @@ s16 emvTypeAAnticollision(EmvPicc_t *picc)
         if (numBitsSetInAnticollisionBits != 1)
             return EMV_ERR_PROTOCOL;
     }
+    //debug("atqa[0]:%x,atqa[1]:%x",atqa[0],atqa[1]);
+	//debug("responseLength:%x \r\n",responseLength);
 
     /* Check correctness of ATQA[1] high nibble.
      * All bits of ATQA[1] are either RFU bits or defined as any value.

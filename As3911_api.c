@@ -17,50 +17,38 @@
 #include "emv_picc.h"
 #include "as3911_io.h"
 #include "main.h"
-#define FALSE                               0
+/*#define FALSE                               0
 #define TRUE                                 1
 #define MIFARE_DEFAULT_READER_NONCE             0xAA55AA55
 
-#define EMV_TYPEA_FDT_9     1250
+//#define EMV_TYPEA_FDT_9     1250
 
-/*! Bit mask for the UID size field of the first ATQA byte. */
 #define EMV_ATQA_UID_SIZE_MASK      0xC0
-/*! ATQA UID size field value for a single size UID. */
 #define EMV_ATQA_UID_SIZE_SINGLE    0x00
-/*! ATQA UID size field value for a double size UID. */
 #define EMV_ATQA_UID_SIZE_DOUBLE    0x40
-/*! ATQA UID size field value for a triple size UID. */
 #define EMV_ATQA_UID_SIZE_TRIPLE    0x80
 
-/*!
+
  *****************************************************************************
  * Invalid ATQA UID size field value. A standard conforming card
  * should never return this value.
  *****************************************************************************
- */
+
 #define EMV_ATQA_UID_SIZE_INVALID   0xC0
 
-/*! Value of the SEL byte of a cascade level 1 anticollision or select request.*/
 #define EMV_SEL_CL1     0x93
-/*! Value of the SEL byte of a cascade level 2 anticollision or select request.*/
 #define EMV_SEL_CL2     0x95
-/*! Value of the SEL byte of a cascade level 3 anticollision or select request.*/
 #define EMV_SEL_CL3     0x97
 
-/*! NVB (number of valid bits) byte value for an ISO14443-A anticollision request. */
 #define EMV_ANTICOLLISION_NVB   0x20
-/*! NVB (number of valid bits) byte value for an ISO14443-A select request. */
 #define EMV_SELECT_NVB          0x70
 
-/*! ISO14434-A anticollision response cascade tag value. */
 #define EMV_CASCADE_TAG         0x88
-/*! Mask for the cascade bit of an ISO14443-A SAK. */
 #define EMV_SAK_CASCADE_BIT_MASK                0x04
-/*! Mask for the ISO14443-4 compliance bit fo an ISO14443-A SAK. */
 #define EMV_SAK_ISO144434_COMPLIANT_BIT_MASK    0x20
 
-//#define DEBUG_PBOC                     
 typedef unsigned char                    Bool;
+*/
 
 
 /*
