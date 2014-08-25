@@ -38,13 +38,12 @@
 * INCLUDES
 ******************************************************************************
 */
-
-#include "as3911_interrupt.h"
-
 #include "as3911.h"
+#include "as3911_interrupt.h"
 #include "errno.h"
 #include <linux/jiffies.h>
 #include <linux/ioctl.h>
+#include "sleep.h"
 /*
 ******************************************************************************
 * DEFINES
@@ -102,52 +101,31 @@ u32 g_jiffies_count;
 //(unsigned char TimerNo, int ms )
 //TimerNo  定时器编号
 // ms  延迟时间 ,单位 毫秒.
+ u32 ggjiffies_count=1;
 void  TimerStart( unsigned char TimerNo, int ms )
 {
+	measure_counter_start();
 	TimerNo=TimerNo;
-	//ms=(ms/QUCK_HZ_DEF? ms/QUCK_HZ_DEF:2);
-	//ms+=50;
-	//ms*=5;
-	/*if(ms >=5)
-	{
-		ms=100;
-	}*/
-	g_jiffies=jiffies;
-	g_jiffies_count=ms;
-/*	struct timeval tv ;
-	struct timezone tz;
+	g_jiffies= get_timer_count();
 
-	gettimeofday( &tv, &tz );
-	As3911_Timer[ TimerNo ].clk_start = tv.tv_sec *1000 + tv.tv_usec/1000; //ms
-	As3911_Timer[ TimerNo ].times      = ms;*/
+	g_jiffies_count=ms;
+	/*if(g_jiffies_count>10)
+	{
+		g_jiffies_count=10;
+		if(++ggjiffies_count>100)
+		{
+			ggjiffies_count=0;
+			printk(" %d ",ms);
+		}
+ 	}*/
 }
 //返回0超时了, 返回其他整数没有超时.
 int TimerCheck( unsigned char TimerNo )
 {
-
 	u32 temp;
-
-	temp=jiffies-g_jiffies;
+	temp=g_jiffies-get_timer_count();
+	temp=(temp*168)/1000000;
 	return (temp>=g_jiffies_count? 0:1);
-	/*long RestTime                                   = 0;
-	unsigned long CurrentTime            = 0;
-	unsigned long ElapsedTime            =0;	
-	struct timeval tv;
-	struct timezone tz;
-
-	gettimeofday( &tv, &tz );
-	CurrentTime = tv.tv_sec * 1000 + tv.tv_usec /1000;
-	ElapsedTime = CurrentTime - As3911_Timer[ TimerNo ].clk_start;
-	RestTime = As3911_Timer[ TimerNo ].times - ElapsedTime;
-	if ( RestTime > 0 )
-	{
-		return RestTime;
-	}
-	else
-	{
-		return 0;
-	}*/
-	return 0;
 }
 
 

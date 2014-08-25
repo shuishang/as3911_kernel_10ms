@@ -40,6 +40,7 @@
 #include "emv_gui.h"
 //#include "main.h"
 #include "sleep.h"
+#include "as3911_interrupt.h"
 /**mach-smdk2416.c*/
 #define SPI_RFID_NAME		          "spi_rfid"
 
@@ -449,34 +450,26 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 			if ( ucValue == 0 ) 
 			{
 				printk("  emvGuiDigital();4\n");
-			//	emvGuiDigital();	
+		//	emvGuiDigital();	
 			}
 			else 
 			{
 			
 			} 
-			measure_counter_stop();
-			measure_counter_setup();
-			measure_counter_start();
 			
 			while(1)
-			{	
+			{
+				if (QDeselect())break;
+ 				SSelect();  //6000¨º?1o¨¢??.
+	 			TimerStart( 0, 10 );	
+ 				while(TimerCheck( 0 )){   }	
+ 				SDeselect();
+	 			TimerStart( 0, 10 );	
+ 				while(TimerCheck( 0 )){   }	
+			}
+						
 
-			  // if (QDeselect())
-			 //   {
-			        
-			 //   	break;
-			//    }
-
-			//	local_irq_save(flags);
-				SSelect();udelay(1000);
-				//ucValue=ucValue2=get_timer_count();
-				//while((ucValue-ucValue2)<=600000){ ucValue=get_timer_count();	   }	
-				SDeselect();udelay(1000);
-				//ucValue=ucValue2=get_timer_count();
-				//while((ucValue-ucValue2)<=600000){ ucValue=get_timer_count();	   }			
- 			 //	 local_irq_restore(flags); 
- 			}
+			
 			break;
 		case IOC_SPI_STAUS_IRQ:
 			printk("  IOC_SPI_STAUS_IRQ\n");
@@ -637,6 +630,8 @@ static void hareware_init(void)
     reg_gpio_set_pull_up_down_disable(BCM5892_GPB12);
 	gpio_set_pin_val(BCM5892_GPB12,0);
 	QSelect();
+	measure_counter_setup();
+	measure_counter_stop();
 }
 
 static int Spi_rfid_probe(struct platform_device *pdev)

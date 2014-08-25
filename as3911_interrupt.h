@@ -239,7 +239,8 @@ s8 as3911ClearInterrupts(u32 mask);
  *****************************************************************************
  */
 s8 as3911WaitForInterruptTimed(u32 mask, u16 timeout, u32 *irqs);
-
+void  TimerStart( unsigned char TimerNo, int ms );
+int TimerCheck( unsigned char TimerNo );
 /*! \ingroup as3911IrqHandling
  *****************************************************************************
  * \brief Get interrupt status of certain interrupts of the AS3911.
