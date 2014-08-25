@@ -160,7 +160,7 @@ s16 emvPoll(void)
 
         /* Wait for t_p. */
         emvHalSleepMilliseconds(4);
-	SSelect();  
+	
 	//printk("    A\r\n");	
         if (emvTypeACardPresent())
         {
@@ -179,7 +179,7 @@ s16 emvPoll(void)
 
         /* Wait for t_p. */
         emvHalSleepMilliseconds (EMV_T_P);
-   	SDeselect();
+    
      //   printk("   B\r\n");	
         if (emvTypeBCardPresent())
         {
