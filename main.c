@@ -38,7 +38,8 @@
 #include "As3911_def.h"
 #include <linux/strong_lion_def.h> 
 #include "emv_gui.h"
-
+//#include "main.h"
+#include "sleep.h"
 /**mach-smdk2416.c*/
 #define SPI_RFID_NAME		          "spi_rfid"
 
@@ -433,7 +434,8 @@ static ssize_t  Spi_rfid_read(struct file *filp, char *buf, u32 count,loff_t *f_
 static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cmd, unsigned long arg)
 {
 	int ret=0;
-	unsigned char ucValue = 0;
+	unsigned int ucValue = 0;
+	unsigned int ucValue2 = 0;
 	unsigned long flags;	
 	if ( _IOC_TYPE(cmd) != SPI_RFID_IOC_MAGIC ) 
 	{
@@ -446,25 +448,35 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 			get_user( ucValue, (unsigned char *) arg );
 			if ( ucValue == 0 ) 
 			{
-				printk("  emvGuiDigital();\n");
-				emvGuiDigital();	
+				printk("  emvGuiDigital();4\n");
+			//	emvGuiDigital();	
 			}
 			else 
 			{
 			
-			}
-			/*while(1)
+			} 
+			measure_counter_stop();
+			measure_counter_setup();
+			measure_counter_start();
+			
+			while(1)
 			{	
-				local_irq_save(flags);
-				SSelect();QSelect();
-				quck_udelay(1000);
-				SDeselect();QDeselect();
-				quck_udelay(1000);
-			 
-			}
-			 local_irq_restore(flags);*/
-			
-			
+
+			  // if (QDeselect())
+			 //   {
+			        
+			 //   	break;
+			//    }
+
+			//	local_irq_save(flags);
+				SSelect();udelay(1000);
+				//ucValue=ucValue2=get_timer_count();
+				//while((ucValue-ucValue2)<=600000){ ucValue=get_timer_count();	   }	
+				SDeselect();udelay(1000);
+				//ucValue=ucValue2=get_timer_count();
+				//while((ucValue-ucValue2)<=600000){ ucValue=get_timer_count();	   }			
+ 			 //	 local_irq_restore(flags); 
+ 			}
 			break;
 		case IOC_SPI_STAUS_IRQ:
 			printk("  IOC_SPI_STAUS_IRQ\n");

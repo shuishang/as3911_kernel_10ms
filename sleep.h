@@ -75,5 +75,10 @@
  *****************************************************************************
  */
 void sleepMilliseconds(unsigned int milliseconds);
+void measure_counter_setup(void);
+void measure_counter_start(void);
+void measure_counter_stop(void);
+unsigned int get_timer_count(void);
 
+ 
 #endif /* SLEEP_H */
