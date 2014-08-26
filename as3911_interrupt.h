@@ -241,6 +241,22 @@ s8 as3911ClearInterrupts(u32 mask);
 s8 as3911WaitForInterruptTimed(u32 mask, u16 timeout, u32 *irqs);
 void  TimerStart( unsigned char TimerNo, int ms );
 int TimerCheck( unsigned char TimerNo );
+extern  u32 ggjiffies_count;
+
+#define quck_printk(x) do{  \
+if(++ggjiffies_count>500)  \
+	{  \
+			ggjiffies_count=0; \
+			printk(" %x (i)",x);  \
+	}}while(0)
+
+#define quck_printk2(x) do{  \
+if(++ggjiffies_count>500)  \
+	{  \
+			ggjiffies_count=0; \
+			printk(" %x (a)",x);  \
+	}}while(0)
+
 /*! \ingroup as3911IrqHandling
  *****************************************************************************
  * \brief Get interrupt status of certain interrupts of the AS3911.

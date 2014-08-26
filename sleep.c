@@ -96,6 +96,20 @@ unsigned int get_timer_count(void)
 
 	return *((unsigned int *)(IO_ADDRESS(TIM3_REG_BASE_ADDR+0x24)));
 }
+u32 g_timer_count=0;
+
+void quck_timer_count(u8 flag)
+{
+	u32 temp;
+	temp=*((unsigned int *)(IO_ADDRESS(TIM3_REG_BASE_ADDR+0x24)));
+//	temp=(temp*168)/1000000;
+//	printk("%xms",(temp*168)/1000000);
+	printk("%d:%dus ",flag,((g_timer_count-temp)*168)/1000);
+	g_timer_count=temp;
+	
+}
+
+
 //rst_end_count = *((unsigned int *)(IO_ADDRESS(TIM3_REG_BASE_ADDR+0x24)));
 //ts_start_count = *((unsigned int *)(IO_ADDRESS(TIM3_REG_BASE_ADDR+0x24)));;
 

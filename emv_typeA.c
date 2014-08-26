@@ -47,6 +47,7 @@
 #include "emv_standard.h"
 #include "emv_error_codes.h"
 #include "main.h"
+#include "as3911_interrupt.h"
 #define debug printk
 
 /*
@@ -384,7 +385,7 @@ s16 emvTypeARemove(EmvPicc_t *picc)
     {
         if (emvStopRequestReceived())
             return EMV_ERR_STOPPED;
-
+	//quck_printk2(get_timer_count());
         if (emvTypeACardPresent())
         {
             /* Send hlta command. */

@@ -450,13 +450,13 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 			if ( ucValue == 0 ) 
 			{
 				printk("  emvGuiDigital();4\n");
-		//	emvGuiDigital();	
+				emvGuiDigital();	
 			}
 			else 
 			{
 			
 			} 
-			
+	/*		
 			while(1)
 			{
 				if (QDeselect())break;
@@ -467,9 +467,7 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 	 			TimerStart( 0, 10 );	
  				while(TimerCheck( 0 )){   }	
 			}
-						
-
-			
+				*/		
 			break;
 		case IOC_SPI_STAUS_IRQ:
 			printk("  IOC_SPI_STAUS_IRQ\n");

@@ -102,6 +102,8 @@ u32 g_jiffies_count;
 //TimerNo  定时器编号
 // ms  延迟时间 ,单位 毫秒.
  u32 ggjiffies_count=1;
+
+
 void  TimerStart( unsigned char TimerNo, int ms )
 {
 	measure_counter_start();
@@ -109,15 +111,11 @@ void  TimerStart( unsigned char TimerNo, int ms )
 	g_jiffies= get_timer_count();
 
 	g_jiffies_count=ms;
-	/*if(g_jiffies_count>10)
+	if(g_jiffies_count>15)
 	{
-		g_jiffies_count=10;
-		if(++ggjiffies_count>100)
-		{
-			ggjiffies_count=0;
-			printk(" %d ",ms);
-		}
- 	}*/
+		g_jiffies_count=15;
+
+ 	}
 }
 //返回0超时了, 返回其他整数没有超时.
 int TimerCheck( unsigned char TimerNo )
@@ -202,7 +200,7 @@ s8 as3911WaitForInterruptTimed(u32 mask, u16 timeout, u32 *irqs)
    	{
    		as3911ContinuousRead(AS3911_REG_IRQ_MAIN, (u8*) &irqStatus, 3);
 		as3911InterruptStatus |= irqStatus & as3911InterruptMask;
-		
+	//	quck_printk(get_timer_count());
 		irqStatus = as3911InterruptStatus & mask;
 		if ( timeout > 0 )
 		{

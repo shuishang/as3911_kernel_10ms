@@ -351,7 +351,9 @@ s8 emvHalResetField(void)
     s8 error = ERR_NONE;
 
     error |= emvHalActivateField(FALSE);
+
     emvHalSleepMilliseconds(EMV_T_RESET);
+
     error |= emvHalActivateField(TRUE);
 
     if (ERR_NONE == error)

@@ -79,6 +79,8 @@ void measure_counter_setup(void);
 void measure_counter_start(void);
 void measure_counter_stop(void);
 unsigned int get_timer_count(void);
+void quck_timer_count(u8 flag);
+
 
  
 #endif /* SLEEP_H */

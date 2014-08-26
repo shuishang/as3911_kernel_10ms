@@ -139,12 +139,12 @@ s16 emvStartTerminalApplication(s16 (*application)(void))
             return EMV_ERR_STOPPED;
         }
         if (EMV_ERR_OK != error)
-        {SSelect();  
-            emvDisplayError(error);
-
-            /* Reset field and continue with polling. */
-            emvHalResetField();
-			SDeselect();  
+        {
+		//emvDisplayError(error);
+		//SSelect();  
+		/* Reset field and continue with polling. */
+		emvHalResetField();
+		//SDeselect();  
         }
 
         /* Polling. */
