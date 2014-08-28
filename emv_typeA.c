@@ -49,6 +49,8 @@
 #include "main.h"
 #include "as3911_interrupt.h"
 #define debug printk
+#undef debug 
+#define debug(...)  
 
 /*
 ******************************************************************************

@@ -136,7 +136,6 @@ s8 as3911ReadRegister(u8 address, u8 *data)
 	}
 	else
 	{	
-		//printk( "as3911ReadCommand: %X\n",as3911ReadCommand[1] );
 		*data = as3911ReadCommand[ 1 ];
 		return ERR_NONE;
 	}

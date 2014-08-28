@@ -48,5 +48,4 @@ int AS3911_init(void);
 
 void displayTestRegisterValue(unsigned char  address);
    void displayRegisterValue(unsigned char  address) ;
-//#define myTACE  printk
 #endif//

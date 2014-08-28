@@ -17,6 +17,8 @@
 #include "emv_picc.h"
 #include "as3911_io.h"
 #include "main.h"
+
+#define api_debug(...) 
 /*#define FALSE                               0
 #define TRUE                                 1
 #define MIFARE_DEFAULT_READER_NONCE             0xAA55AA55
@@ -71,21 +73,19 @@ static AS3911ModulationLevelTable_t mainModulationTable = {
 
 
  //  AS3911ModulationLevelTable_t mainModulationTable ;
-#define LOG myTACE
-#define myTACE printk
 
 void displayRegisterValue(unsigned char  address)
 {
     u8 value = 0;
     as3911ReadRegister(address, &value);
-    printk("REG: 0x%x: 0x%x\r\n", address, value);
+    api_debug("REG: 0x%x: 0x%x\r\n", address, value);
    // printk("\033[40;44mREG: 0x%x: 0x%x\r\n\033[5m", address, value);
 }
    
 void displayTestRegisterValue(unsigned char address)
 {
     u8 value = 0;
-    printk("Test REG: 0x%x: 0x%x\r\n", address, value);
+    api_debug("Test REG: 0x%x: 0x%x\r\n", address, value);
 }
 void show3911Reg(void)
 {
@@ -143,9 +143,9 @@ void show3911Reg(void)
 		mainModulationTable.y[index] = *rxByte++;
 	}
 	
-	printk("EMV: modulation depth adjustment table length %d\r\n", mainModulationTable.length);
+	api_debug("EMV: modulation depth adjustment table length %d\r\n", mainModulationTable.length);
 	for (index = 0; index < mainModulationTable.length; index++)
-		printk("EMV: modulationTable[%d] = 0x%x, 0x%x\r\n", index, mainModulationTable.x[index], mainModulationTable.y[index]);
+		api_debug("EMV: modulationTable[%d] = 0x%x, 0x%x\r\n", index, mainModulationTable.x[index], mainModulationTable.y[index]);
 	
 	// FIXME: configuration of the mod depth conf register should be done inside the
 	 //modulation level adjustment module.

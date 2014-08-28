@@ -630,6 +630,7 @@ static void hareware_init(void)
 	QSelect();
 	measure_counter_setup();
 	measure_counter_stop();
+	measure_counter_start();
 }
 
 static int Spi_rfid_probe(struct platform_device *pdev)

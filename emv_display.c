@@ -100,6 +100,10 @@
 * GLOBAL FUNCTIONS
 ******************************************************************************
 */
+#undef EMV_LOG
+#define EMV_LOG(...)   
+
+
 
 void emvDisplayString(const char *string)
 {

@@ -47,6 +47,8 @@
 #include "emv_typeA.h"
 #include "emv_typeB.h"
 #include "main.h"
+#undef debug 
+#define debug(...)  
 /*
 ******************************************************************************
 * DEFINES
@@ -148,7 +150,7 @@ s16 emvPoll(void)
     emvTypeA = 0;
     emvTypeB = 0;
     
-    debug("emvPoll() \r\n");	 	
+   // debug("emvPoll() \r\n");	 	
     /* Poll as long as no cards are found. */
      local_irq_save(flags);
     while (1)
@@ -161,7 +163,6 @@ s16 emvPoll(void)
         /* Wait for t_p. */
         emvHalSleepMilliseconds(4);
 	
-	//printk("    A\r\n");	
         if (emvTypeACardPresent())
         {
             /* ISO14443-A card(s) found. */
@@ -180,7 +181,6 @@ s16 emvPoll(void)
         /* Wait for t_p. */
         emvHalSleepMilliseconds (EMV_T_P);
     
-     //   printk("   B\r\n");	
         if (emvTypeBCardPresent())
         {
             /* ISO14443-B card(s) found. */

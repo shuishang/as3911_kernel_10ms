@@ -44,6 +44,7 @@
 #include "aS3911.h"
 #include "logger.h"
 #include "main.h"
+#define com_debug(...)  
 /*
 ******************************************************************************
 * DEFINES
@@ -514,7 +515,7 @@ s16 as3911Receive(u8 *response, u32 maxResponseLength, u32 *responseLength)
                     return AS3911_PARITY_ERROR;
                 else if (errorIrqStatus & AS3911_IRQ_MASK_ERR2)
                 {
-                    LOG("Soft framing error\n");
+                    com_debug("Soft framing error\n");
 
                     return AS3911_SOFT_FRAMING_ERROR;
                 }

@@ -106,7 +106,7 @@ u32 g_jiffies_count;
 
 void  TimerStart( unsigned char TimerNo, int ms )
 {
-	measure_counter_start();
+	
 	TimerNo=TimerNo;
 	g_jiffies= get_timer_count();
 
@@ -200,7 +200,6 @@ s8 as3911WaitForInterruptTimed(u32 mask, u16 timeout, u32 *irqs)
    	{
    		as3911ContinuousRead(AS3911_REG_IRQ_MAIN, (u8*) &irqStatus, 3);
 		as3911InterruptStatus |= irqStatus & as3911InterruptMask;
-	//	quck_printk(get_timer_count());
 		irqStatus = as3911InterruptStatus & mask;
 		if ( timeout > 0 )
 		{
