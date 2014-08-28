@@ -111,11 +111,11 @@ void  TimerStart( unsigned char TimerNo, int ms )
 	g_jiffies= get_timer_count();
 
 	g_jiffies_count=ms;
-	if(g_jiffies_count>15)
-	{
-		g_jiffies_count=15;
-
- 	}
+	//if(g_jiffies_count>15)
+	//{
+	//	g_jiffies_count=15;
+//
+ //	}
 }
 //返回0超时了, 返回其他整数没有超时.
 int TimerCheck( unsigned char TimerNo )
