@@ -152,7 +152,7 @@ s16 emvPoll(void)
     
    // debug("emvPoll() \r\n");	 	
     /* Poll as long as no cards are found. */
-     local_irq_save(flags);
+  //   local_irq_save(flags);
     while (1)
     {
         if (emvStopRequestReceived())
@@ -188,7 +188,7 @@ s16 emvPoll(void)
             emvTypeB = 1;
         }
     }
-    local_irq_restore(flags);
+  //  local_irq_restore(flags);
 	
     return EMV_ERR_OK;
 }

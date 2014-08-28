@@ -193,7 +193,7 @@ s16 emvStartTerminalApplication(s16 (*application)(void))
         error = emvRemove(&picc);
       if (EMV_ERR_OK != error)
             continue;
-	  quck_timer_count(1);
+	  //quck_timer_count(1);
 	//debug
 	
     }
