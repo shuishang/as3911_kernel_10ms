@@ -179,5 +179,6 @@ if(++ggjiffies_count>500)  \
  */
 s8 as3911GetInterrupts(u32 mask, u32 *irqs);
 void as3911InterruptInit(void);
+extern volatile u32 quck_InterruptStatus  ;
 #endif /* AS3911_INTERRUPT_H */
 
