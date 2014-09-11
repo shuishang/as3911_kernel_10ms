@@ -142,7 +142,7 @@ inline void quck_udelay_sub(unsigned int t)
 	for(i=0;i<quck_time;i++)
 	{
 		//for(quck_time2=0;quck_time2<37;quck_time2++);//这个大概是1us
-		for(quck_time2=0;quck_time2<30;quck_time2++);
+		for(quck_time2=0;quck_time2<10;quck_time2++);
 	}
 }
 void sleepMilliseconds(unsigned int t)
