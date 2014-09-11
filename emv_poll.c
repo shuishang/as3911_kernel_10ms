@@ -167,7 +167,7 @@ s16 emvPoll(void)
         {
             /* ISO14443-A card(s) found. */
             emvTypeA = 1;
-	    debug("emvTypeACardPresent() \r\n");	 
+	  //  debug("emvTypeACardPresent() \r\n");	 
             /* Send HLTA command. */
              hltaCommand[0] = 0x50;
 	    hltaCommand[1] = 0x00;	
@@ -184,7 +184,7 @@ s16 emvPoll(void)
         if (emvTypeBCardPresent())
         {
             /* ISO14443-B card(s) found. */
-	   debug("emvTypeBCardPresent() \r\n");	 		
+	  // debug("emvTypeBCardPresent() \r\n");	 		
             emvTypeB = 1;
         }
     }

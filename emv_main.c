@@ -191,8 +191,9 @@ s16 emvStartTerminalApplication(s16 (*application)(void))
         /* Card removal. */
         emvDisplayMessage(EMV_M_REMOVE_CARD);
         error = emvRemove(&picc);
-      if (EMV_ERR_OK != error)
+        if (EMV_ERR_OK != error)
             continue;
+	    printk("ok\n");
 	  //quck_timer_count(1);
 	//debug
 	
