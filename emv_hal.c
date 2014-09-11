@@ -46,6 +46,7 @@
 #include "emv_standard.h"
 #include "as3911.h"
 #include "sleep.h"
+#include "main.h"
 
 /*
 ******************************************************************************
@@ -229,6 +230,7 @@ s8 emvHalSetStandard(EmvHalStandard_t standard)
     if (EMV_HAL_TYPE_A == standard)
     {
         emvioActiveStandard = standard;
+		SSelect();	
 
         /* Set the AS3911 to ISO14443-A, 106kBit/s rx/tx datarate. */
         as3911WriteRegister(AS3911_REG_MODE, 0x08);
@@ -251,6 +253,7 @@ s8 emvHalSetStandard(EmvHalStandard_t standard)
 
         /* Disable dynamic adjustment of the modulation level. */
         as3911SetModulationLevelMode(AS3911_MODULATION_LEVEL_FIXED, NULL);
+		SDeselect();
     }
     else if (EMV_HAL_TYPE_B == standard)
     {
@@ -349,7 +352,7 @@ bool_t emvHalFieldIsActivated(void)
 s8 emvHalResetField(void)
 {
     s8 error = ERR_NONE;
-
+	
     error |= emvHalActivateField(FALSE);
 
     emvHalSleepMilliseconds(EMV_T_RESET);

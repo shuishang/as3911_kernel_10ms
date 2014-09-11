@@ -140,11 +140,11 @@ s16 emvStartTerminalApplication(s16 (*application)(void))
         }
         if (EMV_ERR_OK != error)
         {
-		//emvDisplayError(error);
+		emvDisplayError(error);
 		//SSelect();  
 		/* Reset field and continue with polling. */
 		emvHalResetField();
-		//SDeselect();  
+	//	SDeselect();  
         }
 
         /* Polling. */
