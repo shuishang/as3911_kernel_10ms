@@ -175,14 +175,12 @@ static irqreturn_t AS3911_Interrupt( int irq, void * dev_id )
 inline static void Spi_Set_Scl( int state )
 {
 	//change to output pin
-	gpio_set_pin_type(RF_SCL, GPIO_PIN_TYPE_OUTPUT );
 	gpio_set_pin_val(RF_SCL,state);		
 
 }
 
 inline static void Spi_Write_Bit( int state )
 {
-	gpio_set_pin_type(RF_MOSI, GPIO_PIN_TYPE_OUTPUT );
 	gpio_set_pin_val(RF_MOSI,state);	
 	
 	
@@ -191,19 +189,16 @@ inline static void Spi_Write_Bit( int state )
 inline static int Spi_Read_Bit( void )
 {
 	// GPE15 [31:30] 00= INPUT 01=OUTPUT 10=  用于读取数据//
-	gpio_set_pin_type(RF_MISO, GPIO_PIN_TYPE_INPUT );
 	return reg_gpio_get_pin(RF_MISO);	
 }
 
 inline static void Spi_Select(void)
 {
-	gpio_set_pin_type(RF_CS, GPIO_PIN_TYPE_OUTPUT );
 	gpio_set_pin_val(RF_CS,0);	
 }
 
 inline static void Spi_Deselect(void)
 {
-	gpio_set_pin_type(RF_CS, GPIO_PIN_TYPE_OUTPUT );	
 	gpio_set_pin_val(RF_CS,1);		
 	return;
 }

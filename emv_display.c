@@ -101,7 +101,8 @@
 ******************************************************************************
 */
 #undef EMV_LOG
-#define EMV_LOG(...)   
+//#define EMV_LOG(...)   
+#define EMV_LOG printk
 
 
 
