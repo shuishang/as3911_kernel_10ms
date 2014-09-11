@@ -1,103 +1,7 @@
-/*
- *****************************************************************************
- * Copyright by ams AG                                                       *
- * All rights are reserved.                                                  *
- *                                                                           *
- * IMPORTANT - PLEASE READ CAREFULLY BEFORE COPYING, INSTALLING OR USING     *
- * THE SOFTWARE.                                                             *
- *                                                                           *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       *
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT         *
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS         *
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT  *
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,     *
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT          *
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,     *
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY     *
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT       *
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE     *
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.      *
- *****************************************************************************
- */
- 
-/*
- * PROJECT: AS3911 firmware
- * $Revision: $
- * LANGUAGE: ANSI C
- */
- 
-/*! \file as3911_interrupt.h
- *
- * \author Oliver Regenfelder
- *
- * \brief AS3911 interrupt handling.
- */
-
-/*! \defgroup as3911IrqHandling AS3911 Interrupt Handling
- * \ingroup as3911
- *
- * \brief This part of the AS3911 module abstracts AS3911 interrupt handling.
- *
- * The AS3911 interrupt logic consists of three byte registers to mask or
- * unmask interupt
- * sources and three additional registers to indicate which interrupts are
- * pending. The content of this pending interrupt registers is automatically
- * cleared on a register read. Additionally a single interrupt line is used
- * to signal any interrupt pending interrupt condition to the microcontroller.
- *
- * This module abstracts this so the user no longer needs to know to which
- * interrupt register an interrupt source belongs to. To achive this a flat
- * hirarchy of interrupt masks is provided. This module also serves any
- * interrupt requests from the AS3911 and accumulates the pending interrupt
- * requests until the user reads out the interrupt status (as3911GetInterrupts(),
- * as3911WaitForInterruptTimed()).
- *
- * \section sec_1 Enabling and disabling processing of interrupt request from the AS3911
- *
- * The macros AS3911_IRQ_ON() and AS3911_IRQ_OFF() enable or disable processing
- * of AS3911 interrupt requests by the PIC controller (and thus by this module).
- * If interrupt processing is disabled via AS3911_IRQ_OFF, then no interrupt
- * request will reach the software even if the interrupt source is enabled via
- * as3911EnableInterrupts().
- *
- * Add startup processing of interrupts by the microcontroller is enabled and
- * therefore AS3911_IRQ_ON() needs to called at least once to enable AS3911
- * interrupt processing.
- *
- * \section sec_2 Enabling and disabling interrupts.
- *
- * The functions as3911EnableInterrupts() and as3911DisableInterrupts()
- * can be used to enable or disable specific AS3911 interrupt sources.
- * 
- * \section sec_3 Retreiving and reseting the interrupt status.
- *
- * The function as3911GetInterrupts() can be used to retreive the interrupt
- * status of any combination of AS3911 interrupt source(s). If an interrupt
- * from a source is pending \em and this interrupt is read out via
- * as3911GetInterrupts() then the penging interrupt is automatically
- * cleared. So a subsequent call to
- * as3911GetInterrupt() will mark that source as not pending (if no additional
- * interrupt happened in between).
- *
- * The function as3911ClearInterrupts() can be used to clear the interrupt
- * status of an interrupt source.
- *
- * The function as3911WaitForInterruptTimed can be used to wait for any
- * interrupt out of a set of interrupts to occure. Additionally a timeout can
- * be specified. This function blocks until at least one of the selected
- * interrupts occure or the timeout expires. This function does not enable
- * or disable interrupts. So any interrupt source to wait for needs to be
- * enabled prior to the call via as3911EnableInterrupts.
- */
 
 #ifndef AS3911_INTERRUPT_H
 #define AS3911_INTERRUPT_H
 
-/*
-******************************************************************************
-* INCLUDES
-******************************************************************************
-*/
 
 
 
@@ -244,7 +148,7 @@ int TimerCheck( unsigned char TimerNo );
 extern  u32 ggjiffies_count;
 
 #define quck_printk(x) do{  \
-if(++ggjiffies_count>500)  \
+if(++ggjiffies_count>6700)  \
 	{  \
 			ggjiffies_count=0; \
 			printk(" %x (i)",x);  \
@@ -257,6 +161,8 @@ if(++ggjiffies_count>500)  \
 			printk(" %x (a)",x);  \
 	}}while(0)
 
+#define QUCK_PUB_INTERR_OFF() 	reg_gpio_disable_interrupt( BCM5892_GPB12 ) 
+#define QUCK_PUB_INTERR_ON()	reg_gpio_enable_interrupt(BCM5892_GPB12)
 /*! \ingroup as3911IrqHandling
  *****************************************************************************
  * \brief Get interrupt status of certain interrupts of the AS3911.
@@ -272,5 +178,6 @@ if(++ggjiffies_count>500)  \
  *****************************************************************************
  */
 s8 as3911GetInterrupts(u32 mask, u32 *irqs);
-
+void as3911InterruptInit(void);
 #endif /* AS3911_INTERRUPT_H */
+

@@ -626,6 +626,7 @@ static void hareware_init(void)
 	measure_counter_setup();
 	measure_counter_stop();
 	measure_counter_start();
+	as3911InterruptInit();
 }
 
 static int Spi_rfid_probe(struct platform_device *pdev)
