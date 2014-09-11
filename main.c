@@ -700,7 +700,7 @@ static int Spi_rfid_remove(struct platform_device *pdev )
 	kfree(spi_devp);
 	
 	unregister_chrdev_region(dev, 1);
-
+	free_irq(gpio_to_irq(BCM5892_GPB12),0);
 	return 0;
 }
 
