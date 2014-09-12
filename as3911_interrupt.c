@@ -245,6 +245,7 @@ s8 as3911WaitForInterruptTimed(u32 mask, u16 timeout, u32 *irqs)
 		}
 	        if (emvStopRequestReceived())
 	        	{
+	        	*irqs=0;
 	        		  printk(" WaitForInterrupt\n");	 
 			   return  -6;	
 		}
