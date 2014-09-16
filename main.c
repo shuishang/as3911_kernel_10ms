@@ -142,7 +142,7 @@ inline void quck_udelay_sub(unsigned int t)
 	for(i=0;i<quck_time;i++)
 	{
 		//for(quck_time2=0;quck_time2<37;quck_time2++);//这个大概是1us
-		for(quck_time2=0;quck_time2<10;quck_time2++);
+		for(quck_time2=0;quck_time2<15;quck_time2++);
 	}
 }
 void sleepMilliseconds(unsigned int t)
@@ -294,13 +294,14 @@ int Spi_Read_Byte( void )
 		Spi_Set_Scl( SPI_CLK_HIGH );       
 		quck_udelay( SPI_PARA_CO * SPI_DELAY_BASE );
 
+
+		  
+        Spi_Set_Scl( SPI_CLK_LOW );
 		ucReceiveBit = Spi_Read_Bit();
 		if ( ucReceiveBit ) 
 		{
 			ucTemp++;         
-		}
-		  
-	        Spi_Set_Scl( SPI_CLK_LOW );
+		}		
 		quck_udelay( SPI_PARA_CO * SPI_DELAY_BASE );
 	}
 

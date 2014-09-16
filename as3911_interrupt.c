@@ -114,13 +114,13 @@ void as3911InterruptInit(void)
 	reg_gpio_iotr_set_pin_type( BCM5892_GPB12,GPIO_PIN_TYPE_INPUT_WITH_INTERRUPT );
 	AS3911_IRQ_CLR();
 
-	 reg_gpio_itr_set_interrupt_type_level( BCM5892_GPB12, GPIO_LEWEL_TRIGGER );  
+	 //reg_gpio_itr_set_interrupt_type_level( BCM5892_GPB12, GPIO_LEWEL_TRIGGER );  
 	// high level interrupt trigger   //GPIO_LOW_LEVEL_INTERRUPT_TRIGGER  //GPIO_HIGH_LEVEL_INTERRUPT_TRIGGER
-	 reg_gpio_itr_set_interrupt_type( BCM5892_GPB12, GPIO_HIGH_LEVEL_INTERRUPT_TRIGGER );
+	// reg_gpio_itr_set_interrupt_type( BCM5892_GPB12, GPIO_HIGH_LEVEL_INTERRUPT_TRIGGER );
 	
 	//raising edge interrupt
-	//reg_gpio_itr_set_interrupt_type_level( BCM5892_GPB12, GPIO_EDGE_TRIGGER );    
-	//reg_gpio_itr_set_interrupt_type( BCM5892_GPB12, GPIO_RISING_EDGE_INTERRUPT_TRIGGER ); 	
+	reg_gpio_itr_set_interrupt_type_level( BCM5892_GPB12, GPIO_EDGE_TRIGGER );    
+	reg_gpio_itr_set_interrupt_type( BCM5892_GPB12, GPIO_RISING_EDGE_INTERRUPT_TRIGGER ); 	
 
 	reg_gpio_set_pull_up_down_enable(BCM5892_GPB12);
 	reg_gpio_set_pull_up_down(BCM5892_GPB12, 1);
