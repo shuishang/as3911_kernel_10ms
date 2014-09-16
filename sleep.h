@@ -82,5 +82,14 @@ unsigned int get_timer_count(void);
 void quck_timer_count(u8 flag);
 
 
- 
+  void quck_ssp_setup(void);
+ void quck_ssp_start(void);
+ void quck_ssp_stop(void);
+unsigned char  quck_ssp_read_printk(u8 *buf,u8 count);
+u8 quck_ssp_write_printk( u8 * buf ,u8 count );
+
+
+
+
+  
 #endif /* SLEEP_H */

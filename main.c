@@ -490,35 +490,10 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 
 u8 quck_read_printk(unsigned int fd,u8 *buf,u8 count)
 {
-	int iNum                      = 0;
-	int ret                           = (int)fd;
-	
-	if ( count > BUF_SIZE )
-	{
-		return 2;
-	}
-	
-	if ( !count )
-	{
-		return 0;
-	}
-	//local_irq_save(flags);
-	
+
 	Spi_Select();
-	ret = Spi_Write_Byte( buf[ 0 ] );
-	if ( ret )
-	{
-		return 2;
-	}
-	
-	for ( iNum = 0;iNum < count; iNum++ )
-	{
-		buf[ iNum+1 ] = Spi_Read_Byte( );
-	}
-	
+	quck_ssp_read_printk(buf,count);
 	Spi_Deselect();
-	//local_irq_restore(flags);
-	
 	return 0;
 
 }
@@ -526,38 +501,13 @@ u8 quck_read_printk(unsigned int fd,u8 *buf,u8 count)
 //static ssize_t Spi_rfid_write(struct file *filp, const char *buf, u32 count, loff_t *f_pos)
 u8 quck_write_printk(unsigned int fd, u8 * buf ,u8 count )
 {
-	int iNum = 0;
-	int ret     = (int)fd;
-	if ( count > BUF_SIZE )
-	{
-		return 2;
-	}
+
 	
-	if ( !count )
-	{
-		return 0;	
-	}
-	
-	/*if ( copy_from_user( Snd_data_buf, buf, count ) )
-	{
-		printk("get user data from user failed.\n");
-		return  -EFAULT;
-	}*/
-	//memcpy(Snd_data_buf, buf, count );
-	//local_irq_save(flags);
+
 	Spi_Select();
-	for ( iNum = 0;iNum < count; iNum++ )
-	{
-		ret = Spi_Write_Byte( buf[ iNum ]);
-		if ( ret )
-		{
-			return 2;
-		}
-	}
-	
+	quck_ssp_write_printk(buf,count);
 	Spi_Deselect();
-	//local_irq_restore(flags);
-	
+
 	return 0;
 
 }
@@ -603,7 +553,7 @@ static void hareware_init(void)
 	gpio_set_pin_type(RF_CS, GPIO_PIN_TYPE_OUTPUT );
     reg_gpio_set_pull_up_down_disable(RF_CS);
 	gpio_set_pin_val(RF_CS,0);
-
+/*
 	quck_udelay(50000);
 	//RF_MISO    BCM5892_GPA5    
 	gpio_set_pin_val(RF_MISO,0);
@@ -619,16 +569,18 @@ static void hareware_init(void)
 	gpio_set_pin_type(RF_SCL, GPIO_PIN_TYPE_OUTPUT );
     reg_gpio_set_pull_up_down_disable(RF_SCL);
 	gpio_set_pin_val(RF_SCL,0);
-
+*/
 	//RF_IRQ:   BCM5892_GPB12
 	gpio_set_pin_type(BCM5892_GPB12, GPIO_PIN_TYPE_INPUT );
     reg_gpio_set_pull_up_down_disable(BCM5892_GPB12);
 	gpio_set_pin_val(BCM5892_GPB12,0);
+	
 	QSelect();
 	measure_counter_setup();
 	measure_counter_stop();
 	measure_counter_start();
 	as3911InterruptInit();
+	quck_ssp_setup();
 }
 
 static int Spi_rfid_probe(struct platform_device *pdev)
@@ -703,6 +655,7 @@ static int Spi_rfid_remove(struct platform_device *pdev )
 	
 	unregister_chrdev_region(dev, 1);
 	free_irq(gpio_to_irq(BCM5892_GPB12),0);
+	quck_ssp_stop();
 	return 0;
 }
 
