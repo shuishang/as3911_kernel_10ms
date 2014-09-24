@@ -446,13 +446,23 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 			if ( ucValue == 0 ) 
 			{
 				printk("  emvGuiDigital();4\n");
-				local_irq_save(quck_InterruptStatus);
-				emvGuiDigital();	
+			//	local_irq_save(quck_InterruptStatus);
+			//	emvGuiDigital();	
 			}
 			else 
 			{
-			
 			} 
+
+	while(1)
+	{
+
+		displayRegisterValue(0x3f);
+		displayRegisterValue(01);
+		udelay(77);
+		if (QDeselect())break;
+
+	}
+						
 	/*		
 			while(1)
 			{
@@ -491,9 +501,9 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 u8 quck_read_printk(unsigned int fd,u8 *buf,u8 count)
 {
 
-	Spi_Select();
+	//Spi_Select();
 	quck_ssp_read_printk(buf,count);
-	Spi_Deselect();
+//	Spi_Deselect();
 	return 0;
 
 }
@@ -504,9 +514,9 @@ u8 quck_write_printk(unsigned int fd, u8 * buf ,u8 count )
 
 	
 
-	Spi_Select();
+//	Spi_Select();
 	quck_ssp_write_printk(buf,count);
-	Spi_Deselect();
+	//Spi_Deselect();
 
 	return 0;
 
@@ -548,12 +558,12 @@ static void hareware_init(void)
 	gpio_set_pin_type(RF_POWER, GPIO_PIN_TYPE_OUTPUT );
         reg_gpio_set_pull_up_down_disable(RF_POWER);
 	gpio_set_pin_val(RF_POWER,1);	
-	
+/*	
 	//RF_CS	 BCM5892_GPA7   
 	gpio_set_pin_type(RF_CS, GPIO_PIN_TYPE_OUTPUT );
     reg_gpio_set_pull_up_down_disable(RF_CS);
 	gpio_set_pin_val(RF_CS,0);
-/*
+
 	quck_udelay(50000);
 	//RF_MISO    BCM5892_GPA5    
 	gpio_set_pin_val(RF_MISO,0);

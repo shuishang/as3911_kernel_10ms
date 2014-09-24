@@ -18,7 +18,9 @@
 #include "as3911_io.h"
 #include "main.h"
 
-#define api_debug(...) 
+//#define api_debug(...) 
+#define api_debug printk
+
 /*#define FALSE                               0
 #define TRUE                                 1
 #define MIFARE_DEFAULT_READER_NONCE             0xAA55AA55
@@ -152,8 +154,8 @@ void show3911Reg(void)
 	//
 	as3911WriteRegister(AS3911_REG_AM_MOD_DEPTH_CONF, 0x80);
 	emvHalSetAs3911TypeBModulationMode(AS3911_MODULATION_LEVEL_FROM_AMPLITUDE, &mainModulationTable);
-	displayRegisterValue(AS3911_REG_RFO_AM_ON_LEVEL);
-	displayRegisterValue(AS3911_REG_RFO_AM_OFF_LEVEL);
+
+
 	//show3911Reg();
 	return;
 }

@@ -121,7 +121,7 @@ void quck_timer_count(u8 flag)
 	unsigned long reg_addr;
 	//SSPCPSR  ,Must be an even number from 2 to 254,
 	reg_addr = IO_ADDRESS(SPI0_REG_BASE_ADDR+0x0) ;	
-	tcon =2; //__raw_readl(reg_addr);//分频系数
+	tcon =14; //__raw_readl(reg_addr);//分频系数
 	__raw_writel(tcon, reg_addr);
 	
          //SSPCR0
@@ -149,7 +149,7 @@ void quck_timer_count(u8 flag)
 #define RF_POWER     BCM5892_GPB31*/
 	//io
 	//FSS 引脚我自己通过io口控制。
-	//reg_gpio_iotr_set_pin_type(BCM5892_GPA7,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
+	reg_gpio_iotr_set_pin_type(BCM5892_GPA7,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
 	reg_gpio_iotr_set_pin_type(BCM5892_GPA6,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
 	reg_gpio_iotr_set_pin_type(BCM5892_GPA5,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);	
 	reg_gpio_iotr_set_pin_type(BCM5892_GPA4,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
@@ -199,7 +199,7 @@ unsigned char  ssp_Write_Byte(unsigned char d)
 	while(!(__raw_readl(reg_addr) && 0x2 ));//wait until fifo is not full.
 	//SSPDR
 	reg_addr = IO_ADDRESS(SPI0_REG_BASE_ADDR+0x8) ;	
-	__raw_writel(d, reg_addr);	
+	__raw_writeb(d, reg_addr);	
 	//等待发送完
 	reg_addr = IO_ADDRESS(SPI0_REG_BASE_ADDR+0xC) ;		//SSPSR
 	while(!(__raw_readl(reg_addr) && 0x1 ));
@@ -218,7 +218,7 @@ unsigned char  ssp_Read_Byte(void)
 	while(!(__raw_readl(reg_addr) && 0x4 ));
 	//SSPDR
 	reg_addr = IO_ADDRESS(SPI0_REG_BASE_ADDR+0x8) ;	
-	return __raw_readl( reg_addr);	
+	return __raw_readb( reg_addr);	
 
 
 }
