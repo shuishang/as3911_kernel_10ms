@@ -22,9 +22,13 @@
 
 #include <linux/broadcom/bcm_sysctl.h>
 #include <linux/broadcom/timer.h>
+#include <linux/spi/spi.h>
 
 #include "sleep.h"
 #include "main.h"
+
+#define PRINTK   printk
+
 //measure_counter
 //timer 3.2  
 //167ns /one tick
@@ -113,34 +117,73 @@ void quck_timer_count(u8 flag)
 //rst_end_count = *((unsigned int *)(IO_ADDRESS(TIM3_REG_BASE_ADDR+0x24)));
 //ts_start_count = *((unsigned int *)(IO_ADDRESS(TIM3_REG_BASE_ADDR+0x24)));;
 //------------------------------------------------------------------------
+//---------------------------------------------------------------------
 
 
+ //base  就是指哪一个寄存器， 为spi0
+ //mode指相位，和极性	为0 
+ //data_size 指数据宽度  为8
+ //主要操作了CR0和CPSR, 目的是,帧格式,位宽为8位,分频系数.
+ #if 1
+ static void config_hardware(void __iomem *base, unsigned speed, uint8_t mode, int data_size)
+ {
+	  /* half_divisor = clock / (2*speed), rounded up: */
+	  printk("speed:%d, mode:%d,bits_per_word:%d  ",speed,mode,data_size);
+	 unsigned half_divisor = (SPI_INPUT_CLOCK + (speed * 2 - 1)) / (speed*2);
+	 unsigned best_err = half_divisor;
+	 unsigned best_scr = SCR_MAX;
+	 unsigned best_half_cpsr = CPSR_MAX/2;
+	 unsigned scr, half_cpsr, err;
+ 
+	 unsigned polarity = (mode & SPI_CPOL);
+	 unsigned phase = (mode & SPI_CPHA);
+ 
+ 
+	 /* Loop over possible SCR values, calculating the appropriate CPSR and finding the best match
+	  * For any SPI speeds above 260KHz, the first iteration will be it, and it will stop.
+	  * The loop is left in for completeness */
+	 PRINTK(KERN_INFO "Setting up PL022 for: %dHz, mode %d, %d bits (target %d)\n",
+			speed, mode, data_size, half_divisor);
+ 
+	 for (scr = SCR_MIN; scr <= SCR_MAX; ++scr) {
+		 /* find the right cpsr (rounding up) for the given scr */
+		 half_cpsr = ((half_divisor + scr) / (1+scr));
+ 
+		 if (half_cpsr < CPSR_MIN/2)
+			 half_cpsr = CPSR_MIN/2;
+		 if (half_cpsr > CPSR_MAX/2)
+			 continue;
+ 
+		 err = ((1+scr) * half_cpsr) - half_divisor;
+ 
+		 if (err < best_err) {
+			 best_err = err;
+			 best_scr = scr;
+			 best_half_cpsr = half_cpsr;
+			 if (err == 0)
+				 break;
+		 }
+	 }
+ 
+	 PRINTK(KERN_INFO "Actual clock rate: %dHz\n", SPI_INPUT_CLOCK / (2 * best_half_cpsr * (1+best_scr)));
+ 
+	 PRINTK(KERN_INFO "Setting PL022 config: %08x %08x %08x\n",
+		 PL022_SCR_MAP(best_scr) | PL022_SPH_MAP(phase) | PL022_SPO_MAP(polarity) |
+		 PL022_FRF_TI | PL022_DSS_MAP(data_size), 2, best_half_cpsr * 2);
+ 
+	 /* Set CR0 params */
+	 PL022_WRITE_REG(PL022_SCR_MAP(best_scr) | PL022_SPH_MAP(phase) | PL022_SPO_MAP(polarity) |
+			 PL022_FRF_TI | PL022_DSS_MAP(data_size), base, PL022_CR0);
+ 
+	 /* Set prescale divisor */
+	 PL022_WRITE_REG(best_half_cpsr * 2, base, PL022_CPSR);
+	 PRINTK("best_half_cpsr* 2:%x \n",best_half_cpsr* 2);
+ 
+ }
+#endif
  void quck_ssp_setup(void)
 {
-	unsigned int  tcon;
-	unsigned long reg_addr;
-	//SSPCPSR  ,Must be an even number from 2 to 254,
-	reg_addr = IO_ADDRESS(SPI0_REG_BASE_ADDR+0x0) ;	
-	tcon =14; //__raw_readl(reg_addr);//分频系数
-	__raw_writel(tcon, reg_addr);
-	
-         //SSPCR0
-	reg_addr = IO_ADDRESS(SPI0_REG_BASE_ADDR+0x0) ;	
-	tcon =0; //__raw_readl(reg_addr);
-	// 2 = National Semiconductor MICROWIRE frame format 
-	tcon |=  (1<<4);	// 01 = Texas Instruments synchronous serial frame
-	tcon |=  (7<<0);//0111 = 8-bit data 
-	__raw_writel(tcon, reg_addr);
-	//SSPCR1 
-	reg_addr = IO_ADDRESS(SPI0_REG_BASE_ADDR+0x4) ;	
-	//Master mode  , 0 = SSP operation disabled  ,close loop func,
-	tcon =0; //
-	__raw_writel(tcon, reg_addr);
 
-	//关闭中断
-	//reg_addr = IO_ADDRESS(SPI0_REG_BASE_ADDR+0x14) ;	
-	//Master mode  , 0 = SSP operation disabled  ,close loop func,
-	//tcon =0; //
 	//__raw_writel(tcon, reg_addr);	
 /*#define RF_CS    BCM5892_GPA7  
 #define RF_MISO    BCM5892_GPA5    
@@ -149,105 +192,91 @@ void quck_timer_count(u8 flag)
 #define RF_POWER     BCM5892_GPB31*/
 	//io
 	//FSS 引脚我自己通过io口控制。
-	reg_gpio_iotr_set_pin_type(BCM5892_GPA7,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
+	//reg_gpio_iotr_set_pin_type(BCM5892_GPA7,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
 	reg_gpio_iotr_set_pin_type(BCM5892_GPA6,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
 	reg_gpio_iotr_set_pin_type(BCM5892_GPA5,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);	
 	reg_gpio_iotr_set_pin_type(BCM5892_GPA4,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
-
+	config_hardware(SPI0_REG_BASE_ADDR,4000000,0,8);
 	return;
 }
 
- void quck_ssp_start(void)
+void quck_ssp_start(void)
 {
-	unsigned long tcon;
-	unsigned long reg_addr;
-
 	//SSPCR1 
-	reg_addr = IO_ADDRESS(SPI0_REG_BASE_ADDR+0x4) ;	
-	tcon=__raw_readl(reg_addr);
-	// 1 = SSP operation disabled 
-	tcon |=  (1<<1);	//启动
-	__raw_writel(tcon, reg_addr);
-
+	PL022_WRITE_REG(3, SPI0_REG_BASE_ADDR, PL022_CR1);  /* start and set loopback mode */
+	//PL022_WRITE_REG(2, SPI0_REG_BASE_ADDR, PL022_CR1);  /* start */
 	return;
 }
 
  void quck_ssp_stop(void)
 {
-	unsigned long tcon;
-	unsigned long reg_addr;
-
-	//SSPCR1 
-	reg_addr = IO_ADDRESS(SPI0_REG_BASE_ADDR+0x4) ;	
-	tcon=__raw_readl(reg_addr);
-	// 1 = SSP operation disabled 
-	tcon &= ~ (1<<1);	//不启动
-	__raw_writel(tcon, reg_addr);
-
+	//PL022_WRITE_REG(3, SPI0_REG_BASE_ADDR, PL022_CR1);  /* start and set loopback mode /*/
+	PL022_WRITE_REG(0, SPI0_REG_BASE_ADDR, PL022_CR1);  /* start */
 	return;
 }
 
 //0成功  ,其他失败.
-unsigned char  ssp_Write_Byte(unsigned char d)
+void  ssp_Write_Bytes(unsigned char *tx_buf_8,int num_to_tx)
 {
-	unsigned long tcon;
-	unsigned long reg_addr;
+	int i;
 
-	//SSPSR
-	reg_addr = IO_ADDRESS(SPI0_REG_BASE_ADDR+0xC) ;	
-	//不是满的就写.
-	while(!(__raw_readl(reg_addr) && 0x2 ));//wait until fifo is not full.
-	//SSPDR
-	reg_addr = IO_ADDRESS(SPI0_REG_BASE_ADDR+0x8) ;	
-	__raw_writeb(d, reg_addr);	
-	//等待发送完
-	reg_addr = IO_ADDRESS(SPI0_REG_BASE_ADDR+0xC) ;		//SSPSR
-	while(!(__raw_readl(reg_addr) && 0x1 ));
-	return 0;
+	for (i = 0; i < num_to_tx;i++) {
+		/* wait until txfifo is not full */
+		while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TNF) == 0);
+	
+		PL022_WRITE_REG(tx_buf_8[i], SPI0_REG_BASE_ADDR, PL022_DR);
+	}
 
+
+#if 1
+	PRINTK(KERN_INFO "Tx:");
+	for (i =0 ; i<num_to_tx ; ++i)
+		PRINTK(" %02x", tx_buf_8[i]);
+	PRINTK("\n");
+
+#endif
+	return ;
 }
 
-unsigned char  ssp_Read_Byte(void)
+unsigned char  ssp_Read_Bytes(unsigned char *rx_buf_8,int num_rxd )
 {
-	unsigned long tcon;
-	unsigned long reg_addr;
+	int i=0;
+#if 1
+PRINTK(KERN_INFO "Rx:");	
+#endif	
+	do {
+		while (PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_RNE) {
+		
+			rx_buf_8[i++] =PL022_REG(SPI0_REG_BASE_ADDR, PL022_DR);
 
-	//SSPSR
-	reg_addr = IO_ADDRESS(SPI0_REG_BASE_ADDR+0xC) ;	
-	//有数据就读,没有就等
-	while(!(__raw_readl(reg_addr) && 0x4 ));
-	//SSPDR
-	reg_addr = IO_ADDRESS(SPI0_REG_BASE_ADDR+0x8) ;	
-	return __raw_readb( reg_addr);	
+		}
+	} while ( i<1 );	
+	//} while ( i<num_rxd );
 
+#if 1
+	
+	for (i = 0 ; i <num_rxd;++i)
+		PRINTK(" %02x", rx_buf_8[i]);
+	PRINTK(" (%d)\n", num_rxd);
 
+#endif
+	return 1;
 }
 //0成功  ,其他失败.
 unsigned char  quck_ssp_read_printk(u8 *buf,u8 count)
 {
-	int ret,iNum                      = 0;
-
-	
+	//int ret,iNum                      = 0;
 	if ( !count )
 	{
+		printk("error -quck_ssp_read_printk\n");
 		return 0;
 	}
 
-//	Spi_Select();
-	ret = ssp_Write_Byte( buf[ 0 ] );
-	if ( ret )
-	{
-		return 2;
-	}
-	
-	for ( iNum = 0;iNum < count; iNum++ )
-	{
-		buf[ iNum+1 ] = ssp_Read_Byte( );
-	}
-	
-//	Spi_Deselect();
+	Spi_Select();
+	ssp_Write_Bytes( &buf[ 0 ] ,1);
+	ssp_Read_Bytes(&buf[1],count);
+	Spi_Deselect();
 	//local_irq_restore(flags);
-	
 	return 0;	
 }
 //0成功  ,其他失败.
@@ -255,33 +284,16 @@ unsigned char  quck_ssp_read_printk(u8 *buf,u8 count)
 u8 quck_ssp_write_printk( u8 * buf ,u8 count )
 {
 
-	int ret , iNum = 0;
-
 	if ( !count )
 	{
-		return 0;	
+		printk("error -quck_ssp_read_printk\n");
+		return 0;
 	}
-	
-	/*if ( copy_from_user( Snd_data_buf, buf, count ) )
-	{
-		printk("get user data from user failed.\n");
-		return  -EFAULT;
-	}*/
-	//memcpy(Snd_data_buf, buf, count );
 	//local_irq_save(flags);
-//	Spi_Select();
-	for ( iNum = 0;iNum < count; iNum++ )
-	{
-		ret = ssp_Write_Byte( buf[ iNum ]);
-		if ( ret )
-		{
-			return 2;
-		}
-	}
-	
-//	Spi_Deselect();
+	Spi_Select();
+	ssp_Write_Bytes( &buf[ 0 ],count);
+	Spi_Deselect();
 	//local_irq_restore(flags);
-	
 	return 0;
 
 }

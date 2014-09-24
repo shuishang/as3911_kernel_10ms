@@ -49,31 +49,76 @@
 
 #include "ams_types.h"
 
-/*
-******************************************************************************
-* DEFINES
-******************************************************************************
-*/
+/* the spi->mode bits understood by this driver: */
+#define MODEBITS        (SPI_CS_HIGH|SPI_CPOL|SPI_CPHA)
 
-/*
-******************************************************************************
-* MACROS
-******************************************************************************
-*/
+#define SPI_REG_SIZE    (0x28)
 
-/*
-******************************************************************************
-* GLOBAL FUNCTION PROTOTYPES
-******************************************************************************
-*/
+#define SPI_CMD_BUF_SIZE        256             // in bytes
+#define SPI_DATA_BUF_SIZE       4096    // in bytes
 
-/*! \ingroup sleep
- *****************************************************************************
- * \brief Sleep for a number of miliseconds.
- *
- * \param milliseconds Milliseconds to sleep.
- *****************************************************************************
- */
+#define SPI_WAIT_DMA_CHAN       100
+
+#define PL022_CR0   (0x00)
+#define PL022_CR1   (0x04)
+#define PL022_DR    (0x08)
+#define PL022_SR    (0x0c)
+#define PL022_CPSR  (0x10)
+#define PL022_IMSC  (0x14)
+#define PL022_RIS   (0x18)
+#define PL022_MIS   (0x1c)
+#define PL022_CIS   (0x20)
+#define PL022_DMACR (0x24)
+
+#define PL022_SCR_MAP(scr) ((uint16_t)scr << 8)
+#define PL022_SPH_MAP(sph) ((sph) ? 0x80 : 0)
+#define PL022_SPO_MAP(spo) ((spo) ? 0x40 : 0)
+#define PL022_DSS_MAP(data_size) ((data_size - 1) & 0xf)
+
+#define PL022_FRF_SPI (0x00)
+#define PL022_FRF_TI  (0x10)
+#define PL022_FRF_MW  (0x20)
+
+#define PL022_SR_BSY (0x10)
+#define PL022_SR_RFF (0x08)
+#define PL022_SR_RNE (0x04)
+#define PL022_SR_TNF (0x02)
+#define PL022_SR_TFE (0x01)
+
+#define PL022_IRQ_TXW (0x08)   /* Transmit watermark */
+#define PL022_IRQ_RXW (0x04)   /* Receive watermark */
+#define PL022_IRQ_RXT (0x02)   /* Receive timeout */
+#define PL022_IRQ_RXO (0x01)   /* Receive overflow */
+
+#define PL022_DMACR_ENABLE  (0x03)  /* we always use DMA on rx and tx together */
+#define PL022_DMACR_DISABLE (0x00)
+
+#define PL022_REG(base, reg) ioread32(IO_ADDRESS(base) + reg)
+#define PL022_WRITE_REG(val, base, reg) iowrite32(val, IO_ADDRESS(base) + reg)
+
+
+ 
+#define CPSR_MAX 254  /* prescale divisor */
+#define CPSR_MIN 2    /* prescale divisor min (must be divisible by 2) */
+#define SCR_MAX 255   /* other divisor */
+#define SCR_MIN 0
+ 
+ //#define SPI_INPUT_CLOCK (66000000)  /* better if we can get this from the board */
+ #define SPI_INPUT_CLOCK (50000000)
+ 
+#define MAX_CALC_SPEED_HZ (SPI_INPUT_CLOCK / (CPSR_MIN * (1 + SCR_MIN)))
+#define MIN_CALC_SPEED_HZ (SPI_INPUT_CLOCK / (254 * 256))
+#define MAX_SUPPORTED_SPEED_HZ (12000000)
+ 
+#define MAX_SPEED_HZ ( (MAX_SUPPORTED_SPEED_HZ < MAX_CALC_SPEED_HZ) ? MAX_SUPPORTED_SPEED_HZ : MAX_CALC_SPEED_HZ)
+#define MIN_SPEED_HZ (MIN_CALC_SPEED_HZ)
+ 
+#define SPI_TXFIFO_SIZE (8)
+#define SPI_RXFIFO_SIZE (16)
+#define TEST_BUF_SIZE 16
+
+
+
 void sleepMilliseconds(unsigned int milliseconds);
 void measure_counter_setup(void);
 void measure_counter_start(void);

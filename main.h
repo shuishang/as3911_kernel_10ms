@@ -69,10 +69,14 @@
 #include "emv_display.h"
 #include "sleep.h"
 #include "As3911_def.h"
- void SSelect(void);
+
+void Spi_Select(void);
+void Spi_Deselect(void);
+
+void SSelect(void);
  
- void SDeselect(void);
-  void QSelect(void);
+void SDeselect(void);
+void QSelect(void);
  
 
  u8 QDeselect(void);

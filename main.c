@@ -192,12 +192,13 @@ inline static int Spi_Read_Bit( void )
 	return reg_gpio_get_pin(RF_MISO);	
 }
 
-inline static void Spi_Select(void)
+void Spi_Select(void)
 {
 	gpio_set_pin_val(RF_CS,0);	
 }
 
-inline static void Spi_Deselect(void)
+
+void Spi_Deselect(void)
 {
 	gpio_set_pin_val(RF_CS,1);		
 	return;
@@ -438,10 +439,13 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 	{
 		return -ENOTTY;
 	}
+	
 	printk("  Spi_rfid_ioctl(%x);\n",cmd);
 	switch ( cmd )
 	{
 		case IOC_SPI_ENABLE_IRQ :
+			
+			AS3911_init();
 			get_user( ucValue, (unsigned char *) arg );
 			if ( ucValue == 0 ) 
 			{
@@ -558,11 +562,12 @@ static void hareware_init(void)
 	gpio_set_pin_type(RF_POWER, GPIO_PIN_TYPE_OUTPUT );
         reg_gpio_set_pull_up_down_disable(RF_POWER);
 	gpio_set_pin_val(RF_POWER,1);	
-/*	
+
 	//RF_CS	 BCM5892_GPA7   
 	gpio_set_pin_type(RF_CS, GPIO_PIN_TYPE_OUTPUT );
     reg_gpio_set_pull_up_down_disable(RF_CS);
 	gpio_set_pin_val(RF_CS,0);
+	/*	
 
 	quck_udelay(50000);
 	//RF_MISO    BCM5892_GPA5    
@@ -590,7 +595,9 @@ static void hareware_init(void)
 	measure_counter_stop();
 	measure_counter_start();
 	as3911InterruptInit();
+	quck_ssp_start();	
 	quck_ssp_setup();
+
 }
 
 static int Spi_rfid_probe(struct platform_device *pdev)
@@ -637,8 +644,7 @@ static int Spi_rfid_probe(struct platform_device *pdev)
 
 	printk(SPI_RFID_NAME " initialized\n");
 	ret = 0;
-	AS3911_init();
-
+	
 	goto out0;
 
 out3:	
