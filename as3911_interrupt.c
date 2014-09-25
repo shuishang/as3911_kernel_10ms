@@ -162,7 +162,7 @@ s8 as3911EnableInterrupts(u32 mask)
     s8 error = ERR_NONE;
     u32 irqMask = 0;
     QUCK_AS3911_IRQ_OFF();
-	local_irq_restore(quck_InterruptStatus); 
+	//local_irq_restore(quck_InterruptStatus); 
     error |= as3911ContinuousRead(AS3911_REG_IRQ_MASK_MAIN, (u8*) &irqMask, 3);
     irqMask &= ~mask;
     as3911InterruptMask |= mask;
@@ -181,7 +181,7 @@ s8 as3911DisableInterrupts(u32 mask)
     s8 error = ERR_NONE;
     u32 irqMask = 0;
     QUCK_AS3911_IRQ_OFF();
-	local_irq_save(quck_InterruptStatus);
+	//local_irq_save(quck_InterruptStatus);
     error |= as3911ContinuousRead(AS3911_REG_IRQ_MASK_MAIN, (u8*) &irqMask, 3);
     irqMask |= mask;
     as3911InterruptMask &=  ~mask;

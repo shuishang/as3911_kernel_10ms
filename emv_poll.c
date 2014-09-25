@@ -47,8 +47,10 @@
 #include "emv_typeA.h"
 #include "emv_typeB.h"
 #include "main.h"
-#undef debug 
-#define debug(...)  
+#undef poll_debug 
+#define poll_debug printk
+
+//#define poll_debug(...)  
 /*
 ******************************************************************************
 * DEFINES
@@ -167,7 +169,7 @@ s16 emvPoll(void)
         {
             /* ISO14443-A card(s) found. */
             emvTypeA = 1;
-	  //  debug("emvTypeACardPresent() \r\n");	 
+	   		poll_debug("emvTypeACardPresent() \r\n");	 
             /* Send HLTA command. */
              hltaCommand[0] = 0x50;
 	    hltaCommand[1] = 0x00;	
@@ -184,7 +186,7 @@ s16 emvPoll(void)
         if (emvTypeBCardPresent())
         {
             /* ISO14443-B card(s) found. */
-	  // debug("emvTypeBCardPresent() \r\n");	 		
+	   		poll_debug("emvTypeBCardPresent() \r\n");	 		
             emvTypeB = 1;
         }
     }

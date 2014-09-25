@@ -450,7 +450,7 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 			if ( ucValue == 0 ) 
 			{
 				printk("  emvGuiDigital();4\n");
-			//	local_irq_save(quck_InterruptStatus);
+				//local_irq_save(quck_InterruptStatus);
 				emvGuiDigital();	
 			}
 			else 
