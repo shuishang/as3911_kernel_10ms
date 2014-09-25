@@ -24,6 +24,7 @@
 #include <asm/irq.h>
 
 #include <asm/mach/map.h>
+
 /*
 #include <asm/arch/regs-gpio.h>
 #include <asm/arch/regs-gpioj.h>
@@ -41,6 +42,8 @@
 //#include "main.h"
 #include "sleep.h"
 #include "as3911_interrupt.h"
+#include "platform.h"
+
 /**mach-smdk2416.c*/
 #define SPI_RFID_NAME		          "spi_rfid"
 
@@ -595,7 +598,9 @@ static void hareware_init(void)
 	measure_counter_setup();
 	measure_counter_stop();
 	measure_counter_start();
+#if INTERRUPT_ENABLE
 	as3911InterruptInit();
+#endif
 	quck_ssp_start();	
 	quck_ssp_setup();
 
@@ -671,7 +676,9 @@ static int Spi_rfid_remove(struct platform_device *pdev )
 	kfree(spi_devp);
 	
 	unregister_chrdev_region(dev, 1);
+#if INTERRUPT_ENABLE	
 	free_irq(gpio_to_irq(BCM5892_GPB12),0);
+#endif
 	quck_ssp_stop();
 	return 0;
 }

@@ -140,7 +140,7 @@ void as3911InterruptInit(void)
 
 void  TimerStart( unsigned char TimerNo, int ms )
 {
-	measure_counter_start();
+//	measure_counter_start();
 	TimerNo=TimerNo;
 	g_jiffies= get_timer_count();
 
@@ -167,7 +167,7 @@ s8 as3911EnableInterrupts(u32 mask)
     irqMask &= ~mask;
     as3911InterruptMask |= mask;
     error |= as3911ContinuousWrite(AS3911_REG_IRQ_MASK_MAIN, (u8*) &irqMask, 3);
-
+	printk(" quck_1 ");
     QUCK_AS3911_IRQ_ON();
 
     if (ERR_NONE == error)
@@ -226,8 +226,8 @@ s8 as3911WaitForInterruptTimed(u32 mask, u16 timeout, u32 *irqs)
    	do
    	{
    		//quck_printk(timeout);
-   	//	as3911ContinuousRead(AS3911_REG_IRQ_MAIN, (u8*) &irqStatus, 3);
-		//as3911InterruptStatus |= irqStatus & as3911InterruptMask;
+   		as3911ContinuousRead(AS3911_REG_IRQ_MAIN, (u8*) &irqStatus, 3);
+		as3911InterruptStatus |= irqStatus & as3911InterruptMask;
 	//	quck_printk(get_timer_count());
 
 		

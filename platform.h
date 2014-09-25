@@ -62,6 +62,8 @@
 * GLOBAL VARIABLES
 ******************************************************************************
 */
+#define 	INTERRUPT_ENABLE 0
+extern  unsigned char deug_flag;
 
 
 

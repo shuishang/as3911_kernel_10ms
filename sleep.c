@@ -245,7 +245,7 @@ void  ssp_Write_Bytes(unsigned char *tx_buf_8,int num_to_tx)
 	}
 
 
-#if 1
+#if 0
 	PRINTK(KERN_INFO "Tx:");
 	for (i =0 ; i<num_to_tx ; ++i)
 		PRINTK(" %02x", tx_buf_8[i]);
@@ -258,19 +258,26 @@ void  ssp_Write_Bytes(unsigned char *tx_buf_8,int num_to_tx)
 unsigned char  ssp_Read_Bytes(unsigned char *rx_buf_8,int num_rxd )
 {
 	int i=0;
-#if 1
+#if 0
 PRINTK(KERN_INFO "Rx:");	
 #endif	
+	u32 temp=get_timer_count();
 	do {
 		while (PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_RNE) {
 		
 			rx_buf_8[i++] =PL022_REG(SPI0_REG_BASE_ADDR, PL022_DR);
 
 		}
+		
 	//} while ( i<1 );	
-	} while ( i<num_rxd );
-
-#if 1
+	} while ( i<num_rxd && ((temp-get_timer_count() ) < 3000 ));
+    //6000= 168*5.9*1000 -->1ms
+    //1000= 168*5.9*1000 -->1us
+	if(((temp-get_timer_count() ) > 3000 ))
+	{
+		PRINTK("read_time_out \n",);
+	}
+#if 0
 	
 	for (i = 0 ; i <num_rxd;++i)
 		PRINTK(" %02x", rx_buf_8[i]);
