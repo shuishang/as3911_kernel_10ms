@@ -125,10 +125,10 @@ void quck_timer_count(u8 flag)
  //data_size 指数据宽度  为8
  //主要操作了CR0和CPSR, 目的是,帧格式,位宽为8位,分频系数.
  #if 1
- static void config_hardware(void __iomem *base, unsigned speed, uint8_t mode, int data_size)
+ static void config_hardware(unsigned int base, unsigned speed, uint8_t mode, int data_size)
  {
 	  /* half_divisor = clock / (2*speed), rounded up: */
-	  printk("speed:%d, mode:%d,bits_per_word:%d  ",speed,mode,data_size);
+	
 	 unsigned half_divisor = (SPI_INPUT_CLOCK + (speed * 2 - 1)) / (speed*2);
 	 unsigned best_err = half_divisor;
 	 unsigned best_scr = SCR_MAX;
@@ -181,6 +181,18 @@ void quck_timer_count(u8 flag)
  
  }
 #endif
+ static int enable_periph(int gpio_aux, uint32_t bitmask, int setAux01)
+ {
+	 REG_1ST_GPIO_FROM_AUX(gpio_aux, REGOFFSET_GPIO_AUX_SEL) |= bitmask;
+ 
+	 if (setAux01) {
+		 REG_1ST_GPIO_FROM_AUX(gpio_aux, REGOFFSET_GPIO_AUX01_SEL) |= bitmask;
+	 } else {
+		 REG_1ST_GPIO_FROM_AUX(gpio_aux, REGOFFSET_GPIO_AUX01_SEL) &= ~bitmask;
+	 }
+	 return 0;
+ }
+
  void quck_ssp_setup(void)
 {
 
@@ -193,18 +205,22 @@ void quck_timer_count(u8 flag)
 	//io
 	//FSS 引脚我自己通过io口控制。
 	//reg_gpio_iotr_set_pin_type(BCM5892_GPA7,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
-	reg_gpio_iotr_set_pin_type(BCM5892_GPA6,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
-	reg_gpio_iotr_set_pin_type(BCM5892_GPA5,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);	
-	reg_gpio_iotr_set_pin_type(BCM5892_GPA4,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
-	config_hardware(SPI0_REG_BASE_ADDR,4000000,0,8);
+	reg_gpio_iotr_set_pin_type(BCM5892_GPA6,GPIO_PIN_TYPE_ALTERNATIVE_FUNC1);
+	reg_gpio_iotr_set_pin_type(BCM5892_GPA5,GPIO_PIN_TYPE_ALTERNATIVE_FUNC1);	
+	reg_gpio_iotr_set_pin_type(BCM5892_GPA4,GPIO_PIN_TYPE_ALTERNATIVE_FUNC1);
+	//enable_periph(GPIO_AUX_SPI0, 0xf, 0);	
+	config_hardware(SPI0_REG_BASE_ADDR,1000000,0,8);
+	//gpio_set_pin_type(BCM5892_GPA7, GPIO_PIN_TYPE_OUTPUT );
+  //  reg_gpio_set_pull_up_down_disable(BCM5892_GPA7);
+	//gpio_set_pin_val(BCM5892_GPA7,0);	
 	return;
 }
 
 void quck_ssp_start(void)
 {
 	//SSPCR1 
-	PL022_WRITE_REG(3, SPI0_REG_BASE_ADDR, PL022_CR1);  /* start and set loopback mode */
-	//PL022_WRITE_REG(2, SPI0_REG_BASE_ADDR, PL022_CR1);  /* start */
+	//PL022_WRITE_REG(3, SPI0_REG_BASE_ADDR, PL022_CR1);  /* start and set loopback mode */
+	PL022_WRITE_REG(2, SPI0_REG_BASE_ADDR, PL022_CR1);  /* start */
 	return;
 }
 
