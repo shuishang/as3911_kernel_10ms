@@ -244,7 +244,7 @@ void  ssp_Write_Bytes(unsigned char *tx_buf_8,int num_to_tx)
 	}
 
 
-#if 1
+#if 0
 	PRINTK(KERN_INFO "Tx:");
 	for (i =0 ; i<num_to_tx ; ++i)
 		PRINTK(" %02x", tx_buf_8[i]);
@@ -257,7 +257,7 @@ void  ssp_Write_Bytes(unsigned char *tx_buf_8,int num_to_tx)
 unsigned char  ssp_Read_Bytes(unsigned char *rx_buf_8,int num_rxd )
 {
 	int i=0;
-#if 1
+#if 0
 PRINTK(KERN_INFO "Rx:");	
 #endif	
 	do {
@@ -266,10 +266,10 @@ PRINTK(KERN_INFO "Rx:");
 			rx_buf_8[i++] =PL022_REG(SPI0_REG_BASE_ADDR, PL022_DR);
 
 		}
-	} while ( i<1 );	
-	//} while ( i<num_rxd );
+	//} while ( i<1 );	
+	} while ( i<num_rxd );
 
-#if 1
+#if 0
 	
 	for (i = 0 ; i <num_rxd;++i)
 		PRINTK(" %02x", rx_buf_8[i]);

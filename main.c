@@ -451,11 +451,12 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 			{
 				printk("  emvGuiDigital();4\n");
 			//	local_irq_save(quck_InterruptStatus);
-			//	emvGuiDigital();	
+				emvGuiDigital();	
 			}
 			else 
 			{
 			} 
+			/*
 
 	while(1)
 	{
@@ -467,7 +468,7 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 
 	}
 						
-	/*		
+		
 			while(1)
 			{
 				if (QDeselect())break;
