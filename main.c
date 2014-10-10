@@ -491,6 +491,7 @@ u8 quck_read_printk(unsigned int fd,u8 *buf,u8 count)
 {
 	int iNum                      = 0;
 	int ret                           = (int)fd;
+	int i;
 	
 	if ( count > BUF_SIZE )
 	{
@@ -509,13 +510,16 @@ u8 quck_read_printk(unsigned int fd,u8 *buf,u8 count)
 	{
 		return 2;
 	}
-	
+	printk(" send:%02x",  buf[ 0 ]);	
 	for ( iNum = 0;iNum < count; iNum++ )
 	{
 		buf[ iNum+1 ] = Spi_Read_Byte( );
+		printk(" %02x", buf[ iNum+1 ]);
 	}
 	
 	Spi_Deselect();
+
+  	printk(" (%d)\n", count);
 	//local_irq_restore(flags);
 	
 	return 0;
@@ -545,15 +549,17 @@ u8 quck_write_printk(unsigned int fd, u8 * buf ,u8 count )
 	//memcpy(Snd_data_buf, buf, count );
 	//local_irq_save(flags);
 	Spi_Select();
+		printk(" send:");
 	for ( iNum = 0;iNum < count; iNum++ )
 	{
 		ret = Spi_Write_Byte( buf[ iNum ]);
+		printk(" %02x", buf[ iNum ]);
 		if ( ret )
 		{
 			return 2;
 		}
 	}
-	
+	printk(" \n");
 	Spi_Deselect();
 	//local_irq_restore(flags);
 	
