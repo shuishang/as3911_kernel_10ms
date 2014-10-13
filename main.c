@@ -445,25 +445,28 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 			if ( ucValue == 0 ) 
 			{
 				printk("  emvGuiDigital();4\n");
-				local_irq_save(quck_InterruptStatus);
-				emvGuiDigital();	
+				
+				//local_irq_save(quck_InterruptStatus);
+				//emvGuiDigital();	
 			}
 			else 
 			{
 			
 			} 
-	/*		
+	
 			while(1)
 			{
 				if (QDeselect())break;
  				SSelect();  //6000¨º?1o¨¢??.
+ 				displayRegisterValue(0x3f);
+				
 	 			TimerStart( 0, 10 );	
  				while(TimerCheck( 0 )){   }	
  				SDeselect();
 	 			TimerStart( 0, 10 );	
  				while(TimerCheck( 0 )){   }	
 			}
-				*/		
+			/*			*/		
 			break;
 		case IOC_SPI_STAUS_IRQ:
 			printk("  IOC_SPI_STAUS_IRQ\n");
@@ -680,7 +683,7 @@ static int Spi_rfid_probe(struct platform_device *pdev)
 
 	printk(SPI_RFID_NAME " initialized\n");
 	ret = 0;
-	AS3911_init();
+	//AS3911_init();
 
 	goto out0;
 

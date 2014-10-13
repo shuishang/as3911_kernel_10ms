@@ -78,7 +78,7 @@ void displayRegisterValue(unsigned char  address)
 {
     u8 value = 0;
     as3911ReadRegister(address, &value);
-    api_debug("REG: 0x%x: 0x%x\r\n", address, value);
+    printk("REG: 0x%x: 0x%x\r\n", address, value);
    // printk("\033[40;44mREG: 0x%x: 0x%x\r\n\033[5m", address, value);
 }
    
