@@ -135,8 +135,8 @@ void quck_timer_count(u8 flag)
 	 unsigned best_half_cpsr = CPSR_MAX/2;
 	 unsigned scr, half_cpsr, err;
  
-	 unsigned polarity = (mode & SPI_CPOL);
-	 unsigned phase = (mode & SPI_CPHA);
+	 unsigned polarity =0; //(mode & SPI_CPOL);
+	 unsigned phase = 1; //(mode & SPI_CPHA);
  
  
 	 /* Loop over possible SCR values, calculating the appropriate CPSR and finding the best match
@@ -169,11 +169,11 @@ void quck_timer_count(u8 flag)
  
 	 PRINTK(KERN_INFO "Setting PL022 config: %08x %08x %08x\n",
 		 PL022_SCR_MAP(best_scr) | PL022_SPH_MAP(phase) | PL022_SPO_MAP(polarity) |
-		 PL022_FRF_TI | PL022_DSS_MAP(data_size), 2, best_half_cpsr * 2);
+		 PL022_FRF_SPI | PL022_DSS_MAP(data_size), 2, best_half_cpsr * 2);
  
 	 /* Set CR0 params */
 	 PL022_WRITE_REG(PL022_SCR_MAP(best_scr) | PL022_SPH_MAP(phase) | PL022_SPO_MAP(polarity) |
-			 PL022_FRF_TI | PL022_DSS_MAP(data_size), base, PL022_CR0);
+			 PL022_FRF_SPI | PL022_DSS_MAP(data_size), base, PL022_CR0);
  
 	 /* Set prescale divisor */
 	 PL022_WRITE_REG(best_half_cpsr * 2, base, PL022_CPSR);
@@ -209,7 +209,7 @@ void quck_timer_count(u8 flag)
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA5,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);	
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA4,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
 	//enable_periph(GPIO_AUX_SPI0, 0xf, 0);	
-	config_hardware(SPI0_REG_BASE_ADDR,400000,0,8);
+	config_hardware(SPI0_REG_BASE_ADDR,200000,0,8);
 	//config_hardware(SPI0_REG_BASE_ADDR,8000000,0,8);
 	//gpio_set_pin_type(BCM5892_GPA7, GPIO_PIN_TYPE_OUTPUT );
   //  reg_gpio_set_pull_up_down_disable(BCM5892_GPA7);

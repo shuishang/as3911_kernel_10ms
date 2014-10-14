@@ -435,6 +435,7 @@ static ssize_t  Spi_rfid_read(struct file *filp, char *buf, u32 count,loff_t *f_
 static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cmd, unsigned long arg)
 {
 	int ret=0;
+	unsigned char temp;
 	unsigned int ucValue = 0;
 	unsigned int ucValue2 = 0;
 	unsigned long flags;	
@@ -460,14 +461,18 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 			{
 			} 
 		*/
+		
 
 	while(1)
 	{
-
-		displayRegisterValue(0x3f);
-		displayRegisterValue(01);
+		temp=0x7f;
+		quck_ssp_write_printk( &temp ,1 );
+		//displayRegisterValue(0x3f);
+	//	displayRegisterValue(01);
 		//udelay(77);
 		//if (QDeselect())break;
+		TimerStart( 0,100 );	
+ 				while(TimerCheck( 0 )){   }	
 
 	}
 					
@@ -476,8 +481,7 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 			{
 				if (QDeselect())break;
  				SSelect();  //6000¨º?1o¨¢??.
-	 			TimerStart( 0, 10 );	
- 				while(TimerCheck( 0 )){   }	
+	 	
  				SDeselect();
 	 			TimerStart( 0, 10 );	
  				while(TimerCheck( 0 )){   }	
