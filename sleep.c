@@ -204,13 +204,13 @@ void quck_timer_count(u8 flag)
 #define RF_POWER     BCM5892_GPB31*/
 	//io
 	//FSS 引脚我自己通过io口控制。
-	//reg_gpio_iotr_set_pin_type(BCM5892_GPA7,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
-	reg_gpio_iotr_set_pin_type(BCM5892_GPA6,GPIO_PIN_TYPE_ALTERNATIVE_FUNC1);
-	reg_gpio_iotr_set_pin_type(BCM5892_GPA5,GPIO_PIN_TYPE_ALTERNATIVE_FUNC1);	
-	reg_gpio_iotr_set_pin_type(BCM5892_GPA4,GPIO_PIN_TYPE_ALTERNATIVE_FUNC1);
+	 reg_gpio_iotr_set_pin_type(BCM5892_GPA7,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
+	 reg_gpio_iotr_set_pin_type(BCM5892_GPA6,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
+	 reg_gpio_iotr_set_pin_type(BCM5892_GPA5,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);	
+	 reg_gpio_iotr_set_pin_type(BCM5892_GPA4,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
 	//enable_periph(GPIO_AUX_SPI0, 0xf, 0);	
-	//config_hardware(SPI0_REG_BASE_ADDR,1000000,0,8);
-	config_hardware(SPI0_REG_BASE_ADDR,320000,0,8);
+	config_hardware(SPI0_REG_BASE_ADDR,400000,0,8);
+	//config_hardware(SPI0_REG_BASE_ADDR,8000000,0,8);
 	//gpio_set_pin_type(BCM5892_GPA7, GPIO_PIN_TYPE_OUTPUT );
   //  reg_gpio_set_pull_up_down_disable(BCM5892_GPA7);
 	//gpio_set_pin_val(BCM5892_GPA7,0);	
@@ -243,7 +243,7 @@ void  ssp_Write_Bytes(unsigned char *tx_buf_8,int num_to_tx)
 	
 		PL022_WRITE_REG(tx_buf_8[i], SPI0_REG_BASE_ADDR, PL022_DR);
 	}
-
+	while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
 
 #if 0
 	PRINTK(KERN_INFO "Tx:");
@@ -254,14 +254,14 @@ void  ssp_Write_Bytes(unsigned char *tx_buf_8,int num_to_tx)
 #endif
 	return ;
 }
-
+u32 quck_ssp_count=0;
 unsigned char  ssp_Read_Bytes(unsigned char *rx_buf_8,int num_rxd )
 {
 	int i=0;
 #if 0
 PRINTK(KERN_INFO "Rx:");	
 #endif	
-	u32 temp=get_timer_count();
+	u32 t, temp=get_timer_count();
 	do {
 		while (PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_RNE) {
 		
@@ -270,12 +270,13 @@ PRINTK(KERN_INFO "Rx:");
 		}
 		
 	//} while ( i<1 );	
-	} while ( i<num_rxd && ((temp-get_timer_count() ) < 3000 ));
+	} while ( i<num_rxd && ((t=(temp-get_timer_count() )) < 6000 ));
     //6000= 168*5.9*1000 -->1ms
     //1000= 168*5.9*1000 -->1us
-	if(((temp-get_timer_count() ) > 3000 ))
+	if(t > 3000  && (++quck_ssp_count>5000) )
 	{
-		PRINTK("read_time_out \n",);
+		quck_ssp_count=0;
+		PRINTK(" &");
 	}
 #if 0
 	
