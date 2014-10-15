@@ -298,8 +298,8 @@ unsigned char  quck_ssp_read_printk(u8 *buf,u8 count)
 	}
 
 	Spi_Select();
-	ssp_Write_Bytes( &buf[ 0 ] ,1);
-	ssp_Read_Bytes(&buf[1],count);
+	ssp_Write_Bytes( &buf[ 0 ] ,2);
+	ssp_Read_Bytes(&buf[0],count);
 	Spi_Deselect();
 	//local_irq_restore(flags);
 	return 0;	

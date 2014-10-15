@@ -435,6 +435,7 @@ static ssize_t  Spi_rfid_read(struct file *filp, char *buf, u32 count,loff_t *f_
 static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cmd, unsigned long arg)
 {
 	int ret=0;
+	unsigned char buf[10];
 	unsigned char temp;
 	unsigned int ucValue = 0;
 	unsigned int ucValue2 = 0;
@@ -448,12 +449,13 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 	switch ( cmd )
 	{
 		case IOC_SPI_ENABLE_IRQ :
+			printk("  emvGuiDigital();last\n");
 			/*	
 			AS3911_init();
 			get_user( ucValue, (unsigned char *) arg );
 			if ( ucValue == 0 ) 
 			{
-				printk("  emvGuiDigital();4\n");
+				
 				//local_irq_save(quck_InterruptStatus);
 				emvGuiDigital();	
 			}
@@ -466,20 +468,27 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 	while(1)
 	{
 		temp=0x7f;
-		quck_ssp_write_printk( &temp ,1 );
+		buf[0] =0x7f ;
+		buf[1] = 0xff;
+		quck_ssp_read_printk(buf,2);
+		//quck_ssp_write_printk( &temp ,1 );
+
+		printk(" %x,%x",buf[0] ,buf[1] );
 		//displayRegisterValue(0x3f);
 	//	displayRegisterValue(01);
 		//udelay(77);
 		//if (QDeselect())break;
-		TimerStart( 0,100 );	
- 				while(TimerCheck( 0 )){   }	
+		TimerStart( 0,500 );	
+ 		while(TimerCheck( 0 )){   }	
+		
+		if (QDeselect())break;
 
 	}
 					
 		/*
 			while(1)
 			{
-				if (QDeselect())break;
+				
  				SSelect();  //6000¨º?1o¨¢??.
 	 	
  				SDeselect();
