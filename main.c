@@ -473,7 +473,7 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 		quck_ssp_read_printk(buf,2);
 		//quck_ssp_write_printk( &temp ,1 );
 
-		printk(" %x,%x",buf[0] ,buf[1] );
+		printk(" %x,%x\n",buf[0] ,buf[1] );
 		//displayRegisterValue(0x3f);
 	//	displayRegisterValue(01);
 		//udelay(77);

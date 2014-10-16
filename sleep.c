@@ -231,7 +231,16 @@ void quck_ssp_start(void)
 	PL022_WRITE_REG(0, SPI0_REG_BASE_ADDR, PL022_CR1);  /* start */
 	return;
 }
+void ssp_sync(void)
+{
+	u8 temp;
+	while (PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_RNE) {
+	
+		temp=PL022_REG(SPI0_REG_BASE_ADDR, PL022_DR);
+	
+	}
 
+}
 //0成功  ,其他失败.
 void  ssp_Write_Bytes(unsigned char *tx_buf_8,int num_to_tx)
 {
@@ -243,7 +252,7 @@ void  ssp_Write_Bytes(unsigned char *tx_buf_8,int num_to_tx)
 	
 		PL022_WRITE_REG(tx_buf_8[i], SPI0_REG_BASE_ADDR, PL022_DR);
 	}
-	while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
+	//while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
 
 #if 0
 	PRINTK(KERN_INFO "Tx:");
@@ -288,9 +297,13 @@ PRINTK(KERN_INFO "Rx:");
 	return 1;
 }
 //0成功  ,其他失败.
-unsigned char  quck_ssp_read_printk(u8 *buf,u8 count)
+#define SPI_FIFO_DEPTH 8
+unsigned char  quck_ssp_read_printk(u8 *buf,u8 length)
 {
 	//int ret,iNum                      = 0;
+	u8 t_buf[20];
+	t_buf[0]=buf[0];
+	t_buf[1]=0xff;
 	if ( !count )
 	{
 		printk("error -quck_ssp_read_printk\n");
@@ -298,8 +311,12 @@ unsigned char  quck_ssp_read_printk(u8 *buf,u8 count)
 	}
 
 	Spi_Select();
-	ssp_Write_Bytes( &buf[ 0 ] ,2);
-	ssp_Read_Bytes(&buf[0],count);
+	ssp_sync();
+	ssp_Write_Bytes(&t_buf[ 0 ],2);
+	while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
+
+	ssp_Read_Bytes(&t_buf[0],length+1);
+	buf[0]=t_buf[1];
 	Spi_Deselect();
 	//local_irq_restore(flags);
 	return 0;	
