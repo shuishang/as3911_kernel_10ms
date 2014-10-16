@@ -468,12 +468,12 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 	while(1)
 	{
 		temp=0x7f;
-		buf[0] =0x7f ;
-		buf[1] = 0xff;
-		quck_ssp_read_printk(buf,2);
+		//buf[0] =0x7f ;
+		//buf[1] = 0xff;
+		//quck_ssp_read_printk(buf,2);
 		//quck_ssp_write_printk( &temp ,1 );
-
-		printk(" %x,%x\n",buf[0] ,buf[1] );
+		displayRegisterValue(0x3f);
+	//	printk(" %x,%x\n",buf[0] ,buf[1] );
 		//displayRegisterValue(0x3f);
 	//	displayRegisterValue(01);
 		//udelay(77);

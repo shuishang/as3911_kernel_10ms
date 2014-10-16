@@ -304,11 +304,6 @@ unsigned char  quck_ssp_read_printk(u8 *buf,u8 length)
 	u8 t_buf[20];
 	t_buf[0]=buf[0];
 	t_buf[1]=0xff;
-	if ( !count )
-	{
-		printk("error -quck_ssp_read_printk\n");
-		return 0;
-	}
 
 	Spi_Select();
 	ssp_sync();
@@ -316,7 +311,7 @@ unsigned char  quck_ssp_read_printk(u8 *buf,u8 length)
 	while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
 
 	ssp_Read_Bytes(&t_buf[0],length+1);
-	buf[0]=t_buf[1];
+	buf[1]=t_buf[1];
 	Spi_Deselect();
 	//local_irq_restore(flags);
 	return 0;	
