@@ -28,6 +28,7 @@
 #include "main.h"
 
 #define PRINTK   printk
+unsigned char deug_flag=0;
 
 //measure_counter
 //timer 3.2  
@@ -209,7 +210,7 @@ u8 ssp_magic_buf[300];
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA5,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);	
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA4,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
 	//enable_periph(GPIO_AUX_SPI0, 0xf, 0);	
-	config_hardware(SPI0_REG_BASE_ADDR,4000000,0,8);
+	config_hardware(SPI0_REG_BASE_ADDR,320000,0,8);
 	//config_hardware(SPI0_REG_BASE_ADDR,8000000,0,8);
 	//gpio_set_pin_type(BCM5892_GPA7, GPIO_PIN_TYPE_OUTPUT );
   //  reg_gpio_set_pull_up_down_disable(BCM5892_GPA7);
@@ -255,7 +256,8 @@ void  ssp_Write_Bytes(unsigned char *tx_buf_8,int num_to_tx)
 	}
 	//while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
 
-#if 0
+#if 1
+	if(deug_flag) return;
 	PRINTK(KERN_INFO "Tx:");
 	for (i =0 ; i<num_to_tx ; ++i)
 		PRINTK(" %02x", tx_buf_8[i]);
@@ -268,9 +270,7 @@ u32 quck_ssp_count=0;
 unsigned char  ssp_Read_Bytes(unsigned char *rx_buf_8,int num_rxd )
 {
 	int i=0;
-#if 0
-PRINTK(KERN_INFO "Rx:");	
-#endif	
+
 	u32 t, temp=get_timer_count();
 	do {
 		while (PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_RNE) {
@@ -288,7 +288,12 @@ PRINTK(KERN_INFO "Rx:");
 		quck_ssp_count=0;
 		PRINTK(" &");
 	}
-#if 0
+	
+	if(deug_flag) return 1;
+#if 1
+PRINTK(KERN_INFO "Rx:");	
+#endif		
+#if 1
 	
 	for (i = 0 ; i <num_rxd;++i)
 		PRINTK(" %02x", rx_buf_8[i]);

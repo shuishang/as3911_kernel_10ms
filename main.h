@@ -69,6 +69,10 @@
 #include "emv_display.h"
 #include "sleep.h"
 #include "As3911_def.h"
+#include "platform.h"
+
+
+
 
 void Spi_Select(void);
 void Spi_Deselect(void);

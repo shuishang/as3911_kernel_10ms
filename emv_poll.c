@@ -189,6 +189,8 @@ s16 emvPoll(void)
 	   		poll_debug("emvTypeBCardPresent() \r\n");	 		
             emvTypeB = 1;
         }
+		deug_flag=1;
+		
     }
   //  local_irq_restore(flags);
 	
