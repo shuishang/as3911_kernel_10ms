@@ -167,7 +167,6 @@ s8 as3911EnableInterrupts(u32 mask)
     irqMask &= ~mask;
     as3911InterruptMask |= mask;
     error |= as3911ContinuousWrite(AS3911_REG_IRQ_MASK_MAIN, (u8*) &irqMask, 3);
-	printk(" quck_1 ");
     QUCK_AS3911_IRQ_ON();
 
     if (ERR_NONE == error)

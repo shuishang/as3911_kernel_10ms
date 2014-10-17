@@ -302,7 +302,7 @@ PRINTK(KERN_INFO "Rx:");
 #define SPI_LOG printk 
 
 //buf 第一个字节 发送的,其他区域用来 存放接收.
-//
+//buf的长度必须 大于 length+ 1;
 unsigned char  quck_ssp_read_printk(u8 *buf,u8 length)
 {
 	//int ret,iNum                      = 0;
@@ -343,6 +343,7 @@ u8 quck_ssp_write_printk( u8 * buf ,u8 count )
 	//local_irq_save(flags);
 	Spi_Select();
 	ssp_Write_Bytes( &buf[ 0 ],count);
+	while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
 	Spi_Deselect();
 	//local_irq_restore(flags);
 	return 0;

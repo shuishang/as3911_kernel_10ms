@@ -450,9 +450,9 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 	{
 		case IOC_SPI_ENABLE_IRQ :
 			printk("  emvGuiDigital();last\n");
-			/*	
+		
 			AS3911_init();
-			get_user( ucValue, (unsigned char *) arg );
+		//	get_user( ucValue, (unsigned char *) arg );
 			if ( ucValue == 0 ) 
 			{
 				
@@ -462,7 +462,7 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 			else 
 			{
 			} 
-		*/
+		/*		*/
 		
 
 	while(1)
@@ -611,7 +611,7 @@ static void hareware_init(void)
 	measure_counter_setup();
 	measure_counter_stop();
 	measure_counter_start();
-#if INTERRUPT_ENABLE
+#if 0
 	as3911InterruptInit();
 #endif
 	quck_ssp_start();	
