@@ -119,7 +119,7 @@ void quck_timer_count(u8 flag)
 //------------------------------------------------------------------------
 //---------------------------------------------------------------------
 
-
+u8 ssp_magic_buf[300];
  //base  就是指哪一个寄存器， 为spi0
  //mode指相位，和极性	为0 
  //data_size 指数据宽度  为8
@@ -214,6 +214,7 @@ void quck_timer_count(u8 flag)
 	//gpio_set_pin_type(BCM5892_GPA7, GPIO_PIN_TYPE_OUTPUT );
   //  reg_gpio_set_pull_up_down_disable(BCM5892_GPA7);
 	//gpio_set_pin_val(BCM5892_GPA7,0);	
+	memset(ssp_magic_buf,0xff,sizeof(ssp_magic_buf));
 	return;
 }
 
@@ -298,20 +299,33 @@ PRINTK(KERN_INFO "Rx:");
 }
 //0成功  ,其他失败.
 #define SPI_FIFO_DEPTH 8
+#define SPI_LOG printk 
+
+//buf 第一个字节 发送的,其他区域用来 存放接收.
+//
 unsigned char  quck_ssp_read_printk(u8 *buf,u8 length)
 {
 	//int ret,iNum                      = 0;
-	u8 t_buf[20];
-	t_buf[0]=buf[0];
-	t_buf[1]=0xff;
-
+	u8 a,widx,ridx;
+	widx=0;
+	ridx=0;
 	Spi_Select();
 	ssp_sync();
-	ssp_Write_Bytes(&t_buf[ 0 ],2);
-	while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
-
-	ssp_Read_Bytes(&t_buf[0],length+1);
-	buf[1]=t_buf[1];
+//
+	length+=1;
+	ssp_magic_buf[0]=buf[0];
+	widx=0;
+	ridx=0;
+	while (length)
+	{
+		a = length > SPI_FIFO_DEPTH ? SPI_FIFO_DEPTH : length;
+		//SPI_LOG("SPI Write:");
+		ssp_Write_Bytes(&ssp_magic_buf[widx],a);
+		ssp_Read_Bytes(&buf[ridx],a);
+		widx+=8;//最后一次小于8的发送,自加8 ,也没事.
+		ridx+=8;
+		length-=a;
+	}
 	Spi_Deselect();
 	//local_irq_restore(flags);
 	return 0;	
@@ -334,4 +348,7 @@ u8 quck_ssp_write_printk( u8 * buf ,u8 count )
 	return 0;
 
 }
+
+
+
 
