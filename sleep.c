@@ -210,7 +210,7 @@ u8 ssp_magic_buf[300];
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA5,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);	
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA4,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
 	//enable_periph(GPIO_AUX_SPI0, 0xf, 0);	
-	config_hardware(SPI0_REG_BASE_ADDR,320000,0,8);
+	config_hardware(SPI0_REG_BASE_ADDR,1000000,0,8);
 	//config_hardware(SPI0_REG_BASE_ADDR,8000000,0,8);
 	//gpio_set_pin_type(BCM5892_GPA7, GPIO_PIN_TYPE_OUTPUT );
   //  reg_gpio_set_pull_up_down_disable(BCM5892_GPA7);
@@ -326,6 +326,8 @@ unsigned char  quck_ssp_read_printk(u8 *buf,u8 length)
 		a = length > SPI_FIFO_DEPTH ? SPI_FIFO_DEPTH : length;
 		//SPI_LOG("SPI Write:");
 		ssp_Write_Bytes(&ssp_magic_buf[widx],a);
+		//等待tx_fifo清空
+		while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
 		ssp_Read_Bytes(&buf[ridx],a);
 		widx+=8;//最后一次小于8的发送,自加8 ,也没事.
 		ridx+=8;
@@ -337,21 +339,30 @@ unsigned char  quck_ssp_read_printk(u8 *buf,u8 length)
 }
 //0成功  ,其他失败.
 //static ssize_t Spi_rfid_write(struct file *filp, const char *buf, u32 count, loff_t *f_pos)
-u8 quck_ssp_write_printk( u8 * buf ,u8 count )
+u8 quck_ssp_write_printk( u8 * buf ,u8 length )
 {
 
-	if ( !count )
+
+	u8 a,widx,ridx;
+	u8 temp_buf[50];
+	widx=0;
+	ridx=0;
+	
+	ssp_sync();	
+	while (length)
 	{
-		printk("error -quck_ssp_read_printk\n");
-		return 0;
+		a = length > SPI_FIFO_DEPTH ? SPI_FIFO_DEPTH : length;
+		//SPI_LOG("SPI Write:");
+		ssp_Write_Bytes(&buf[widx],a);
+		//等待tx_fifo清空
+		while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
+		ssp_Read_Bytes(&temp_buf[ridx],a);
+		widx+=8;//最后一次小于8的发送,自加8 ,也没事.
+		ridx+=8;
+		length-=a;
 	}
-	//local_irq_save(flags);
-	Spi_Select();
-	ssp_Write_Bytes( &buf[ 0 ],count);
-	while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
-	Spi_Deselect();
-	//local_irq_restore(flags);
-	return 0;
+
+
 
 }
 
