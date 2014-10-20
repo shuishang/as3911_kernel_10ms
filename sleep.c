@@ -210,7 +210,7 @@ u8 ssp_magic_buf[300];
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA5,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);	
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA4,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
 	//enable_periph(GPIO_AUX_SPI0, 0xf, 0);	
-	config_hardware(SPI0_REG_BASE_ADDR,1000000,0,8);
+	config_hardware(SPI0_REG_BASE_ADDR,500000,0,8);
 	//config_hardware(SPI0_REG_BASE_ADDR,8000000,0,8);
 	//gpio_set_pin_type(BCM5892_GPA7, GPIO_PIN_TYPE_OUTPUT );
   //  reg_gpio_set_pull_up_down_disable(BCM5892_GPA7);

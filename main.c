@@ -449,9 +449,10 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 	switch ( cmd )
 	{
 		case IOC_SPI_ENABLE_IRQ :
+			AS3911_init();
 			printk("  emvGuiDigital();last\n");
 		
-			AS3911_init();
+			
 		//	get_user( ucValue, (unsigned char *) arg );
 			if ( ucValue == 0 ) 
 			{
