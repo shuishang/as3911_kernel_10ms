@@ -38,7 +38,7 @@ spi_rfid-y += logger.o
 spi_rfid-y += platform.o
 spi_rfid-y += sleep.o 
 
-EXTRA_CFLAGS      += -O0
+EXTRA_CFLAGS      += -O2
 else
 
   KERNELDIR="/home/ljj/work/scl_85000/linux-2.6.32.9"

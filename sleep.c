@@ -261,8 +261,6 @@ u32 quck_ssp_count=0;
 unsigned char  ssp_Read_Bytes(unsigned char *rx_buf_8,int num_rxd )
 {
 	int i=0;
-
-	u32 t, temp=get_timer_count();
 	do {
 		while (PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_RNE) {
 		
@@ -270,20 +268,12 @@ unsigned char  ssp_Read_Bytes(unsigned char *rx_buf_8,int num_rxd )
 
 		}
 		
-	//} while ( i<1 );	
-	} while ( i<num_rxd && ((t=(temp-get_timer_count() )) < 6000 ));
-    //6000= 168*5.9*1000 -->1ms
-    //1000= 168*5.9*1000 -->1us
-	if(t > 3000  && (++quck_ssp_count>5000) )
-	{
-		quck_ssp_count=0;
-		PRINTK(" &");
-	}
-	return 1;
+	} while (i<num_rxd);
 }
 //0成功  ,其他失败.
 #define SPI_FIFO_DEPTH 8
-#define SPI_LOG printk 
+//#define SPI_LOG printk 
+#define SPI_LOG(...)  
 
 //buf 第一个字节 发送的,其他区域用来 存放接收.
 //buf的长度必须 大于等于 length+ 1;

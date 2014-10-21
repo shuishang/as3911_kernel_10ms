@@ -234,10 +234,7 @@ s8 as3911WaitForInterruptTimed(u32 mask, u16 timeout, u32 *irqs)
 
 		
 		irqStatus = as3911InterruptStatus & mask;
-		if(irqStatus &&(deug_flag==0))
-		{
-			printk("wi:%08x ,%08x\n",irqStatus,mask);
-		}
+
 		if ( timeout > 0 )
 		{
 			if ( TimerCheck( TIMER_INTERRUPT_STATUS ) > 0 )

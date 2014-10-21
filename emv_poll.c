@@ -166,8 +166,6 @@ s16 emvPoll(void)
         emvHalSleepMilliseconds(4);
 
 
-		if(deug_flag==0)
-		printk("\n--------a_card_begin-----\n");
         if (emvTypeACardPresent())
         {
             /* ISO14443-A card(s) found. */
@@ -185,15 +183,14 @@ s16 emvPoll(void)
 
         /* Wait for t_p. */
         emvHalSleepMilliseconds (EMV_T_P);
-		if(deug_flag==0)
-    	printk("\n--------b_card_begin-----\n");
+
         if (emvTypeBCardPresent())
         {
             /* ISO14443-B card(s) found. */
 	   		poll_debug("emvTypeBCardPresent() \r\n");	 		
             emvTypeB = 1;
         }
-		deug_flag=1;
+		//deug_flag=1;
 		
     }
   //  local_irq_restore(flags);
