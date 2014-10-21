@@ -38,6 +38,7 @@
 
 #include <linux/ioctl.h>
 #include "sleep.h"
+#include "Platform.h"
 bool_t emvStopRequestReceived(void);
 
 #define AS3911_IRQ_CLR() { reg_gpio_clear_interrupt( BCM5892_GPB12 );}
@@ -100,7 +101,7 @@ static irqreturn_t as3911_interrupt(int irq,void * dev_id,struct pt_regs * regs)
 	as3911ContinuousRead(AS3911_REG_IRQ_MAIN, (u8*) &irqStatus, 3);
 	as3911InterruptStatus |= irqStatus & as3911InterruptMask;
 	//}
-
+	printk("interrupt\n");
 
 	return IRQ_HANDLED;
 }
@@ -231,6 +232,10 @@ s8 as3911WaitForInterruptTimed(u32 mask, u16 timeout, u32 *irqs)
 
 		
 		irqStatus = as3911InterruptStatus & mask;
+		if(irqStatus &&(deug_flag==0))
+		{
+			printk("wi:%08x ,%08x\n",irqStatus,mask);
+		}
 		if ( timeout > 0 )
 		{
 			if ( TimerCheck( TIMER_INTERRUPT_STATUS ) > 0 )

@@ -744,7 +744,7 @@ static int Spi_rfid_remove(struct platform_device *pdev )
 	kfree(spi_devp);
 	
 	unregister_chrdev_region(dev, 1);
-#if INTERRUPT_ENABLE	
+#if 0	
 	free_irq(gpio_to_irq(BCM5892_GPB12),0);
 #endif
 	quck_ssp_stop();
