@@ -164,7 +164,10 @@ s16 emvPoll(void)
 
         /* Wait for t_p. */
         emvHalSleepMilliseconds(4);
-	
+
+
+		
+		printk("\n--------a_card_begin-----\n");
         if (emvTypeACardPresent())
         {
             /* ISO14443-A card(s) found. */
@@ -182,7 +185,7 @@ s16 emvPoll(void)
 
         /* Wait for t_p. */
         emvHalSleepMilliseconds (EMV_T_P);
-    
+    	printk("\n--------b_card_begin-----\n");
         if (emvTypeBCardPresent())
         {
             /* ISO14443-B card(s) found. */

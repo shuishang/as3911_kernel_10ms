@@ -245,5 +245,9 @@ s8 emvHalTransceive(const u8 *request, u32 requestLength,
  *****************************************************************************
  */
 s8 emvHalSetAs3911TypeBModulationMode(AS3911ModulationLevelMode_t modulationLevelMode, const void *modulationLevelModeData);
+s8 as3911CalibrateModulationDepth(u8* result);
+
+
  
 #endif /* EMV_HAL_H */
+

@@ -43,6 +43,15 @@
 #include "sleep.h"
 #include "as3911_interrupt.h"
 #include "platform.h"
+#include "emv_display.h"
+#include "sleep.h"
+#include "As3911_def.h"
+#include "platform.h"
+#include "as3911_io.h"
+
+#include "emv_hal.h"
+
+
 
 /**mach-smdk2416.c*/
 #define SPI_RFID_NAME		          "spi_rfid"
@@ -432,6 +441,49 @@ static ssize_t  Spi_rfid_read(struct file *filp, char *buf, u32 count,loff_t *f_
 	return 0;
 }
 
+int g_count=0;
+u8 as3911_Calc_Data(unsigned char *buffer)
+{
+	u32 irqs = 0;
+	u8 measurementCommand = 0;
+	u8 amplitudePhase = 0;
+ 	u8 tmp,index = 0;
+	int i=0;
+	 measurementCommand = AS3911_CMD_MEASURE_AMPLITUDE;
+	as3911ClearInterrupts(AS3911_IRQ_MASK_DCT);
+	as3911EnableInterrupts(AS3911_IRQ_MASK_DCT);
+	as3911ExecuteCommand(measurementCommand);
+	as3911WaitForInterruptTimed(AS3911_IRQ_MASK_DCT, 5, &irqs);
+
+	as3911DisableInterrupts(AS3911_IRQ_MASK_DCT);
+	as3911ReadRegister(AS3911_REG_AD_RESULT, &amplitudePhase);
+	printk("%08x:   amplitude:%x   ",g_count,amplitudePhase);
+//--------------------------------
+	//usleep(10900);
+	for(i=0;i<500;i++)
+	{
+		udelay(500); 
+
+	}
+
+
+        as3911WriteRegister(AS3911_REG_AM_MOD_DEPTH_CONF, 0x9e);
+ 	
+        as3911CalibrateModulationDepth(&tmp);
+	printk("modul_depth:%x\r\n",tmp);
+	//usleep(10900);
+	for(i=0;i<500;i++)
+	{
+		udelay(500); 
+
+	}
+
+	++g_count;
+
+}
+
+
+
 static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cmd, unsigned long arg)
 {
 	int ret=0;
@@ -450,13 +502,11 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 	{
 		case IOC_SPI_ENABLE_IRQ :
 			AS3911_init();
-			printk("  emvGuiDigital();last\n");
-		
-			
+
 		//	get_user( ucValue, (unsigned char *) arg );
 			if ( ucValue == 0 ) 
 			{
-				
+				printk("  emvGuiDigital();last\n");
 				//local_irq_save(quck_InterruptStatus);
 				emvGuiDigital();	
 			}
@@ -469,11 +519,15 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 	while(1)
 	{
 		temp=0x7f;
+		
+	//	as3911_Calc_Data(NULL);
+				
 		//buf[0] =0x7f ;
 		//buf[1] = 0xff;
 		//quck_ssp_read_printk(buf,2);
 		//quck_ssp_write_printk( &temp ,1 );
-		displayRegisterValue(0x3f);
+	//	displayRegisterValue(0x3f);
+	
 	//	printk(" %x,%x\n",buf[0] ,buf[1] );
 		//displayRegisterValue(0x3f);
 	//	displayRegisterValue(01);
