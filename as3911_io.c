@@ -110,7 +110,7 @@ s8 as3911WriteRegister(u8 address, u8 data)
 	s8 error = ERR_NONE;
 	u8 as3911WriteCommand[2] = { address & AS3911_SPI_ADDRESS_MASK, data };
 
-	error = quck_write_printk( I_AS3911_FD, as3911WriteCommand, 2 );	
+	error = quck_write_printk(  as3911WriteCommand, 2 );	
 
 	if (ERR_NONE != error)
 	{
@@ -128,7 +128,7 @@ s8 as3911ReadRegister(u8 address, u8 *data)
 	s8 error = ERR_NONE;
 	u8 as3911ReadCommand[ 2 ] = { ( AS3911_SPI_CMD_READ_REGISTER | (address & AS3911_SPI_ADDRESS_MASK)),0 };
 	
-	error = quck_read_printk( I_AS3911_FD, as3911ReadCommand, 1 );	
+	error = quck_read_printk(  as3911ReadCommand, 1 );	
 	if (ERR_NONE != error)
 	{
 		//printk( "error as3911ReadCommand: %X\n",as3911ReadCommand[1] );
@@ -195,7 +195,7 @@ s8 as3911ContinuousWrite(u8 address, const u8 *data, u8 length)
 	ucaDataBuffer[ 0 ] = as3911WriteCommand;
 	memcpy( &ucaDataBuffer[ 1 ], data, length );
 	
-	error = quck_write_printk( I_AS3911_FD, ucaDataBuffer, length+1 );
+	error = quck_write_printk(  ucaDataBuffer, length+1 );
 
 	if (ERR_NONE != error)
 	{
@@ -215,7 +215,7 @@ s8 as3911ContinuousRead(u8 address, u8 *data, u8 length)
 	u8 ucaDataBuffer[ 1024 ] = { 0 };
 
 	ucaDataBuffer[ 0 ] = as3911ReadCommand;
-	error = quck_read_printk( I_AS3911_FD, ucaDataBuffer, length);
+	error = quck_read_printk( ucaDataBuffer, length);
 
 	if (ERR_NONE != error)
 	{
@@ -239,7 +239,7 @@ s8 as3911WriteFifo(const u8 *data, u8 length)
 
 	ucaDataBuffer[ 0 ] = as3911WriteFifoCommand;
 	memcpy( ucaDataBuffer + 1, data, length );
-	error = quck_write_printk( I_AS3911_FD, ucaDataBuffer, length+1 );
+	error = quck_write_printk( ucaDataBuffer, length+1 );
 
 	if ( ERR_NONE != error )
 	    return ERR_IO;
@@ -260,7 +260,7 @@ s8 as3911ReadFifo(u8 *data, u8 length)
 	}
 
 	ucaDataBuffer[ 0 ] = as3911ReadFifoCommand;
-	error = quck_read_printk( I_AS3911_FD, ucaDataBuffer, length);
+	error = quck_read_printk( ucaDataBuffer, length);
 
 	if (ERR_NONE != error)
 	{
@@ -282,7 +282,7 @@ s8 as3911ExecuteCommand(u8 directCommand)
     s8 error = ERR_NONE;
     u8 as3911DirectCommand = AS3911_SPI_CMD_DIREC_CMD | (directCommand & AS3911_SPI_ADDRESS_MASK);
 
-    error = quck_write_printk( I_AS3911_FD, &as3911DirectCommand, 1 );
+    error = quck_write_printk(  &as3911DirectCommand, 1 );
 
     if (ERR_NONE != error)
         return ERR_IO;

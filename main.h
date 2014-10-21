@@ -84,7 +84,7 @@ void QSelect(void);
  
 
  u8 QDeselect(void);
-u8 quck_read_printk(unsigned int fd,u8 *databuf,u8 i);
-u8 quck_write_printk(unsigned int fd,u8 *databuf,u8 i);
+#define quck_read_printk(databuf,i)  quck_ssp_read_printk(databuf,i)
+#define  quck_write_printk(databuf,i)   quck_ssp_write_printk(databuf,i)
 
 #endif /* MAIN_H */

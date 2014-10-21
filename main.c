@@ -574,7 +574,7 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 
 //0成功  ,其他失败.
 
-u8 quck_read_printk(unsigned int fd,u8 *buf,u8 count)
+/*u8 quck_read_printk(u8 *buf,u8 count)
 {
 
 	//Spi_Select();
@@ -585,18 +585,14 @@ u8 quck_read_printk(unsigned int fd,u8 *buf,u8 count)
 }
 //0成功  ,其他失败.
 //static ssize_t Spi_rfid_write(struct file *filp, const char *buf, u32 count, loff_t *f_pos)
-u8 quck_write_printk(unsigned int fd, u8 * buf ,u8 count )
+u8 quck_write_printk(u8 * buf ,u8 count )
 {
-
-	
-
 //	Spi_Select();
 	quck_ssp_write_printk(buf,count);
 	//Spi_Deselect();
-
 	return 0;
 
-}
+}*/
 
 struct file_operations  Spi_rfid_fops =
 {

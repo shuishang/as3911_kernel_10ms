@@ -89,6 +89,7 @@ u32 g_jiffies_count;
 // ms  延迟时间 ,单位 毫秒.
  u32 ggjiffies_count=1;
 
+#if 0
 static irqreturn_t as3911_interrupt(int irq,void * dev_id,struct pt_regs * regs)
 {
 	
@@ -138,6 +139,7 @@ void as3911InterruptInit(void)
 
 }
 
+#endif
 
 void  TimerStart( unsigned char TimerNo, int ms )
 {

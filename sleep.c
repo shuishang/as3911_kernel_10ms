@@ -255,15 +255,6 @@ void  ssp_Write_Bytes(unsigned char *tx_buf_8,int num_to_tx)
 		PL022_WRITE_REG(tx_buf_8[i], SPI0_REG_BASE_ADDR, PL022_DR);
 	}
 	//while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
-
-#if 1
-	if(deug_flag) return;
-	PRINTK(KERN_INFO "Tx:");
-	for (i =0 ; i<num_to_tx ; ++i)
-		PRINTK(" %02x", tx_buf_8[i]);
-	PRINTK("\n");
-
-#endif
 	return ;
 }
 u32 quck_ssp_count=0;
@@ -288,18 +279,6 @@ unsigned char  ssp_Read_Bytes(unsigned char *rx_buf_8,int num_rxd )
 		quck_ssp_count=0;
 		PRINTK(" &");
 	}
-	
-	if(deug_flag) return 1;
-#if 1
-PRINTK(KERN_INFO "Rx:");	
-#endif		
-#if 1
-	
-	for (i = 0 ; i <num_rxd;++i)
-		PRINTK(" %02x", rx_buf_8[i]);
-	PRINTK(" (%d)\n", num_rxd);
-
-#endif
 	return 1;
 }
 //0成功  ,其他失败.
@@ -307,7 +286,7 @@ PRINTK(KERN_INFO "Rx:");
 #define SPI_LOG printk 
 
 //buf 第一个字节 发送的,其他区域用来 存放接收.
-//buf的长度必须 大于 length+ 1;
+//buf的长度必须 大于等于 length+ 1;
 unsigned char  quck_ssp_read_printk(u8 *buf,u8 length)
 {
 	//int ret,iNum                      = 0;
@@ -338,13 +317,14 @@ unsigned char  quck_ssp_read_printk(u8 *buf,u8 length)
 	return 0;	
 }
 //0成功  ,其他失败.
+//buf的长度必须 大于等于 length;
+
 //static ssize_t Spi_rfid_write(struct file *filp, const char *buf, u32 count, loff_t *f_pos)
 u8 quck_ssp_write_printk( u8 * buf ,u8 length )
 {
 
 
 	u8 a,widx,ridx;
-	u8 temp_buf[50];
 	widx=0;
 	ridx=0;
 	
@@ -356,7 +336,7 @@ u8 quck_ssp_write_printk( u8 * buf ,u8 length )
 		ssp_Write_Bytes(&buf[widx],a);
 		//等待tx_fifo清空
 		while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
-		ssp_Read_Bytes(&temp_buf[ridx],a);
+		ssp_Read_Bytes(&buf[ridx],a);
 		widx+=8;//最后一次小于8的发送,自加8 ,也没事.
 		ridx+=8;
 		length-=a;
