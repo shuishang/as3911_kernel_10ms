@@ -146,6 +146,8 @@
  *****************************************************************************
  */
 extern void dbgHexDump (unsigned char *buffer, u16 length);
-#define  dbgLog printk
+//#define  dbgLog printk
+#define  dbgLog(...) 
+
 #endif /* LOGGER_H */
 

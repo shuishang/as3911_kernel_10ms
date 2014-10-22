@@ -228,3 +228,4 @@ static u16 emvConvertCarrierCyclesToMilliseconds(u32 num_cycles)
 {
     return (num_cycles / 13560) + 1;
 }
+

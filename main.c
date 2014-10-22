@@ -440,7 +440,7 @@ static ssize_t  Spi_rfid_read(struct file *filp, char *buf, u32 count,loff_t *f_
 	
 	return 0;
 }
-
+#if 0
 int g_count=0;
 u8 as3911_Calc_Data(unsigned char *buffer)
 {
@@ -482,16 +482,16 @@ u8 as3911_Calc_Data(unsigned char *buffer)
 
 }
 
-
+#endif
 
 static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cmd, unsigned long arg)
 {
 	int ret=0;
-	unsigned char buf[10];
-	unsigned char temp;
+	//unsigned char buf[10];
+	//unsigned char temp;
 	unsigned int ucValue = 0;
-	unsigned int ucValue2 = 0;
-	unsigned long flags;	
+	//unsigned int ucValue2 = 0;
+	//unsigned long flags;	
 	if ( _IOC_TYPE(cmd) != SPI_RFID_IOC_MAGIC ) 
 	{
 		return -ENOTTY;
@@ -507,13 +507,14 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 			if ( ucValue == 0 ) 
 			{
 				printk("  emvGuiDigital();last\n");
-				//local_irq_save(quck_InterruptStatus);
+				local_irq_save(quck_InterruptStatus);
 				emvGuiDigital();	
+				local_irq_restore(quck_InterruptStatus); 
 			}
 			else 
 			{
 			} 
-		/*		*/
+		/*		
 		
 
 	while(1)
@@ -538,7 +539,7 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 		
 		if (QDeselect())break;
 
-	}
+	}*/
 					
 		/*
 			while(1)

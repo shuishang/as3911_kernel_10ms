@@ -204,12 +204,14 @@ u8 ssp_magic_buf[300];
 #define RF_SCL     BCM5892_GPA4
 #define RF_POWER     BCM5892_GPB31*/
 	//io
+#if 0
 	//FSS 引脚我自己通过io口控制。
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA7,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA6,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA5,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);	
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA4,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
-	//enable_periph(GPIO_AUX_SPI0, 0xf, 0);	
+#endif
+	enable_periph(GPIO_AUX_SPI0, 0xf, 0);	
 	config_hardware(SPI0_REG_BASE_ADDR,500000,0,8);
 	//config_hardware(SPI0_REG_BASE_ADDR,8000000,0,8);
 	//gpio_set_pin_type(BCM5892_GPA7, GPIO_PIN_TYPE_OUTPUT );
@@ -257,7 +259,6 @@ void  ssp_Write_Bytes(unsigned char *tx_buf_8,int num_to_tx)
 	//while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
 	return ;
 }
-u32 quck_ssp_count=0;
 unsigned char  ssp_Read_Bytes(unsigned char *rx_buf_8,int num_rxd )
 {
 	int i=0;
@@ -269,6 +270,7 @@ unsigned char  ssp_Read_Bytes(unsigned char *rx_buf_8,int num_rxd )
 		}
 		
 	} while (i<num_rxd);
+	return 0;
 }
 //0成功  ,其他失败.
 #define SPI_FIFO_DEPTH 8
@@ -331,7 +333,7 @@ u8 quck_ssp_write_printk( u8 * buf ,u8 length )
 		ridx+=8;
 		length-=a;
 	}
-
+	return 0;
 
 
 }

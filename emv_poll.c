@@ -48,9 +48,8 @@
 #include "emv_typeB.h"
 #include "main.h"
 #undef poll_debug 
-#define poll_debug printk
-
-//#define poll_debug(...)  
+//#define poll_debug printk
+#define poll_debug(...)  
 /*
 ******************************************************************************
 * DEFINES
@@ -148,7 +147,7 @@ void emvPollSingleIteration(void)
 s16 emvPoll(void)
 {
     u8 hltaCommand[2];
-    unsigned long flags;		
+   // unsigned long flags;		
     emvTypeA = 0;
     emvTypeB = 0;
     

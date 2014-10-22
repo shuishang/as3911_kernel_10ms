@@ -72,7 +72,7 @@ static volatile u32 as3911InterruptMask = 0;
 /*! Accumulated AS3911 interrupt status. */
 static volatile u32 as3911InterruptStatus = 0;
 
-volatile u32 quck_InterruptStatus  ;
+unsigned  long  quck_InterruptStatus  ;
 
 /*
 typedef struct {
@@ -268,7 +268,11 @@ s8 as3911WaitForInterruptTimed(u32 mask, u16 timeout, u32 *irqs)
 
 s8 as3911GetInterrupts(u32 mask, u32 *irqs)
 {
+	u32 irqStatus;
     QUCK_AS3911_IRQ_OFF();
+	
+	as3911ContinuousRead(AS3911_REG_IRQ_MAIN, (u8*) &irqStatus, 3);
+	as3911InterruptStatus |= irqStatus & as3911InterruptMask;
 
     *irqs = as3911InterruptStatus & mask;
     as3911InterruptStatus &= ~mask;
