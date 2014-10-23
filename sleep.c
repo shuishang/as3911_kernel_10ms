@@ -298,7 +298,7 @@ unsigned char  quck_ssp_read_printk(u8 *buf,u8 length)
 		//SPI_LOG("SPI Write:");
 		ssp_Write_Bytes(&ssp_magic_buf[widx],a);
 		//等待tx_fifo清空
-		while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
+		//while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
 		ssp_Read_Bytes(&buf[ridx],a);
 		widx+=8;//最后一次小于8的发送,自加8 ,也没事.
 		ridx+=8;
@@ -327,7 +327,7 @@ u8 quck_ssp_write_printk( u8 * buf ,u8 length )
 		//SPI_LOG("SPI Write:");
 		ssp_Write_Bytes(&buf[widx],a);
 		//等待tx_fifo清空
-		while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
+		///while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
 		ssp_Read_Bytes(&buf[ridx],a);
 		widx+=8;//最后一次小于8的发送,自加8 ,也没事.
 		ridx+=8;
