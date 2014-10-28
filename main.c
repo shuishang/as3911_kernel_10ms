@@ -140,7 +140,7 @@ struct fasync_struct *async_queue;
 volatile int quck_time;
 volatile int quck_time2;
 //1000次大概是延迟0.97毫秒
-inline void quck_udelay_sub(unsigned int t)
+void quck_udelay_sub(unsigned int t)
 {
 	
 /*	int i;
@@ -206,13 +206,13 @@ inline static int Spi_Read_Bit( void )
 
 void Spi_Select(void)
 {
-	//gpio_set_pin_val(RF_CS,0);	
+	gpio_set_pin_val(RF_CS,0);	
 }
 
 
 void Spi_Deselect(void)
 {
-	//gpio_set_pin_val(RF_CS,1);		
+	gpio_set_pin_val(RF_CS,1);		
 	//return;
 }
 //TP8 ,B26.
@@ -238,12 +238,14 @@ void Spi_Deselect(void)
 
 }
 
- u8 QDeselect(void)
-{
-	  gpio_set_pin_type(BCM5892_GPB27, GPIO_PIN_TYPE_INPUT );
-	  return reg_gpio_get_pin(BCM5892_GPB27);
+ //正常状态下.s20,按键得到的是高电平,按下后得到低电平.
+  u8 QDeselect(void)
+ {
+	  // gpio_set_pin_type(BCM5892_GPB27, GPIO_PIN_TYPE_INPUT );
+	   return !reg_gpio_get_pin(BCM5892_GPB1);
+ 
+ }
 
-}
 
 /**************************************************************************
 * 函数名称：int Spi_Write_Byte( unsigned char mode )
@@ -501,7 +503,7 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 	switch ( cmd )
 	{
 		case IOC_SPI_ENABLE_IRQ :
-			AS3911_init();
+				AS3911_init();
 
 		//	get_user( ucValue, (unsigned char *) arg );
 			if ( ucValue == 0 ) 
@@ -514,12 +516,12 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 			else 
 			{
 			} 
-		/*		
+		
 		
 
-	while(1)
+	/*	*/while(1)
 	{
-		temp=0x7f;
+	//	temp=0x7f;
 		
 	//	as3911_Calc_Data(NULL);
 				
@@ -527,7 +529,7 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 		//buf[1] = 0xff;
 		//quck_ssp_read_printk(buf,2);
 		//quck_ssp_write_printk( &temp ,1 );
-	//	displayRegisterValue(0x3f);
+	 	displayRegisterValue(0x3f);
 	
 	//	printk(" %x,%x\n",buf[0] ,buf[1] );
 		//displayRegisterValue(0x3f);
@@ -539,7 +541,7 @@ static int  Spi_rfid_ioctl(struct inode *inode,struct file *filp,unsigned int cm
 		
 		if (QDeselect())break;
 
-	}*/
+	}
 					
 		/*
 			while(1)
@@ -629,13 +631,13 @@ static void hareware_init(void)
 {
 
 	gpio_set_pin_type(RF_POWER, GPIO_PIN_TYPE_OUTPUT );
-        reg_gpio_set_pull_up_down_disable(RF_POWER);
+    reg_gpio_set_pull_up_down_disable(RF_POWER);
 	gpio_set_pin_val(RF_POWER,1);	
 
 	//RF_CS	 BCM5892_GPA7   
-	//gpio_set_pin_type(RF_CS, GPIO_PIN_TYPE_OUTPUT );
-   // reg_gpio_set_pull_up_down_disable(RF_CS);
-	//gpio_set_pin_val(RF_CS,0);
+	gpio_set_pin_type(RF_CS, GPIO_PIN_TYPE_OUTPUT );
+    reg_gpio_set_pull_up_down_disable(RF_CS);
+	gpio_set_pin_val(RF_CS,0);
 	/*	
 
 	quck_udelay(50000);
@@ -741,6 +743,10 @@ static int Spi_rfid_remove(struct platform_device *pdev )
 	kfree(spi_devp);
 	
 	unregister_chrdev_region(dev, 1);
+	gpio_set_pin_type(RF_POWER, GPIO_PIN_TYPE_OUTPUT );
+    reg_gpio_set_pull_up_down_disable(RF_POWER);
+	gpio_set_pin_val(RF_POWER,0);	
+	
 #if 0	
 	free_irq(gpio_to_irq(BCM5892_GPB12),0);
 #endif

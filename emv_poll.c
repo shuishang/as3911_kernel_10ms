@@ -48,8 +48,8 @@
 #include "emv_typeB.h"
 #include "main.h"
 #undef poll_debug 
-//#define poll_debug printk
-#define poll_debug(...)  
+#define poll_debug printk
+//#define poll_debug(...)  
 /*
 ******************************************************************************
 * DEFINES

@@ -81,7 +81,7 @@ void SSelect(void);
  
 void SDeselect(void);
 void QSelect(void);
- 
+void quck_udelay_sub(unsigned int t);
 
  u8 QDeselect(void);
 #define quck_read_printk(databuf,i)  quck_ssp_read_printk(databuf,i)

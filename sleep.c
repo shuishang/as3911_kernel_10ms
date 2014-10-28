@@ -205,14 +205,16 @@ u8 ssp_magic_buf[300];
 #define RF_POWER     BCM5892_GPB31*/
 	//io
 #if 0
+
+	enable_periph(GPIO_AUX_SPI0, 0xf, 0);		 
+#endif
 	//FSS 引脚我自己通过io口控制。
-	 reg_gpio_iotr_set_pin_type(BCM5892_GPA7,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
+	 //reg_gpio_iotr_set_pin_type(BCM5892_GPA7,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA6,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA5,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);	
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA4,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
-#endif
-	enable_periph(GPIO_AUX_SPI0, 0xf, 0);	
-	config_hardware(SPI0_REG_BASE_ADDR,500000,0,8);
+
+	config_hardware(SPI0_REG_BASE_ADDR,1500000,0,8);
 	//config_hardware(SPI0_REG_BASE_ADDR,8000000,0,8);
 	//gpio_set_pin_type(BCM5892_GPA7, GPIO_PIN_TYPE_OUTPUT );
   //  reg_gpio_set_pull_up_down_disable(BCM5892_GPA7);
@@ -287,6 +289,7 @@ unsigned char  quck_ssp_read_printk(u8 *buf,u8 length)
 	ridx=0;
 	Spi_Select();
 	ssp_sync();
+	quck_udelay_sub(1);
 //
 	length+=1;
 	ssp_magic_buf[0]=buf[0];
@@ -304,7 +307,10 @@ unsigned char  quck_ssp_read_printk(u8 *buf,u8 length)
 		ridx+=8;
 		length-=a;
 	}
+	ssp_sync();	
+	while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
 	Spi_Deselect();
+	
 	//local_irq_restore(flags);
 	return 0;	
 }
@@ -319,20 +325,24 @@ u8 quck_ssp_write_printk( u8 * buf ,u8 length )
 	u8 a,widx,ridx;
 	widx=0;
 	ridx=0;
-	
-	ssp_sync();	
+	Spi_Select();
+	quck_udelay_sub(1);
+	//ssp_sync();	
 	while (length)
 	{
 		a = length > SPI_FIFO_DEPTH ? SPI_FIFO_DEPTH : length;
 		//SPI_LOG("SPI Write:");
 		ssp_Write_Bytes(&buf[widx],a);
 		//等待tx_fifo清空
-		///while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
+	
 		ssp_Read_Bytes(&buf[ridx],a);
 		widx+=8;//最后一次小于8的发送,自加8 ,也没事.
 		ridx+=8;
 		length-=a;
 	}
+	while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
+	
+	Spi_Deselect();
 	return 0;
 
 
