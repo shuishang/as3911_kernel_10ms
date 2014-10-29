@@ -146,6 +146,9 @@ void  TimerStart( unsigned char TimerNo, int ms )
 //	measure_counter_start();
 	TimerNo=TimerNo;
 	g_jiffies= get_timer_count();
+#if 1
+	ms=100;
+#endif
 
 	g_jiffies_count=ms;
 
