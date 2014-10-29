@@ -1,3 +1,6 @@
+
+#if 0
+
 /*****************************************************************************
 * Copyright 2009 - 2011 Broadcom Corporation.  All rights reserved.
 *
@@ -11,6 +14,7 @@
 * license other than the GPL, without Broadcom's express prior written
 * consent.
 *****************************************************************************/
+
 
 
 #include <linux/version.h>
@@ -1395,3 +1399,8 @@ MODULE_AUTHOR("Broadcom");
 MODULE_DESCRIPTION("PL022 SPI hardware driver for BCM5892");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:bcm5892-spi");
+
+#endif
+
+
+

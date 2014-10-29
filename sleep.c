@@ -214,7 +214,7 @@ u8 ssp_magic_buf[300];
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA5,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);	
 	 reg_gpio_iotr_set_pin_type(BCM5892_GPA4,GPIO_PIN_TYPE_ALTERNATIVE_FUNC0);
 
-	config_hardware(SPI0_REG_BASE_ADDR,4000000,0,8);
+	config_hardware(SPI0_REG_BASE_ADDR,8000000,0,8);
 	//config_hardware(SPI0_REG_BASE_ADDR,8000000,0,8);
 	//gpio_set_pin_type(BCM5892_GPA7, GPIO_PIN_TYPE_OUTPUT );
   //  reg_gpio_set_pull_up_down_disable(BCM5892_GPA7);
@@ -309,6 +309,7 @@ unsigned char  quck_ssp_read_printk(u8 *buf,u8 length)
 	}
 	ssp_sync();	
 	while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
+	quck_udelay_sub(1);
 	Spi_Deselect();
 	
 	//local_irq_restore(flags);
@@ -341,7 +342,7 @@ u8 quck_ssp_write_printk( u8 * buf ,u8 length )
 		length-=a;
 	}
 	while ((PL022_REG(SPI0_REG_BASE_ADDR, PL022_SR) & PL022_SR_TFE) == 0);
-	
+	quck_udelay_sub(1);
 	Spi_Deselect();
 	return 0;
 
