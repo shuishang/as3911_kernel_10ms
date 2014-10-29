@@ -37,6 +37,7 @@ spi_rfid-y += emv_typeB.o
 spi_rfid-y += logger.o 
 spi_rfid-y += platform.o
 spi_rfid-y += sleep.o 
+spi_rfid-y += pl022-spi.o
 
 EXTRA_CFLAGS      += -O0
 else
