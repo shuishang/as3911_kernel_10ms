@@ -39,6 +39,9 @@
 #include <linux/ioctl.h>
 #include "sleep.h"
 #include "Platform.h"
+#define inter_debug printk
+//#define inter_debug(...)
+
 bool_t emvStopRequestReceived(void);
 
 #define AS3911_IRQ_CLR() { reg_gpio_clear_interrupt( BCM5892_GPB12 );}
@@ -168,6 +171,7 @@ s8 as3911EnableInterrupts(u32 mask)
     s8 error = ERR_NONE;
     u32 irqMask = 0;
     QUCK_AS3911_IRQ_OFF();
+	inter_debug("i_begin: ");
 	//local_irq_restore(quck_InterruptStatus); 
     error |= as3911ContinuousRead(AS3911_REG_IRQ_MASK_MAIN, (u8*) &irqMask, 3);
     irqMask &= ~mask;
@@ -191,7 +195,7 @@ s8 as3911DisableInterrupts(u32 mask)
     irqMask |= mask;
     as3911InterruptMask &=  ~mask;
     error |= as3911ContinuousWrite(AS3911_REG_IRQ_MASK_MAIN, (u8*) &irqMask, 3);
-
+	inter_debug(" -iend\n");
     QUCK_AS3911_IRQ_ON();
 
     if (ERR_NONE == error)
@@ -206,7 +210,7 @@ s8 as3911ClearInterrupts(u32 mask)
     u32 irqStatus = 0;
 
     QUCK_AS3911_IRQ_OFF();
-
+	
     error |= as3911ContinuousRead(AS3911_REG_IRQ_MAIN, (u8*) &irqStatus, 3);
     as3911InterruptStatus |= irqStatus & as3911InterruptMask;
     as3911InterruptStatus &= ~mask;
@@ -234,6 +238,8 @@ s8 as3911WaitForInterruptTimed(u32 mask, u16 timeout, u32 *irqs)
    		as3911ContinuousRead(AS3911_REG_IRQ_MAIN, (u8*) &irqStatus, 3);
 		as3911InterruptStatus |= irqStatus & as3911InterruptMask;
 	//	quck_printk(get_timer_count());
+		if(irqStatus)
+	    inter_debug(" %x,%x,%x; ",irqStatus,mask,as3911InterruptStatus);
 
 		
 		irqStatus = as3911InterruptStatus & mask;
@@ -259,7 +265,11 @@ s8 as3911WaitForInterruptTimed(u32 mask, u16 timeout, u32 *irqs)
 		
 	}while( !irqStatus && !timerExpired );
 
+	if(timerExpired)
+	{
+		  printk(" timerExpired ");	 
 
+	}
 	QUCK_AS3911_IRQ_OFF();
 	as3911InterruptStatus &= ~irqStatus;
 	QUCK_AS3911_IRQ_ON();
@@ -276,7 +286,7 @@ s8 as3911GetInterrupts(u32 mask, u32 *irqs)
 	
 	as3911ContinuousRead(AS3911_REG_IRQ_MAIN, (u8*) &irqStatus, 3);
 	as3911InterruptStatus |= irqStatus & as3911InterruptMask;
-
+	inter_debug(" get:%x,%x ,%x",irqStatus,mask,as3911InterruptStatus);
     *irqs = as3911InterruptStatus & mask;
     as3911InterruptStatus &= ~mask;
 

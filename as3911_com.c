@@ -44,7 +44,9 @@
 #include "aS3911.h"
 #include "logger.h"
 #include "main.h"
-#define com_debug(...)  
+//#define com_debug(...)  
+#define com_debug printk
+
 /*
 ******************************************************************************
 * DEFINES
@@ -398,18 +400,27 @@ s16 as3911Receive(u8 *response, u32 maxResponseLength, u32 *responseLength)
         if (irqStatus & AS3911_IRQ_MASK_RXS)
         {
             /* start of receive interrupt. */
+			com_debug("com-a1 ");
             receiving = TRUE;
         }
         if (irqStatus & AS3911_IRQ_MASK_NRE)
         {
             /* no response timer expired. */
+			com_debug("com-b1 ");
             if (!receiving)
             {
 //                LOG("----------------nrt time out\n");
+				com_debug("com-c1");
+
                 return AS3911_TIMEOUT_ERROR;
             }
              else
-                nrtExpired = TRUE;
+             	{
+             	com_debug("com-d1\n");
+				 nrtExpired = TRUE;
+
+			 	}
+               
 //            	LOG("----------------nrt time out after rxs\n");
         }
         if (irqStatus & AS3911_IRQ_MASK_RXE)
@@ -419,10 +430,12 @@ s16 as3911Receive(u8 *response, u32 maxResponseLength, u32 *responseLength)
             u32 errorIrqStatus = 0;
             u8 numBytesInFifo = 0;
             bool_t reenableReceiver = FALSE;
-
+			
             as3911ContinuousRead(AS3911_REG_FIFO_RX_STATUS1, &fifoStatus[0], 2);
             numBytesInFifo = fifoStatus[0] & 0x7F;
-
+			com_debug("com-a2,%02x",fifoStatus[0]);
+			com_debug(",%02x",fifoStatus[1]);
+			
             as3911GetInterrupts(
                 AS3911_IRQ_MASK_COL | AS3911_IRQ_MASK_CRC | AS3911_IRQ_MASK_PAR | AS3911_IRQ_MASK_ERR1 | AS3911_IRQ_MASK_ERR2,
                 &errorIrqStatus
@@ -482,12 +495,14 @@ s16 as3911Receive(u8 *response, u32 maxResponseLength, u32 *responseLength)
                 /* Read data from the FIFO. */
                 if (numBytesReceived + numBytesInFifo > maxResponseLength)
                 {
+                	com_debug("com-E1 ");
                     as3911ReadFifo(&response[numBytesReceived], maxResponseLength - numBytesReceived);
                     numBytesReceived = maxResponseLength;
                     overflowOccured = TRUE;
                 }
                 else
                 {
+                	com_debug("com-E2 ");
                     as3911ReadFifo(&response[numBytesReceived], numBytesInFifo);
                     numBytesReceived += numBytesInFifo;
                 }
@@ -501,10 +516,10 @@ s16 as3911Receive(u8 *response, u32 maxResponseLength, u32 *responseLength)
                 as3911ExecuteCommand(AS3911_CMD_START_GP_TIMER);
 
                 as3911ReceptionInProgress = FALSE;
-		if(responseLength != NULL)
-		{
-		 *responseLength = numBytesReceived;
-		}				
+				if(responseLength != NULL)
+				{
+				 *responseLength = numBytesReceived;
+				}				
                 if (errorIrqStatus & AS3911_IRQ_MASK_COL)
                     return AS3911_COLLISION_ERROR;
                 else if (errorIrqStatus & AS3911_IRQ_MASK_ERR1)
@@ -515,7 +530,7 @@ s16 as3911Receive(u8 *response, u32 maxResponseLength, u32 *responseLength)
                     return AS3911_PARITY_ERROR;
                 else if (errorIrqStatus & AS3911_IRQ_MASK_ERR2)
                 {
-                    com_debug("Soft framing error\n");
+                    com_debug("com-Soft framing error\n");
 
                     return AS3911_SOFT_FRAMING_ERROR;
                 }
@@ -526,6 +541,7 @@ s16 as3911Receive(u8 *response, u32 maxResponseLength, u32 *responseLength)
             }
         }
     } while (0 != irqStatus);
+	printk(" timer ");	 
 
     /* We only reach this code if the IRQ sanity timeout expired. */
     return AS3911_INTERNAL_ERROR;
