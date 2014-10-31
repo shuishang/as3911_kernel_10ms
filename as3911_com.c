@@ -332,6 +332,7 @@ void as3911Transmit(const u8 *message, u32 messageLength, AS3911RequestFlags_t r
         }
     } while (0 != irqStatus);
 
+	printk(" trans_a ");
     /* This code is only reached when the AS3911 interrupt sanity timeout expires. */
     return;
 }
@@ -365,7 +366,7 @@ s16 as3911Receive(u8 *response, u32 maxResponseLength, u32 *responseLength)
             u8 auxDisplay = 0;
             u8 fifoStatus[2];
             u8 numBytesInFifo = 0;
-
+			com_debug(" com-wl ");
             /* Read data from the FIFO in chunks as long as FIFO data is available
              * and the chip is receiving. Reading the FIFO data in chunks asures that
              * a too long FIFO read doesn't interfere with the error handling required
@@ -400,23 +401,23 @@ s16 as3911Receive(u8 *response, u32 maxResponseLength, u32 *responseLength)
         if (irqStatus & AS3911_IRQ_MASK_RXS)
         {
             /* start of receive interrupt. */
-			com_debug("com-a1 ");
+			com_debug(" com-RXS ");
             receiving = TRUE;
         }
         if (irqStatus & AS3911_IRQ_MASK_NRE)
         {
             /* no response timer expired. */
-			com_debug("com-b1 ");
+			com_debug(" com-NRE ");
             if (!receiving)
             {
 //                LOG("----------------nrt time out\n");
-				com_debug("com-c1");
+				com_debug("NRE-0 ");
 
                 return AS3911_TIMEOUT_ERROR;
             }
              else
              	{
-             	com_debug("com-d1\n");
+             	com_debug(" NRE-1 ");
 				 nrtExpired = TRUE;
 
 			 	}
@@ -433,9 +434,7 @@ s16 as3911Receive(u8 *response, u32 maxResponseLength, u32 *responseLength)
 			
             as3911ContinuousRead(AS3911_REG_FIFO_RX_STATUS1, &fifoStatus[0], 2);
             numBytesInFifo = fifoStatus[0] & 0x7F;
-			com_debug("com-a2,%02x",fifoStatus[0]);
-			com_debug(",%02x",fifoStatus[1]);
-			
+			com_debug(" com-RXE,%02x,%02x",fifoStatus[0],fifoStatus[1]);	
             as3911GetInterrupts(
                 AS3911_IRQ_MASK_COL | AS3911_IRQ_MASK_CRC | AS3911_IRQ_MASK_PAR | AS3911_IRQ_MASK_ERR1 | AS3911_IRQ_MASK_ERR2,
                 &errorIrqStatus
@@ -450,6 +449,7 @@ s16 as3911Receive(u8 *response, u32 maxResponseLength, u32 *responseLength)
 
             if(as3911EmvExceptionProcessing)
             {
+            	com_debug(" ep-1 ");
                 if (  (errorIrqStatus & AS3911_IRQ_MASK_COL)
                    || (errorIrqStatus & AS3911_IRQ_MASK_ERR1)
                    || (errorIrqStatus & AS3911_IRQ_MASK_ERR2))
@@ -474,7 +474,7 @@ s16 as3911Receive(u8 *response, u32 maxResponseLength, u32 *responseLength)
             {
                 /* Reset the receive buffer. */
                 numBytesReceived = 0;
-
+				com_debug(" ep-2 ");
                 /* If no receive timeout has occured yet then the
                  * receiver needs to be reenabled. If a receive timeout
                  * has already occured then we have a reception timeout.
@@ -484,10 +484,12 @@ s16 as3911Receive(u8 *response, u32 maxResponseLength, u32 *responseLength)
                     receiving = FALSE;
                     as3911ExecuteCommand(AS3911_CMD_CLEAR_FIFO);
                     as3911ExecuteCommand(AS3911_CMD_UNMASK_RECEIVE_DATA);
+					com_debug(" ep-2 ");
                 }
                 else
                 {
                     return AS3911_TIMEOUT_ERROR;
+					com_debug(" ep-3 ");
                 }
             }
             else
@@ -495,14 +497,14 @@ s16 as3911Receive(u8 *response, u32 maxResponseLength, u32 *responseLength)
                 /* Read data from the FIFO. */
                 if (numBytesReceived + numBytesInFifo > maxResponseLength)
                 {
-                	com_debug("com-E1 ");
+                	com_debug("ep-E1 ");
                     as3911ReadFifo(&response[numBytesReceived], maxResponseLength - numBytesReceived);
                     numBytesReceived = maxResponseLength;
                     overflowOccured = TRUE;
                 }
                 else
                 {
-                	com_debug("com-E2 ");
+                	com_debug("ep-E2 ");
                     as3911ReadFifo(&response[numBytesReceived], numBytesInFifo);
                     numBytesReceived += numBytesInFifo;
                 }
